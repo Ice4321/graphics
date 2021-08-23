@@ -1,7 +1,10 @@
 #ifndef INCLUDED_PREPROCESSOR_BUILD_HPP
 #define INCLUDED_PREPROCESSOR_BUILD_HPP
 
+#define BUILD_DEBUG 1
+#define BUILD_RELEASE 2
+
 //TODO: Configure CMake for this
-#define BUILD_DIAGNOSTIC
+#define BUILD BUILD_DEBUG
 
 #endif
