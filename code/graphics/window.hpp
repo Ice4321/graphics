@@ -5,7 +5,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include<GLFW/glfw3.h>
 
-//TODO: Is there a way to avoid declaring so many namespaces inside namespace Events?
 namespace Events {
     namespace Graphics {
 	namespace Window {
@@ -17,6 +16,8 @@ namespace Events {
 }
 
 namespace Graphics {
+    namespace Events = Events::Graphics::Window;
+
     class Window {
     public:
 	Window(int _width, int _height);
