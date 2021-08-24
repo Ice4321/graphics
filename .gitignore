@@ -1,5 +1,6 @@
-# Main executable
 main
+build
+.cache
 
 ### C++ ###
 # Prerequisites
