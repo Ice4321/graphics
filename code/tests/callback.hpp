@@ -7,13 +7,14 @@
     #include"events/emitter.hpp"
     #include<concepts>
     #include<functional>
+    #include<iostream>
 
     namespace Tests {
 	namespace Callback {
 	    struct X {}; struct Y {};
 	    struct Callable1 { void operator()(int) {} };
 	    struct Callable2 { void operator()(int&) const & {} };
-	    struct Callable3 { void operator()(int const&&) const && noexcept {} };
+	    struct Callable3 { void operator()(int const&&) const & noexcept {} };
 	    struct Callable4 { 
 		void operator()(X) noexcept {}
 		void operator()(Y) noexcept {} 
@@ -21,7 +22,38 @@
 	    double callable5(double) {}
 	    double callable6(double) noexcept {}
 
+	    struct E: public Event_emitter<X, Y> {
+		void emit_x() {
+		    X x;
+		    post_event(x);
+		    post_event(std::move(x));
+		    post_event(std::as_const(x));
+		    post_event(std::move(std::as_const(x)));
+		}
+
+		void emit_Y() {
+		    Y x;
+		    post_event(x);
+		    post_event(std::move(x));
+		    post_event(std::as_const(x));
+		    post_event(std::move(std::as_const(x)));
+		}
+	    };
+
+	    struct Handler {
+		void operator()(X&) { std::cout << "X&" << std::endl; }
+		void operator()(X&&) { std::cout << "X&&" << std::endl; }
+		void operator()(X const&) { std::cout << "X const&" << std::endl; }
+		void operator()(X const&&) { std::cout << "X const&&" << std::endl; }
+	    };
+
 	    void run() {
+		E e;
+		e.add_callback(Internal::Event_emitter_impl::Callable<X>([](X){}));
+		e.emit_x();
+
+		return;
+
 		Callable1 ca1{};
 		Internal::Event_emitter_impl::Callable c1(ca1);
 		static_assert(std::same_as<decltype(c1), Internal::Event_emitter_impl::Callable<int>>);
@@ -54,6 +86,8 @@
 		
 		auto b = std::bind_front([](double, double){}, 1.0);
 		Internal::Event_emitter_impl::Callable<double> c13(b);
+
+
 	    }
 	}
     }
