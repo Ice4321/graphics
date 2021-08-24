@@ -1,5 +1,5 @@
-#ifndef INCLUDED_MACROS_HPP
-#define INCLUDED_MACROS_HPP
+#ifndef INCLUDED_PREPROCESSOR_MACROS_HPP
+#define INCLUDED_PREPROCESSOR_MACROS_HPP
 
 #include"preprocessor/build.hpp"
 
