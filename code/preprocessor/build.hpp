@@ -6,5 +6,6 @@
 
 //TODO: Configure CMake for this
 #define BUILD BUILD_DEBUG
+#define BUILD_TESTS true
 
 #endif

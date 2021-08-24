@@ -1,7 +1,6 @@
 #ifndef INCLUDED_GRAPHICS_WINDOW_HPP
 #define INCLUDED_GRAPHICS_WINDOW_HPP
 
-#include<memory> 
 #define GLFW_INCLUDE_VULKAN
 #include<GLFW/glfw3.h>
 
@@ -32,7 +31,7 @@ namespace Graphics {
 
     private:
 	int width, height;
-	std::unique_ptr<GLFWwindow, void(*)(GLFWwindow*)> window;
+	GLFWwindow* window;
 
     };
 }

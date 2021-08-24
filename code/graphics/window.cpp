@@ -4,10 +4,8 @@
 #include<cassert>
 
 Graphics::Window::Window(int _width, int _height):
-    width(_width), height(_height),
-    //If unique_ptr holds a nullptr, the deleter is not called
-    //The deleter won't be called before GLFW is initialised
-    window(nullptr, [](GLFWwindow* _window){ glfwDestroyWindow(_window); })
+    width(_width), height(_height), 
+    window(nullptr)
 { 
     IF_DEBUG(assert(std::this_thread::get_id() == Concurrency::main_thread_id));
 
@@ -16,14 +14,17 @@ Graphics::Window::Window(int _width, int _height):
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-    window.reset(glfwCreateWindow(width, height, "main", nullptr, nullptr));
-    if(!window) throw std::runtime_error("Graphics::Window::Window(): window creation error");
+    
+    if(!(window = glfwCreateWindow(width, height, "main", nullptr, nullptr))) {
+	glfwTerminate();
+	throw std::runtime_error("Graphics::Window::Window(): window creation error");
+    }
 }
 
 Graphics::Window::~Window() {
     IF_DEBUG(assert(std::this_thread::get_id() == Concurrency::main_thread_id));
-
+    
+    glfwDestroyWindow(window);
     glfwTerminate(); //Safe to call multiple times
 }
 
