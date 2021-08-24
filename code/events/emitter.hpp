@@ -79,9 +79,10 @@ namespace Internal {
 	    void invoke(auto&& _argument) {
 		callable->invoke(std::forward<decltype(_argument)>(_argument));
 	    }
-
-	    Callable(Callable const&) = delete;
-	    Callable& operator=(Callable const&) = delete;
+	    
+	    // This is needed to avoid recursion if the main constructor is selected
+	    Callable(Callable&&) = default;
+	    Callable& operator=(Callable&&) = default;
 
 	private:
 	    std::unique_ptr<Callable_wrapper_base<_Argument>> callable;
@@ -107,7 +108,7 @@ namespace Internal {
 
 
 
-	template<typename _Event>
+	template<Remove_cvref _Event>
 	class Event_emitter_base {
 	private:
 	    // std::list never invalidates iterators
@@ -147,11 +148,17 @@ namespace Internal {
 }
 
 
-template<typename... _Events> requires (... && std::same_as<_Events, typename std::remove_cvref<_Events>::type>)
+template<Internal::Event_emitter_impl::Remove_cvref... _Events>
 class Event_emitter: private Internal::Event_emitter_impl::Event_emitter_base<_Events>... {
 public:
-    using Internal::Event_emitter_impl::Event_emitter_base<_Events>::add_callback...;
-    using Internal::Event_emitter_impl::Event_emitter_base<_Events>::remove_callback...;
+    template<Internal::Event_emitter_impl::Remove_cvref _Event>
+    decltype(auto) add_event_callback(Internal::Event_emitter_impl::Callable<_Event> _callback) {
+	return add_callback(std::move(_callback));
+    }
+
+    void remove_event_callback(auto const& _handle) {
+	remove_callback(_handle);
+    }
 
 protected:
     Event_emitter() = default;
@@ -162,6 +169,10 @@ protected:
 
     Event_emitter(Event_emitter const&) = delete;
     Event_emitter& operator= (Event_emitter const&) = delete;
+
+private:
+    using Internal::Event_emitter_impl::Event_emitter_base<_Events>::add_callback...;
+    using Internal::Event_emitter_impl::Event_emitter_base<_Events>::remove_callback...;
 
 };
 

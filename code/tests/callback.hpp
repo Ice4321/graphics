@@ -4,10 +4,10 @@
 #include"preprocessor/build.hpp"
 
 #if BUILD_TESTS
+    #include<iostream>
     #include"events/emitter.hpp"
     #include<concepts>
     #include<functional>
-    #include<iostream>
 
     namespace Tests {
 	namespace Callback {
@@ -31,7 +31,7 @@
 		    post_event(std::move(std::as_const(x)));
 		}
 
-		void emit_Y() {
+		void emit_Y() { 
 		    Y x;
 		    post_event(x);
 		    post_event(std::move(x));
@@ -47,10 +47,27 @@
 		void operator()(X const&&) { std::cout << "X const&&" << std::endl; }
 	    };
 
+
+	    struct Handler2 {
+		void operator()(Y const&) { std::cout << "Y const&" << std::endl; }
+	    };
+
 	    void run() {
+		Handler h1; Handler2 h2;
+		std::cout << "Starting tests" << std::endl;
 		E e;
-		e.add_callback(Internal::Event_emitter_impl::Callable<X>([](X){}));
+		std::cout << "Registering callbacks" << std::endl;
+		auto z1 = e.add_event_callback<X>(std::move(h1));
+		auto z2 = e.add_event_callback<Y>(h2);
+		std::cout << "Sending events" << std::endl;
 		e.emit_x();
+		e.emit_Y();
+		std::cout << "Removing callbacks" << std::endl;
+		e.remove_event_callback(z1);
+		e.remove_event_callback(z2);
+		std::cout << "Sending events" << std::endl;
+		e.emit_x();
+		e.emit_Y();
 
 		return;
 
