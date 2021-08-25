@@ -1,7 +1,6 @@
 #ifndef INCLUDED_GRAPHICS_WINDOW_HPP
 #define INCLUDED_GRAPHICS_WINDOW_HPP
 
-#define GLFW_INCLUDE_VULKAN
 #include<GLFW/glfw3.h>
 #include"events/emitter.hpp"
 #include"preprocessor/macros.hpp"
