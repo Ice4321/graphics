@@ -1,31 +1,47 @@
 #include"graphics/window.hpp"
-#include"preprocessor/macros.hpp"
 #include"concurrency/main_thread.hpp"
 #include<cassert>
+#include<iostream>
 
 Graphics::Window::Window(int _width, int _height):
     width(_width), height(_height), 
     window(nullptr)
 { 
-    IF_DEBUG(assert(std::this_thread::get_id() == Concurrency::main_thread_id));
+    if(!glfw_initialised) {
+	// May be called before glfwInit()
+	glfwSetErrorCallback([](int _error_code, char const* _description){ 
+	    (void)_error_code;
+	    // TODO: use std::format
+	    std::cout << "GLFW error: " << _description << std::endl;
+	    std::terminate();
+	});
 
-    //Safe to call multiple times
-    if(glfwInit() == GLFW_FALSE) throw std::runtime_error("Graphics::Window::Window(): GLFW initialisation error");
-
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-    
-    if(!(window = glfwCreateWindow(width, height, "main", nullptr, nullptr))) {
-	glfwTerminate();
-	throw std::runtime_error("Graphics::Window::Window(): window creation error");
+	glfwInit();
+	glfw_initialised = true;
     }
+
+    window = glfwCreateWindow(width, height, "main", nullptr, nullptr);
+    glfwSetWindowUserPointer(window, static_cast<void*>(this));
+
+    glfwSetWindowCloseCallback(window, [](GLFWwindow* _window) {
+	static_cast<Window*>(glfwGetWindowUserPointer(_window))->post_event(Events::Graphics::Window::Close{});
+    });
+    glfwSetFramebufferSizeCallback(window, [](GLFWwindow* _window, int _width, int _height) {
+	static_cast<Window*>(glfwGetWindowUserPointer(_window))->post_event(Events::Graphics::Window::Resize{_width, _height});
+    });
+
+    ++total_window_count;
 }
 
 Graphics::Window::~Window() {
-    IF_DEBUG(assert(std::this_thread::get_id() == Concurrency::main_thread_id));
-    
     glfwDestroyWindow(window);
-    glfwTerminate(); //Safe to call multiple times
+
+    --total_window_count;
+    
+    if(glfw_initialised && total_window_count == 0) {
+	glfwTerminate();
+	glfw_initialised = false;
+    }
 }
 
 
@@ -35,4 +51,12 @@ int Graphics::Window::get_width() const noexcept {
 
 int Graphics::Window::get_height() const noexcept {
     return height;
+}
+
+void Graphics::Window::poll_events() {
+    glfwPollEvents();
+}
+
+void Graphics::Window::await_events() {
+    glfwWaitEvents();
 }
