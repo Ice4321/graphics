@@ -58,13 +58,16 @@
 		E e;
 		std::cout << "Registering callbacks" << std::endl;
 		auto z1 = e.add_event_callback<X>(std::move(h1));
+		//auto a1 = e.add_event_callback(std::move(h1));
 		auto z2 = e.add_event_callback<Y>(h2);
+		auto a2 = e.add_event_callback(h2);
 		std::cout << "Sending events" << std::endl;
 		e.emit_x();
 		e.emit_Y();
 		std::cout << "Removing callbacks" << std::endl;
 		e.remove_event_callback(z1);
 		e.remove_event_callback(z2);
+		e.remove_event_callback(a2);
 		std::cout << "Sending events" << std::endl;
 		e.emit_x();
 		e.emit_Y();

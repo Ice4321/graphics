@@ -12,10 +12,12 @@
 namespace Internal {
     namespace Event_emitter_impl {
 	template<typename _Type>
-	concept Remove_cvref = std::same_as<_Type, typename std::remove_cvref<_Type>::type>;
+	concept No_cvref = std::same_as<_Type, typename std::remove_cvref<_Type>::type>;
 
+	template<typename _Type>
+	concept Decayed = std::same_as<_Type, typename std::decay<_Type>::type>;
 
-	template<Remove_cvref _Argument> 
+	template<typename _Argument> requires No_cvref<_Argument>
 	class Callable_wrapper_base {
 	public:
 	    virtual void invoke(_Argument& _argument) = 0;
@@ -27,7 +29,7 @@ namespace Internal {
 	};
 
 
-	template<Remove_cvref _Argument, typename _Callable>
+	template<typename _Argument, typename _Callable> requires No_cvref<_Argument> && Decayed<_Callable>
 	class Callable_wrapper: public Callable_wrapper_base<_Argument> {
 	public:
 	    Callable_wrapper(auto&& _callable): callable(std::forward<decltype(_callable)>(_callable)) { }
@@ -63,7 +65,7 @@ namespace Internal {
 	};
 
 	
-	template<Remove_cvref _Argument>
+	template<typename _Argument> requires No_cvref<_Argument>
 	class Callable {
 	public:
 	    typedef _Argument Argument_type;
@@ -108,7 +110,7 @@ namespace Internal {
 
 
 
-	template<Remove_cvref _Event>
+	template<typename _Event> requires No_cvref<_Event>
 	class Event_emitter_base {
 	private:
 	    // std::list never invalidates iterators
@@ -148,12 +150,19 @@ namespace Internal {
 }
 
 
-template<Internal::Event_emitter_impl::Remove_cvref... _Events>
+template<typename... _Events> requires (... && Internal::Event_emitter_impl::No_cvref<_Events>)
 class Event_emitter: private Internal::Event_emitter_impl::Event_emitter_base<_Events>... {
 public:
-    template<Internal::Event_emitter_impl::Remove_cvref _Event>
-    decltype(auto) add_event_callback(Internal::Event_emitter_impl::Callable<_Event> _callback) {
-	return add_callback(std::move(_callback));
+    // Argument type is deduced in Callable's constructor
+    template<typename _Callback>
+    decltype(auto) add_event_callback(_Callback&& _callback) {
+	return add_callback(Internal::Event_emitter_impl::Callable(std::forward<_Callback>(_callback)));
+    }
+
+    // Argument type provided explicitly
+    template<typename _Event, typename _Callback> requires Internal::Event_emitter_impl::No_cvref<_Event>
+    decltype(auto) add_event_callback(_Callback&& _callback) {
+	return add_callback(Internal::Event_emitter_impl::Callable<_Event>(std::forward<_Callback>(_callback)));
     }
 
     void remove_event_callback(auto const& _handle) {
