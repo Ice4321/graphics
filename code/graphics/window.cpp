@@ -24,10 +24,14 @@ Graphics::Window::Window(int _width, int _height):
     glfwSetWindowUserPointer(window, static_cast<void*>(this));
 
     glfwSetWindowCloseCallback(window, [](GLFWwindow* _window) {
-	static_cast<Window*>(glfwGetWindowUserPointer(_window))->post_event(Events::Graphics::Window::Close{});
+	Window* window_object = static_cast<Window*>(glfwGetWindowUserPointer(_window));
+	window_object->post_event(Events::Graphics::Window::Close{});
     });
     glfwSetFramebufferSizeCallback(window, [](GLFWwindow* _window, int _width, int _height) {
-	static_cast<Window*>(glfwGetWindowUserPointer(_window))->post_event(Events::Graphics::Window::Resize{_width, _height});
+	Window* window_object = static_cast<Window*>(glfwGetWindowUserPointer(_window));
+	window_object->width = _width;
+	window_object->height = _height;
+	window_object->post_event(Events::Graphics::Window::Resize{_width, _height});
     });
 
     ++total_window_count;

@@ -25,10 +25,6 @@ namespace Graphics {
 	// Must be called on the main thread
 	Window(int _width, int _height);
 
-	// == Inherited from Event_emitter ==
-	// Callback_handle add_event_callback(Callback _callback);
-	// void remove_event_callback(Callback_handle _handle);
-
 	int get_width() const noexcept;
 	int get_height() const noexcept;
 	
