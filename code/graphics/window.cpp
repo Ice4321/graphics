@@ -19,7 +19,8 @@ Graphics::Window::Window(int _width, int _height):
 	glfwInit();
 	glfw_initialised = true;
     }
-
+    
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     window = glfwCreateWindow(width, height, "main", nullptr, nullptr);
     glfwSetWindowUserPointer(window, static_cast<void*>(this));
 
