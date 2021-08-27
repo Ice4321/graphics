@@ -5,6 +5,11 @@
 #include"tests/array.hpp"
 
 int main() {
+    Tests::Array::run();
+}
+
+/*
+int main() {
     Concurrency::main_thread_id = std::this_thread::get_id();
     
     // TODO: std::format
@@ -30,6 +35,6 @@ int main() {
     }
 
 }
-
+*/
 
 
