@@ -14,7 +14,8 @@ std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all(
     // Necessary because the constructor is private
     //auto transform = std::views::transform(devices, [](VkPhysicalDevice _device) -> Physical_device { return _device; });
 
-    return { std::ranges::cbegin(devices), std::ranges::cend(devices) };
+    // return { std::ranges::cbegin(devices), std::ranges::cend(devices) };
+    return {};
 }
 
 

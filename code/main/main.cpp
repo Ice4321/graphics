@@ -2,6 +2,7 @@
 #include"concurrency/main_thread.hpp"
 #include"graphics/window.hpp"
 #include"graphics/physical_device.hpp"
+#include"tests/array.hpp"
 
 int main() {
     Concurrency::main_thread_id = std::this_thread::get_id();

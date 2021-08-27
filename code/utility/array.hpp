@@ -2,80 +2,73 @@
 #define INCLUDED_UTILITY_ARRAY_HPP
 
 
-
-/* Old version:
-
-#include<type_traits>
-#include<memory>
-#include<ranges>
-
+// Exception specification is given assuming valid parameters are passed
 template<typename _Element>
 class Array {
 private:
-    // Unique_ptr equivalent, but constexpr. Only for arrays
-    template<typename _Type>
-    struct Raii_array_wrapper {
-        _Type* array;
 
-        constexpr decltype(auto) operator[](std::size_t _index) noexcept { return array[_index]; }
+    union Element_union {
+	_Element element;
 
-        constexpr Raii_array_wrapper(_Type* _array) noexcept: array(_array) { }
-        constexpr ~Raii_array_wrapper() noexcept { delete[] array; }
-        constexpr Raii_array_wrapper(Raii_array_wrapper&& _other) noexcept {
-            array = std::exchange(_other.array, nullptr);
-        }
-        constexpr Raii_array_wrapper& operator=(Raii_array_wrapper&& _other) noexcept {
-            delete[] array;
-            array = std::exchange(_other.array, nullptr);
-        }
-
-    };
-    
-    union Memory {
-    public:
-        _Element element;
-
-        constexpr Memory() noexcept { }
-        constexpr ~Memory() noexcept { }
+	constexpr Element_union() noexcept { }
+	constexpr ~Element_union() noexcept { }
     };
 
     std::size_t size;
-    Raii_array_wrapper<bool> constructed;
-    Raii_array_wrapper<Memory> memory;
+    Element_union* data;
+    bool* constructed;
+
 
 public:
     constexpr Array(std::size_t _size):
-        size(_size),
-        constructed(::new bool[_size]()), // value-init
-        memory(::new Memory[_size]) // default-init
-    { }
+	size(_size)
+    { 
+	data = ::new Element_union[size];
+	try {
+	    // Value init
+	    constructed = ::new bool[size]();
+	} catch(...) {
+	    delete[] data;
+	    throw;
+	}
+    }
 
     constexpr void construct(std::size_t _index, auto&&... _arguments) 
         noexcept(
             std::is_nothrow_constructible<_Element, decltype(_arguments)...>::value &&
-            noexcept(destroy(0))
-        )
+	    std::is_nothrow_destructible<_Element>::value
+	)
     {
-        if(constructed[_index]) destroy(_index);
-        std::construct_at<_Element>(&memory[_index].element, std::forward<decltype(_arguments)>(_arguments)...);
+        destroy(_index);
+        std::construct_at(&data[_index].element, std::forward<decltype(_arguments)>(_arguments)...);
         constructed[_index] = true;
     }
 
     constexpr void destroy(std::size_t _index)
         noexcept(std::is_nothrow_destructible<_Element>::value) 
     {
-        if(constructed[_index]) memory[_index].element.~_Element();
-        constructed[_index] = false;
+        if(constructed[_index]) {
+	    // Lifetime ends when the destructor call starts [basic.life]
+	    constructed[_index] = false;
+	    data[_index].element.~_Element();
+	}
     }
 
-    constexpr _Element& operator[](std::size_t _index) noexcept { return memory[_index].element; }
-    constexpr _Element const& operator[](std::size_t _index) const noexcept { return memory[_index].element; }
+    constexpr bool is_constructed(std::size_t _index) const noexcept { return constructed[_index]; }
+
+    constexpr _Element& operator[](std::size_t _index) & noexcept { return data[_index].element; }
+    constexpr _Element const& operator[](std::size_t _index) const & noexcept { return data[_index].element; }
+    constexpr _Element&& operator[](std::size_t _index) && noexcept { return std::move(data[_index].element); }
+    constexpr _Element const&& operator[](std::size_t _index) const && noexcept { return std::move(data[_index].element); }
 
     constexpr ~Array() 
-        noexcept(noexcept(destroy(0)))
+        noexcept(std::is_nothrow_destructible<_Element>::value) 
     {
-        // Check if this has been moved from
-        if(memory.array) for(std::size_t index = 0; index < size; ++index) destroy(index);
+	// If this has been moved from, size is 0
+        for(std::size_t index = 0; index < size; ++index) destroy(index);
+	// Safe to delete nullptr if this has been moved from
+	delete[] constructed;
+	delete[] data;
     }
 
     constexpr Array(const Array& _other):
@@ -85,25 +78,35 @@ public:
             if(_other.constructed[index]) construct(_other[index]);
         }
     }
-
+    
+    // An example from [basic.life]
     constexpr Array& operator=(const Array& _other) {
-        if(size != _other.size) {
-            size = _other.size;
-            constructed = ::new bool[size]();
-            memory = ::new Memory[size];
-        }
+	if(this != &_other) {
+	    ~Array();
+	    std::construct_at(this, _other);
+	}
 
-        for(std::size_t index = 0; index < size; ++index) {
-            if(_other.constructed[index]) construct(_other[index]);
-        }
+	return *this;
     }
+    
+    constexpr Array(Array&& _other) noexcept:
+	size(std::exchange(_other.size, 0)),
+	data(std::exchange(_other.data, nullptr)),
+	constructed(std::exchange(_other.constructed, nullptr))
+    { }
+    
+    constexpr Array& operator=(Array&& _other) 
+        noexcept(std::is_nothrow_destructible<_Element>::value) 
+    {
+	if(this != &_other) {
+	    ~Array();
+	    std::construct_at(this, std::move(_other));
+	}
 
-    constexpr Array(Array&& _other) noexcept = default;
-    constexpr Array& operator=(Array&& _other) noexcept = default;
+	return *this;
+    }
 
 };
 
-
- */
 
 #endif
