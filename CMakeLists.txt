@@ -10,5 +10,5 @@ file(GLOB_RECURSE Sources CONFIGURE_DEPENDS "code/*.cpp")
 add_executable(main ${Sources})
 
 target_include_directories(main PUBLIC code)
-target_link_libraries(main -ldl -lglfw)
+target_link_libraries(main -ldl -lglfw -lvulkan)
 

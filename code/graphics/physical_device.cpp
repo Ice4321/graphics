@@ -1,14 +1,20 @@
 #include"graphics/physical_device.hpp"
-
+#include<ranges>
 
 std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all(VkInstance _instance) {
     std::vector<VkPhysicalDevice> devices;
+
     uint32_t device_count = 0;
-    vkEnueratePhysicalDevices(_instance, &device_count, nullptr);
+    vkEnumeratePhysicalDevices(_instance, &device_count, nullptr);
     devices.resize(device_count);
-    vkEnueratePhysicalDevices(_instance, &device_count, devices.data());
+    vkEnumeratePhysicalDevices(_instance, &device_count, devices.data());
 
+    // TODO: finish this
+    
+    // Necessary because the constructor is private
+    //auto transform = std::views::transform(devices, [](VkPhysicalDevice _device) -> Physical_device { return _device; });
 
+    return { std::ranges::cbegin(devices), std::ranges::cend(devices) };
 }
 
 

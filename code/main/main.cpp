@@ -24,8 +24,6 @@ int main() {
 	std::cout << "Window resized: " << _event.width << "x" << _event.height << std::endl;
     });
 
-    Graphics::Physical_device ph;
-    
     while(!exit) {
 	w1.await_events();
     }

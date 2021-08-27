@@ -34,6 +34,8 @@ namespace Internal {
 	public:
 	    Callable_wrapper(auto&& _callable): callable(std::forward<decltype(_callable)>(_callable)) { }
 	    
+	    // TODO: Crash here instead of throwing exceptions
+	    
 	    virtual void invoke(_Argument& _argument) override {
 		if constexpr(std::invocable<_Callable&, decltype(_argument)>) callable(std::forward<decltype(_argument)>(_argument));
 		else throw std::logic_error("Internal::Event_emitter_impl::Callable_wrapper::invoke(): invalid value category");
@@ -90,8 +92,7 @@ namespace Internal {
 	    std::unique_ptr<Callable_wrapper_base<_Argument>> callable;
 
 	};
-
-
+	
 	// &&-qualified operator()s need not be considered, because the invoked callable will be an l-value
 	// Exception specification is part of the function type
 	template<typename> struct Callable_ctad_helper;
