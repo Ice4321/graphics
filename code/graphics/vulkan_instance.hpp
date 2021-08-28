@@ -19,7 +19,18 @@ namespace Graphics {
 	Vulkan_instance& operator=(Vulkan_instance const&) = delete;
 
     private:
+	bool validation_enabled;
 	VkInstance instance;
+	VkDebugUtilsMessengerEXT debug_messenger;
+	
+	// TODO: remove this and replace with a debug messenger class
+	// The callback must not make calls to any Vulkan commands (VUID-PFN_vkDebugUtilsMessengerCallbackEXT-None-04769)
+	static VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback(
+	    VkDebugUtilsMessageSeverityFlagBitsEXT _message_severity,
+	    VkDebugUtilsMessageTypeFlagsEXT _message_types,
+	    VkDebugUtilsMessengerCallbackDataEXT const* _callback_data,
+	    void* _user_data
+	);
 
     };
 }
