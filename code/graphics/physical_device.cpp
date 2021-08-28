@@ -1,15 +1,15 @@
 #include"graphics/physical_device.hpp"
 #include<ranges>
 #include<algorithm>
+#include"utility/critical_error.hpp"
 
 std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all(VkInstance _instance) {
     std::vector<VkPhysicalDevice> devices;
     
-    // TODO: handle error in vkEnumeratePhysicalDevices()
     uint32_t device_count = 0;
-    vkEnumeratePhysicalDevices(_instance, &device_count, nullptr);
+    if(vkEnumeratePhysicalDevices(_instance, &device_count, nullptr) < 0) critical_error("vkEnumeratePhysicalDevices()");
     devices.resize(device_count);
-    vkEnumeratePhysicalDevices(_instance, &device_count, devices.data());
+    if(vkEnumeratePhysicalDevices(_instance, &device_count, devices.data()) < 0) critical_error("vkEnumeratePhysicalDevices()");
 
     return { std::begin(devices), std::end(devices) };
 }

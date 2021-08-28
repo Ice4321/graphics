@@ -2,12 +2,10 @@
 #include"concurrency/main_thread.hpp"
 #include"graphics/window.hpp"
 #include"graphics/physical_device.hpp"
-
+#include"utility/critical_error.hpp"
 
 int main() {
     Concurrency::main_thread_id = std::this_thread::get_id();
-    
-    // TODO: std::format
     
     // glfwGetVersionString() may be called before glfwInit()
     std::cout << "GLFW version: " << glfwGetVersionString() << std::endl;
@@ -24,6 +22,7 @@ int main() {
     w1.add_event_callback([&](Events::Graphics::Window::Resize const& _event) {
 	std::cout << "Window resized: " << _event.width << "x" << _event.height << std::endl;
     });
+
 
     while(!exit) {
 	w1.await_events();

@@ -8,6 +8,7 @@
 #include<list>
 #include<vector>
 #include<ranges>
+#include"utility/critical_error.hpp"
 
 namespace Internal {
     namespace Event_emitter_impl {
@@ -34,26 +35,24 @@ namespace Internal {
 	public:
 	    Callable_wrapper(auto&& _callable): callable(std::forward<decltype(_callable)>(_callable)) { }
 	    
-	    // TODO: Crash here instead of throwing exceptions
-	    
 	    virtual void invoke(_Argument& _argument) override {
 		if constexpr(std::invocable<_Callable&, decltype(_argument)>) callable(std::forward<decltype(_argument)>(_argument));
-		else throw std::logic_error("Internal::Event_emitter_impl::Callable_wrapper::invoke(): invalid value category");
+		else critical_error("Incorrect value category");
 	    }
 
 	    virtual void invoke(_Argument&& _argument) override {
 		if constexpr(std::invocable<_Callable&, decltype(_argument)>) callable(std::forward<decltype(_argument)>(_argument));
-		else throw std::logic_error("Internal::Event_emitter_impl::Callable_wrapper::invoke(): invalid value category");
+		else critical_error("Incorrect value category");
 	    }
 
 	    virtual void invoke(_Argument const& _argument) override {
 		if constexpr(std::invocable<_Callable&, decltype(_argument)>) callable(std::forward<decltype(_argument)>(_argument));
-		else throw std::logic_error("Internal::Event_emitter_impl::Callable_wrapper::invoke(): invalid value category");
+		else critical_error("Incorrect value category");
 	    }
 
 	    virtual void invoke(_Argument const&& _argument) override {
 		if constexpr(std::invocable<_Callable&, decltype(_argument)>) callable(std::forward<decltype(_argument)>(_argument));
-		else throw std::logic_error("Internal::Event_emitter_impl::Callable_wrapper::invoke(): invalid value category");
+		else critical_error("Incorrect value category");
 	    }
 
 	    virtual ~Callable_wrapper() override = default;

@@ -9,6 +9,9 @@ namespace Graphics {
     public:
 	Logical_device(Physical_device& _physical_device);
 	
+	// TODO: is this logically const?
+	VkQueue get_graphics_queue() const noexcept;
+	
 	~Logical_device();
 
 	Logical_device(Logical_device const&) = delete;
@@ -16,6 +19,7 @@ namespace Graphics {
 
     private:
 	VkDevice logical_device;
+	VkQueue graphics_queue_handle;
 
     };
 }

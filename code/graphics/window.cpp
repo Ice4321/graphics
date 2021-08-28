@@ -1,5 +1,6 @@
 #include"graphics/window.hpp"
 #include"concurrency/main_thread.hpp"
+#include"utility/critical_error.hpp"
 #include<cassert>
 #include<iostream>
 
@@ -12,8 +13,7 @@ Graphics::Window::Window(int _width, int _height):
 	glfwSetErrorCallback([](int _error_code, char const* _description){ 
 	    (void)_error_code;
 	    // TODO: use std::format
-	    std::cout << "GLFW error: " << _description << std::endl;
-	    std::terminate();
+	    critical_error(std::string("GLFW error: ") + std::string(_description));
 	});
 
 	glfwInit();
