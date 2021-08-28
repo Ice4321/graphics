@@ -4,22 +4,20 @@
 #include<cassert>
 #include<iostream>
 
+std::tuple<char const* const*, uint32_t> Graphics::Window::get_required_instance_extensions() {
+    initialise_glfw();
+    uint32_t count = 0;
+    char const* const* extensions = glfwGetRequiredInstanceExtensions(&count);
+
+    return { extensions, count };
+}
+
 Graphics::Window::Window(int _width, int _height):
     width(_width), height(_height), 
     window(nullptr)
 { 
-    if(!glfw_initialised) {
-	// May be called before glfwInit()
-	glfwSetErrorCallback([](int _error_code, char const* _description){ 
-	    (void)_error_code;
-	    // TODO: use std::format
-	    critical_error(std::string("GLFW error: ") + std::string(_description));
-	});
+    initialise_glfw();   
 
-	glfwInit();
-	glfw_initialised = true;
-    }
-    
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     window = glfwCreateWindow(width, height, "main", nullptr, nullptr);
     glfwSetWindowUserPointer(window, static_cast<void*>(this));
@@ -43,12 +41,12 @@ Graphics::Window::~Window() {
 
     --total_window_count;
     
-    if(glfw_initialised && total_window_count == 0) {
-	glfwTerminate();
-	glfw_initialised = false;
-    }
+    terminate_glfw();
 }
 
+Graphics::Window::operator GLFWwindow* () noexcept {
+    return window;
+}
 
 int Graphics::Window::get_width() const noexcept {
     return width;
@@ -65,3 +63,25 @@ void Graphics::Window::poll_events() {
 void Graphics::Window::await_events() {
     glfwWaitEvents();
 }
+
+void Graphics::Window::initialise_glfw() {
+    if(!glfw_initialised) {
+	// May be called before glfwInit()
+	glfwSetErrorCallback([](int _error_code, char const* _description){ 
+	    (void)_error_code;
+	    // TODO: use std::format
+	    critical_error(std::string("GLFW error: ") + std::string(_description));
+	});
+
+	glfwInit();
+	glfw_initialised = true;
+    }
+}
+
+void Graphics::Window::terminate_glfw() {
+    if(glfw_initialised && total_window_count == 0) {
+	glfwTerminate();
+	glfw_initialised = false;
+    }
+}
+

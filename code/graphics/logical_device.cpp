@@ -45,7 +45,7 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device) {
     vkGetDeviceQueue(logical_device, graphics_queue_family_index, 0, &graphics_queue_handle);
 }
 
-VkQueue Graphics::Logical_device::get_graphics_queue() const noexcept {
+VkQueue Graphics::Logical_device::get_graphics_queue() noexcept {
     return graphics_queue_handle;
 }
 

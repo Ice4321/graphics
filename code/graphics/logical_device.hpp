@@ -9,8 +9,7 @@ namespace Graphics {
     public:
 	Logical_device(Physical_device& _physical_device);
 	
-	// TODO: is this logically const?
-	VkQueue get_graphics_queue() const noexcept;
+	VkQueue get_graphics_queue() noexcept;
 	
 	~Logical_device();
 
