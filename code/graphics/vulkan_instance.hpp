@@ -7,7 +7,9 @@
 namespace Graphics {
     class Vulkan_instance {
     public:
-	Vulkan_instance();
+	struct Use_validation_layers { bool value; };
+
+	Vulkan_instance(Use_validation_layers _use_validation_layers);
 
 	operator VkInstance& () noexcept;
 
