@@ -5,6 +5,9 @@
 #include<type_traits>
 #include<utility>
 
+// TODO: More comments!
+// TODO: Add iterators
+
 // Exception specification is given assuming valid parameters are passed
 template<typename _Element>
 class Array {
