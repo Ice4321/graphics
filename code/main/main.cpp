@@ -1,7 +1,7 @@
 #include<iostream>
 #include"concurrency/main_thread.hpp"
 #include"graphics/window.hpp"
-#include"graphics/physical_device.hpp"
+#include"graphics/vulkan_instance.hpp"
 #include"utility/critical_error.hpp"
 
 int main() {
@@ -22,7 +22,8 @@ int main() {
     w1.add_event_callback([&](Events::Graphics::Window::Resize const& _event) {
 	std::cout << "Window resized: " << _event.width << "x" << _event.height << std::endl;
     });
-
+    
+    Graphics::Vulkan_instance instance(Graphics::Vulkan_instance::Validation::enabled);
 
     while(!exit) {
 	w1.await_events();

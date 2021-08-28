@@ -1,13 +1,11 @@
 #include"graphics/vulkan_instance.hpp"
-#include"utility/critical_error.hpp"
 #include"graphics/window.hpp"
 #include<array>
-#include<iostream>
 
-Graphics::Vulkan_instance::Vulkan_instance(Use_validation_layers _use_validation_layers):
-    validation_enabled(_use_validation_layers.value) 
+Graphics::Vulkan_instance::Vulkan_instance(Validation _validation):
+    validation_enabled(_validation == Validation::enabled),
+    validation_callback(validation_enabled ? std::make_unique<Validation_callback>() : nullptr)
 {
-    // TODO: replace _use_validation_layers with validation_enabled
     VkApplicationInfo application_info{
 	.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
 	.pNext = nullptr,
@@ -25,7 +23,7 @@ Graphics::Vulkan_instance::Vulkan_instance(Use_validation_layers _use_validation
     std::vector<char const*> all_extensions;
     auto [glfw_extensions, glfw_extension_count] = Window::get_required_instance_extensions();
     for(std::size_t i = 0; i < glfw_extension_count; ++i) all_extensions.emplace_back(glfw_extensions[i]);
-    if(_use_validation_layers.value) {
+    if(validation_enabled) {
 	all_extensions.emplace_back(+VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
 
@@ -43,17 +41,17 @@ Graphics::Vulkan_instance::Vulkan_instance(Use_validation_layers _use_validation
 	.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
 			   VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
 			   VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
-	.pfnUserCallback = &debug_messenger_callback,
-	.pUserData = nullptr
+	.pfnUserCallback = &Validation_callback::dispatch,
+	.pUserData = static_cast<void*>(validation_callback.get())
     };
 
     VkInstanceCreateInfo create_info{
 	.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-	.pNext = &debug_messenger_create_info,
+	.pNext = validation_enabled ? &debug_messenger_create_info : nullptr,
 	.flags = 0,
 	.pApplicationInfo = &application_info,
-	.enabledLayerCount = uint32_t(_use_validation_layers.value ? validation_layers.size() : 0),
-	.ppEnabledLayerNames = _use_validation_layers.value ? validation_layers.data() : nullptr,
+	.enabledLayerCount = uint32_t(validation_enabled ? validation_layers.size() : 0),
+	.ppEnabledLayerNames = validation_enabled ? validation_layers.data() : nullptr,
 	.enabledExtensionCount = (uint32_t)all_extensions.size(),
 	.ppEnabledExtensionNames = all_extensions.data()
     };
@@ -61,15 +59,11 @@ Graphics::Vulkan_instance::Vulkan_instance(Use_validation_layers _use_validation
 
     if(vkCreateInstance(&create_info, nullptr, &instance) < 0) critical_error("vkCreateInstance()");
 
-    if(_use_validation_layers.value) {
-	// TODO: skip void_func... and cast immediately if safe
-	PFN_vkVoidFunction void_func_vkCreateDebugUtilsMessengerEXT = vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-	if(!void_func_vkCreateDebugUtilsMessengerEXT) critical_error("vkGetInstanceProcAddr(vkCreateDebugUtilsMessengerEXT)");
-	PFN_vkCreateDebugUtilsMessengerEXT func_vkCreateDebugUtilsMessengerEXT = 
-	    reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(void_func_vkCreateDebugUtilsMessengerEXT);
-
-	if(func_vkCreateDebugUtilsMessengerEXT(instance, &debug_messenger_create_info, nullptr, &debug_messenger) < 0) 
+    if(validation_enabled) {
+	auto ptr_vkCreateDebugUtilsMessengerEXT = get_function_address<PFN_vkCreateDebugUtilsMessengerEXT>("vkCreateDebugUtilsMessengerEXT");
+	if(ptr_vkCreateDebugUtilsMessengerEXT(instance, &debug_messenger_create_info, nullptr, &debug_messenger) < 0) {
 	    critical_error("vkCreateDebugUtilsMessengerEXT()");
+	}
 
     }
 }
@@ -79,29 +73,11 @@ Graphics::Vulkan_instance::operator VkInstance& () noexcept {
 }
 
 Graphics::Vulkan_instance::~Vulkan_instance() {
-    PFN_vkVoidFunction void_func_vkDestroyDebugUtilsMessengerEXT = vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-    if(!void_func_vkDestroyDebugUtilsMessengerEXT) critical_error("vkGetInstanceProcAddr(vkDestroyDebugUtilsMessengerEXT)");
-    PFN_vkDestroyDebugUtilsMessengerEXT func_vkDestroyDebugUtilsMessengerEXT = 
-	reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(void_func_vkDestroyDebugUtilsMessengerEXT);
+    if(validation_enabled) {
+	auto ptr_vkDestroyDebugUtilsMessengerEXT = get_function_address<PFN_vkDestroyDebugUtilsMessengerEXT>("vkDestroyDebugUtilsMessengerEXT");
+	ptr_vkDestroyDebugUtilsMessengerEXT(instance, debug_messenger, nullptr);
+    }
 
-    func_vkDestroyDebugUtilsMessengerEXT(instance, debug_messenger, nullptr);
     vkDestroyInstance(instance, nullptr);
 }
 
-
-VKAPI_ATTR VkBool32 VKAPI_CALL Graphics::Vulkan_instance::debug_messenger_callback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT _message_severity,
-    VkDebugUtilsMessageTypeFlagsEXT _message_types,
-    VkDebugUtilsMessengerCallbackDataEXT const* _callback_data,
-    void* _user_data
-) {
-    // TODO: make this better
-    std::cout << "Vulkan: " << _callback_data->pMessage << std::endl;
-
-    (void)_message_severity;
-    (void)_message_types;
-    (void)_user_data;
-    
-    // Must always return false
-    return VK_FALSE;
-}
