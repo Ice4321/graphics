@@ -8,8 +8,11 @@
 namespace Graphics {
     class Surface {
     public:
-	// Vulkan instance must be within its lifetime during Surface's destruction
+	// Instance must be within its lifetime during Surface's destruction
+	// Instance's address must not change until Surface is destroyed (no copying or moving)
 	Surface(Instance& _instance, Window& _window);
+
+	operator VkSurfaceKHR& () noexcept;
 
 	~Surface();
 
@@ -18,7 +21,7 @@ namespace Graphics {
 
     private:
 	VkSurfaceKHR surface;
-	Instance& instance;
+	Instance* instance;
 
     };
 }

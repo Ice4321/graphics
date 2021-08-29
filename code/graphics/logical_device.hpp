@@ -3,12 +3,16 @@
 
 #include<vulkan/vulkan.h>
 #include"graphics/physical_device.hpp"
+#include"graphics/surface.hpp"
+#include<vector>
 
 namespace Graphics {
     class Logical_device {
     public:
-	Logical_device(Physical_device& _physical_device);
+	Logical_device(Physical_device& _physical_device, Surface& _surface);
 	
+	operator VkDevice& () noexcept;
+
 	VkQueue get_graphics_queue() noexcept;
 	
 	~Logical_device();
@@ -18,7 +22,17 @@ namespace Graphics {
 
     private:
 	VkDevice logical_device;
+
+	// These might be the same queue
 	VkQueue graphics_queue_handle;
+	VkQueue presentation_queue_handle;
+	
+	int graphics_queue_family_index;
+	int presentation_queue_family_index;
+
+	// This function also sets graphics_queue_family_index and presentation_queue_family_index
+	std::vector<VkDeviceQueueCreateInfo> create_queue_creation_info(Physical_device& _physical_device, Surface& _surface);
+	
 
     };
 }

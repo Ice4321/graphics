@@ -3,8 +3,7 @@
 #include<array>
 
 Graphics::Instance::Instance(Validation _validation):
-    validation_enabled(_validation == Validation::enabled),
-    validation_callback(validation_enabled ? std::make_unique<Validation_callback>() : nullptr)
+    validation_enabled(_validation == Validation::enabled)
 {
     VkApplicationInfo application_info{
 	.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
@@ -24,7 +23,7 @@ Graphics::Instance::Instance(Validation _validation):
     auto [glfw_extensions, glfw_extension_count] = Window::get_required_instance_extensions();
     for(std::size_t i = 0; i < glfw_extension_count; ++i) all_extensions.emplace_back(glfw_extensions[i]);
     if(validation_enabled) {
-	all_extensions.emplace_back(+VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	all_extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
 
     // To capture events that occur while creating or destroying an instance an application can link a VkDebugUtilsMessengerCreateInfoEXT structure 
@@ -42,7 +41,7 @@ Graphics::Instance::Instance(Validation _validation):
 			   VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
 			   VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
 	.pfnUserCallback = &Validation_callback::dispatch,
-	.pUserData = static_cast<void*>(validation_callback.get())
+	.pUserData = static_cast<void*>(&validation_callback)
     };
 
     VkInstanceCreateInfo create_info{

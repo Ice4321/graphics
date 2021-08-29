@@ -1,6 +1,4 @@
 #include"graphics/physical_device.hpp"
-#include<ranges>
-#include<algorithm>
 #include"utility/critical_error.hpp"
 
 std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all(Instance& _instance) {
@@ -23,16 +21,8 @@ VkPhysicalDeviceProperties const& Graphics::Physical_device::get_properties() co
     return properties;
 }
 
-std::size_t Graphics::Physical_device::get_queue_family_index(VkQueueFlagBits _capabilities) const {
-    auto found = std::ranges::find_if(
-	queue_family_properties,
-	[&](VkQueueFamilyProperties const& _x) { return _x.queueFlags & _capabilities; }
-    );
-
-    if(found == std::ranges::end(queue_family_properties)) throw Exceptions::Graphics::Physical_device::Queue_family_not_found{};
-
-    // Index must correspond to the index in the array returned by vkGetPhysicalDeviceQueueFamilyProperties()
-    return std::distance(std::ranges::begin(queue_family_properties), found);
+std::vector<VkQueueFamilyProperties> const& Graphics::Physical_device::get_queue_family_properties() const noexcept {
+    return queue_family_properties;
 }
 
 Graphics::Physical_device::Physical_device(VkPhysicalDevice _physical_device) noexcept: 

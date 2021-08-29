@@ -5,14 +5,6 @@
 #include<vector>
 #include"graphics/instance.hpp"
 
-namespace Exceptions {
-    namespace Graphics {
-	namespace Physical_device {
-	    struct Queue_family_not_found: public std::exception { };
-	}
-    }
-}
-
 namespace Graphics {
     class Physical_device {
     public:
@@ -23,7 +15,7 @@ namespace Graphics {
 	operator VkPhysicalDevice& () noexcept;
 
 	VkPhysicalDeviceProperties const& get_properties() const noexcept;
-	std::size_t get_queue_family_index(VkQueueFlagBits _capabilities) const;
+	std::vector<VkQueueFamilyProperties> const& get_queue_family_properties() const noexcept;
 
 	~Physical_device() = default;
 

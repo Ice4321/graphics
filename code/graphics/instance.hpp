@@ -2,11 +2,9 @@
 #define INCLUDED_GRAPHICS_INSTANCE_HPP
 
 #include<vulkan/vulkan.h>
-#include<memory>
 #include"utility/critical_error.hpp"
 #include"graphics/validation_callback.hpp"
 
-// TODO: rename this and files to instance instead of vulkan_instance
 namespace Graphics {
     class Instance {
     public:
@@ -21,7 +19,9 @@ namespace Graphics {
 	_Function_ptr get_function_address(char const* _function_name);
 
 	~Instance();
-
+	
+	// Copying and moving must be disallowed because Vulkan holds a reference to validation_callback
+	// and Surface holds a reference to Instance
 	Instance(Instance const&) = delete;
 	Instance& operator=(Instance const&) = delete;
 
@@ -29,9 +29,7 @@ namespace Graphics {
 	bool validation_enabled;
 	VkInstance instance;
 	VkDebugUtilsMessengerEXT debug_messenger;
-	// If address of Instance changes (such as due to copying or moving), the address of validation_callback must not change,
-	// because it is registered by Vulkan
-	std::unique_ptr<Validation_callback> validation_callback;
+	Validation_callback validation_callback;
 
     };
 
