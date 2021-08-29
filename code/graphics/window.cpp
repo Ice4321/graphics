@@ -44,7 +44,7 @@ Graphics::Window::~Window() {
     terminate_glfw();
 }
 
-Graphics::Window::operator GLFWwindow* () noexcept {
+Graphics::Window::operator GLFWwindow*& () noexcept {
     return window;
 }
 

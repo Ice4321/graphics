@@ -2,11 +2,9 @@
 #include"utility/critical_error.hpp"
 
 std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all(Instance& _instance) {
-    std::vector<VkPhysicalDevice> devices;
-    
     uint32_t device_count = 0;
     if(vkEnumeratePhysicalDevices(_instance, &device_count, nullptr) < 0) critical_error("vkEnumeratePhysicalDevices()");
-    devices.resize(device_count);
+    std::vector<VkPhysicalDevice> devices(device_count);
     if(vkEnumeratePhysicalDevices(_instance, &device_count, devices.data()) < 0) critical_error("vkEnumeratePhysicalDevices()");
 
     return { std::begin(devices), std::end(devices) };

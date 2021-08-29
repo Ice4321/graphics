@@ -28,7 +28,7 @@ namespace Graphics {
 	// Must be called on the main thread
 	Window(int _width, int _height);
 	
-	operator GLFWwindow* () noexcept;
+	operator GLFWwindow*& () noexcept;
 
 	int get_width() const noexcept;
 	int get_height() const noexcept;

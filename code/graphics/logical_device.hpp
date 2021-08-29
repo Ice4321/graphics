@@ -14,6 +14,7 @@ namespace Graphics {
 	operator VkDevice& () noexcept;
 
 	VkQueue get_graphics_queue() noexcept;
+	VkQueue get_presentation_queue() noexcept;
 	
 	~Logical_device();
 
