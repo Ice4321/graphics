@@ -1,8 +1,8 @@
-#include"graphics/vulkan_instance.hpp"
+#include"graphics/instance.hpp"
 #include"graphics/window.hpp"
 #include<array>
 
-Graphics::Vulkan_instance::Vulkan_instance(Validation _validation):
+Graphics::Instance::Instance(Validation _validation):
     validation_enabled(_validation == Validation::enabled),
     validation_callback(validation_enabled ? std::make_unique<Validation_callback>() : nullptr)
 {
@@ -68,11 +68,11 @@ Graphics::Vulkan_instance::Vulkan_instance(Validation _validation):
     }
 }
 
-Graphics::Vulkan_instance::operator VkInstance& () noexcept {
+Graphics::Instance::operator VkInstance& () noexcept {
     return instance;
 }
 
-Graphics::Vulkan_instance::~Vulkan_instance() {
+Graphics::Instance::~Instance() {
     if(validation_enabled) {
 	auto ptr_vkDestroyDebugUtilsMessengerEXT = get_function_address<PFN_vkDestroyDebugUtilsMessengerEXT>("vkDestroyDebugUtilsMessengerEXT");
 	ptr_vkDestroyDebugUtilsMessengerEXT(instance, debug_messenger, nullptr);

@@ -1,5 +1,5 @@
-#ifndef INCLUDED_GRAPHICS_VULKAN_INSTANCE_HPP
-#define INCLUDED_GRAPHICS_VULKAN_INSTANCE_HPP
+#ifndef INCLUDED_GRAPHICS_INSTANCE_HPP
+#define INCLUDED_GRAPHICS_INSTANCE_HPP
 
 #include<vulkan/vulkan.h>
 #include<memory>
@@ -8,11 +8,11 @@
 
 // TODO: rename this and files to instance instead of vulkan_instance
 namespace Graphics {
-    class Vulkan_instance {
+    class Instance {
     public:
 	enum struct Validation { enabled, disabled };
 
-	Vulkan_instance(Validation _validation);
+	Instance(Validation _validation);
 
 	operator VkInstance& () noexcept;
 	
@@ -20,24 +20,23 @@ namespace Graphics {
 	template<typename _Function_ptr>
 	_Function_ptr get_function_address(char const* _function_name);
 
-	~Vulkan_instance();
+	~Instance();
 
-	Vulkan_instance(Vulkan_instance const&) = delete;
-	Vulkan_instance& operator=(Vulkan_instance const&) = delete;
+	Instance(Instance const&) = delete;
+	Instance& operator=(Instance const&) = delete;
 
     private:
 	bool validation_enabled;
 	VkInstance instance;
 	VkDebugUtilsMessengerEXT debug_messenger;
-	// If address of Vulkan_instance changes (such as due to copying or moving), the address of validation_callback must not change,
+	// If address of Instance changes (such as due to copying or moving), the address of validation_callback must not change,
 	// because it is registered by Vulkan
 	std::unique_ptr<Validation_callback> validation_callback;
-	
 
     };
 
     template<typename _Function_ptr>
-    _Function_ptr Vulkan_instance::get_function_address(char const* _function_name) {
+    _Function_ptr Instance::get_function_address(char const* _function_name) {
 	_Function_ptr pointer = reinterpret_cast<_Function_ptr>(vkGetInstanceProcAddr(instance, _function_name));
 	if(!pointer) critical_error("vkGetInstanceProcAddr()");
 	return pointer;

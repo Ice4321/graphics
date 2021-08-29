@@ -3,7 +3,7 @@
 
 #include<vulkan/vulkan.h>
 #include<vector>
-#include"graphics/vulkan_instance.hpp"
+#include"graphics/instance.hpp"
 
 namespace Exceptions {
     namespace Graphics {
@@ -16,7 +16,7 @@ namespace Exceptions {
 namespace Graphics {
     class Physical_device {
     public:
-	static std::vector<Physical_device> enumerate_all(Vulkan_instance& _instance);
+	static std::vector<Physical_device> enumerate_all(Instance& _instance);
 	
 	Physical_device(VkPhysicalDevice _physical_device) noexcept;
 

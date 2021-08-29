@@ -3,13 +3,13 @@
 
 #include<vulkan/vulkan.h>
 #include"graphics/window.hpp"
-#include"graphics/vulkan_instance.hpp"
+#include"graphics/instance.hpp"
 
 namespace Graphics {
     class Surface {
     public:
 	// Vulkan instance must be within its lifetime during Surface's destruction
-	Surface(Vulkan_instance& _instance, Window& _window);
+	Surface(Instance& _instance, Window& _window);
 
 	~Surface();
 
@@ -18,7 +18,7 @@ namespace Graphics {
 
     private:
 	VkSurfaceKHR surface;
-	Vulkan_instance& instance;
+	Instance& instance;
 
     };
 }

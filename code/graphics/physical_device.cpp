@@ -3,7 +3,7 @@
 #include<algorithm>
 #include"utility/critical_error.hpp"
 
-std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all(Vulkan_instance& _instance) {
+std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all(Instance& _instance) {
     std::vector<VkPhysicalDevice> devices;
     
     uint32_t device_count = 0;

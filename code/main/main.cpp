@@ -1,7 +1,7 @@
 #include<iostream>
 #include"concurrency/main_thread.hpp"
 #include"graphics/window.hpp"
-#include"graphics/vulkan_instance.hpp"
+#include"graphics/instance.hpp"
 #include"utility/critical_error.hpp"
 
 int main() {
@@ -23,7 +23,7 @@ int main() {
 	std::cout << "Window resized: " << _event.width << "x" << _event.height << std::endl;
     });
     
-    Graphics::Vulkan_instance instance(Graphics::Vulkan_instance::Validation::enabled);
+    Graphics::Instance instance(Graphics::Instance::Validation::enabled);
 
     while(!exit) {
 	w1.await_events();
