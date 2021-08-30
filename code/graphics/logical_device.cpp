@@ -1,10 +1,14 @@
 #include"graphics/logical_device.hpp"
 #include"utility/critical_error.hpp"
 #include<set>
-
+#include<array>
 
 Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surface& _surface) {
     std::vector<VkDeviceQueueCreateInfo> queue_creation_info = create_queue_creation_info(_physical_device, _surface);
+
+    std::array extensions{
+	+VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
 
     VkDeviceCreateInfo logical_device_create_info{
 	.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
@@ -14,8 +18,8 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surf
 	.pQueueCreateInfos = queue_creation_info.data(),
 	.enabledLayerCount = 0,
 	.ppEnabledLayerNames = nullptr,
-	.enabledExtensionCount = 0,
-	.ppEnabledExtensionNames = nullptr,
+	.enabledExtensionCount = extensions.size(),
+	.ppEnabledExtensionNames = extensions.data(),
 	.pEnabledFeatures = nullptr
     };
 

@@ -10,10 +10,12 @@ namespace Events {
     namespace Graphics {
 	namespace Window {
 	    struct Close { };
-	    struct Resize { int width, height; };
+	    struct Resize { int width_px, height_px; };
 	}
     }
 }
+
+// TODO: rename width_px / height_px to framebuffer_width_px / framebuffer_height_px (also in the event struct)
 
 namespace Graphics {
     class Window: 
@@ -26,12 +28,13 @@ namespace Graphics {
 	static std::tuple<char const* const*, uint32_t> get_required_instance_extensions();
 
 	// Must be called on the main thread
-	Window(int _width, int _height);
+	// Size given in screen coordinates (not pixels)
+	Window(int _width_sc, int _height_sc);
 	
 	operator GLFWwindow*& () noexcept;
 
-	int get_width() const noexcept;
-	int get_height() const noexcept;
+	int get_width_px() const noexcept;
+	int get_height_px() const noexcept;
 	
 	static void poll_events();
 	static void await_events();
@@ -49,7 +52,7 @@ namespace Graphics {
 	static void initialise_glfw();
 	static void terminate_glfw();
 	
-	int width, height;
+	int width_px, height_px;
 	GLFWwindow* window;
 
     };

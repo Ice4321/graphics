@@ -12,25 +12,28 @@ std::tuple<char const* const*, uint32_t> Graphics::Window::get_required_instance
     return { extensions, count };
 }
 
-Graphics::Window::Window(int _width, int _height):
-    width(_width), height(_height), 
+Graphics::Window::Window(int _width_sc, int _height_sc):
     window(nullptr)
 { 
     initialise_glfw();   
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    window = glfwCreateWindow(width, height, "main", nullptr, nullptr);
+    window = glfwCreateWindow(_width_sc, _height_sc, "main", nullptr, nullptr);
+
+    glfwGetFramebufferSize(window, &width_px, &height_px);
+
     glfwSetWindowUserPointer(window, static_cast<void*>(this));
 
     glfwSetWindowCloseCallback(window, [](GLFWwindow* _window) {
 	Window* window_object = static_cast<Window*>(glfwGetWindowUserPointer(_window));
 	window_object->post_event(Events::Graphics::Window::Close{});
     });
-    glfwSetFramebufferSizeCallback(window, [](GLFWwindow* _window, int _width, int _height) {
+
+    glfwSetFramebufferSizeCallback(window, [](GLFWwindow* _window, int _width_px, int _height_px) {
 	Window* window_object = static_cast<Window*>(glfwGetWindowUserPointer(_window));
-	window_object->width = _width;
-	window_object->height = _height;
-	window_object->post_event(Events::Graphics::Window::Resize{_width, _height});
+	window_object->width_px = _width_px;
+	window_object->height_px = _height_px;
+	window_object->post_event(Events::Graphics::Window::Resize{_width_px, _height_px});
     });
 
     ++total_window_count;
@@ -48,12 +51,12 @@ Graphics::Window::operator GLFWwindow*& () noexcept {
     return window;
 }
 
-int Graphics::Window::get_width() const noexcept {
-    return width;
+int Graphics::Window::get_width_px() const noexcept {
+    return width_px;
 }
 
-int Graphics::Window::get_height() const noexcept {
-    return height;
+int Graphics::Window::get_height_px() const noexcept {
+    return height_px;
 }
 
 void Graphics::Window::poll_events() {

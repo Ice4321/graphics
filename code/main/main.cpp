@@ -14,20 +14,6 @@ int main() {
     std::cout << "GLFW version: " << glfwGetVersionString() << std::endl;
 
     Graphics::Window window(400, 400);
-    bool exit = false;
-
-    window.add_event_callback([&](Events::Graphics::Window::Close const& _event) {
-	(void)_event;
-	std::cout << "Window closed" << std::endl;
-	exit = true;
-    });
-
-    window.add_event_callback([&](Events::Graphics::Window::Resize const& _event) {
-	std::cout << "Window resized: " << _event.width << "x" << _event.height << std::endl;
-    });
-    
-
-
     Graphics::Instance instance(Graphics::Instance::Validation::enabled);
     Graphics::Surface surface(instance, window);
 
@@ -39,6 +25,19 @@ int main() {
     Graphics::Logical_device logical_device(all_physical_devices[0], surface);
 
 
+
+
+    bool exit = false;
+
+    window.add_event_callback([&](Events::Graphics::Window::Close const& _event) {
+	(void)_event;
+	std::cout << "Window closed" << std::endl;
+	exit = true;
+    });
+
+    window.add_event_callback([&](Events::Graphics::Window::Resize const& _event) {
+	std::cout << "Window resized: " << _event.width_px << "x" << _event.height_px << std::endl;
+    });
 
     while(!exit) {
 	window.await_events();
