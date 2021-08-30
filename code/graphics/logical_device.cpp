@@ -14,7 +14,7 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surf
 	.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
 	.pNext = nullptr,
 	.flags = 0,
-	.queueCreateInfoCount = (uint32_t)queue_creation_info.size(),
+	.queueCreateInfoCount = (std::uint32_t)queue_creation_info.size(),
 	.pQueueCreateInfos = queue_creation_info.data(),
 	.enabledLayerCount = 0,
 	.ppEnabledLayerNames = nullptr,
@@ -88,7 +88,7 @@ std::vector<VkDeviceQueueCreateInfo> Graphics::Logical_device::create_queue_crea
 		.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
 		.pNext = nullptr,
 		.flags = 0,
-		.queueFamilyIndex = (uint32_t)index,
+		.queueFamilyIndex = (std::uint32_t)index,
 		.queueCount = 1,
 		.pQueuePriorities = priorities
 	    }

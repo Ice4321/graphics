@@ -5,6 +5,7 @@
 #include"graphics/physical_device.hpp"
 #include"graphics/surface.hpp"
 #include"graphics/logical_device.hpp"
+#include"graphics/swap_chain.hpp"
 #include"utility/critical_error.hpp"
 
 int main() {
@@ -23,6 +24,7 @@ int main() {
     }
     
     Graphics::Logical_device logical_device(all_physical_devices[0], surface);
+    Graphics::Swap_chain swap_chain(all_physical_devices[0], logical_device, surface, window);
 
 
 

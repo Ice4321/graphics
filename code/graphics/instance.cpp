@@ -49,9 +49,9 @@ Graphics::Instance::Instance(Validation _validation):
 	.pNext = validation_enabled ? &debug_messenger_create_info : nullptr,
 	.flags = 0,
 	.pApplicationInfo = &application_info,
-	.enabledLayerCount = uint32_t(validation_enabled ? validation_layers.size() : 0),
+	.enabledLayerCount = std::uint32_t(validation_enabled ? validation_layers.size() : 0),
 	.ppEnabledLayerNames = validation_enabled ? validation_layers.data() : nullptr,
-	.enabledExtensionCount = (uint32_t)all_extensions.size(),
+	.enabledExtensionCount = (std::uint32_t)all_extensions.size(),
 	.ppEnabledExtensionNames = all_extensions.data()
     };
 

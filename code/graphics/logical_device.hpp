@@ -28,7 +28,7 @@ namespace Graphics {
 	VkQueue graphics_queue_handle;
 	VkQueue presentation_queue_handle;
 	
-	// TODO: Change this to uint32_t, remove all casts, and use bool flags in create_queue_creation_info()
+	// TODO: Change this to std::uint32_t, remove all casts, and use bool flags in create_queue_creation_info()
 	int graphics_queue_family_index;
 	int presentation_queue_family_index;
 

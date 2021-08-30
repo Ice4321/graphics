@@ -25,7 +25,7 @@ namespace Graphics {
 	>
     {
     public:
-	static std::tuple<char const* const*, uint32_t> get_required_instance_extensions();
+	static std::tuple<char const* const*, std::uint32_t> get_required_instance_extensions();
 
 	// Must be called on the main thread
 	// Size given in screen coordinates (not pixels)

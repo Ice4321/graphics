@@ -4,9 +4,9 @@
 #include<cassert>
 #include<iostream>
 
-std::tuple<char const* const*, uint32_t> Graphics::Window::get_required_instance_extensions() {
+std::tuple<char const* const*, std::uint32_t> Graphics::Window::get_required_instance_extensions() {
     initialise_glfw();
-    uint32_t count = 0;
+    std::uint32_t count = 0;
     char const* const* extensions = glfwGetRequiredInstanceExtensions(&count);
 
     return { extensions, count };
