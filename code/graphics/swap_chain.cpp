@@ -66,7 +66,7 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 	chosen_extent = surface_capabilities.currentExtent;
     }
 
-    std::uint32_t image_count = surface_capabilities.minImageCount + (
+    std::uint32_t min_image_count = surface_capabilities.minImageCount + (
 	surface_capabilities.maxImageCount == 0 || surface_capabilities.maxImageCount > surface_capabilities.minImageCount ? 1 : 0
     );
 
@@ -78,7 +78,7 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 	.pNext = nullptr,
 	.flags = 0,
 	.surface = _surface,
-	.minImageCount = image_count,
+	.minImageCount = min_image_count,
 	.imageFormat = chosen_format.format,
 	.imageColorSpace = chosen_format.colorSpace,
 	.imageExtent = chosen_extent,
@@ -95,7 +95,14 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
     };
 
     if(vkCreateSwapchainKHR(*logical_device, &create_info, nullptr, &swap_chain) < 0) critical_error("vkCreateSwapchainKHR()");
+    
+    std::uint32_t actual_image_count;
+    if(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, nullptr) < 0) critical_error("vkGetSwapchainImagesKHR()");
+    images.resize(actual_image_count);
+    if(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, images.data()) < 0) critical_error("vkGetSwapchainImagesKHR()");
 
+    image_format = chosen_format;
+    image_extent = chosen_extent;
 }
 
 Graphics::Swap_chain::operator VkSwapchainKHR& () noexcept {

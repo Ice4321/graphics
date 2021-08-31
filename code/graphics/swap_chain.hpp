@@ -2,6 +2,7 @@
 #define INCLUDED_GRAPHICS_SWAP_CHAIN_HPP
 
 #include<vulkan/vulkan.h>
+#include<vector>
 #include"graphics/physical_device.hpp"
 #include"graphics/logical_device.hpp"
 #include"graphics/surface.hpp"
@@ -22,6 +23,9 @@ namespace Graphics {
 
     private:
 	VkSwapchainKHR swap_chain;
+	std::vector<VkImage> images;
+	VkSurfaceFormatKHR image_format;
+	VkExtent2D image_extent;
 	Logical_device* logical_device;
 
     };
