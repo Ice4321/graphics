@@ -24,7 +24,8 @@ namespace Graphics {
     private:
 	VkSwapchainKHR swap_chain;
 	std::vector<VkImage> images;
-	VkSurfaceFormatKHR image_format;
+	std::vector<VkImageView> image_views;
+	VkFormat image_format;
 	VkExtent2D image_extent;
 	Logical_device* logical_device;
 

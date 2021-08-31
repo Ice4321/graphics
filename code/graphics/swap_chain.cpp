@@ -96,13 +96,41 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 
     if(vkCreateSwapchainKHR(*logical_device, &create_info, nullptr, &swap_chain) < 0) critical_error("vkCreateSwapchainKHR()");
     
+    image_format = chosen_format.format;
+    image_extent = chosen_extent;
+
     std::uint32_t actual_image_count;
     if(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, nullptr) < 0) critical_error("vkGetSwapchainImagesKHR()");
     images.resize(actual_image_count);
     if(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, images.data()) < 0) critical_error("vkGetSwapchainImagesKHR()");
+    
+    image_views.resize(images.size());
 
-    image_format = chosen_format;
-    image_extent = chosen_extent;
+    for(std::size_t i = 0; i < image_views.size(); ++i) {
+	VkImageViewCreateInfo view_create_info{
+	    .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+	    .pNext = nullptr,
+	    .flags = 0,
+	    .image = images[i],
+	    .viewType = VK_IMAGE_VIEW_TYPE_2D,
+	    .format = image_format,
+	    .components = {
+		VK_COMPONENT_SWIZZLE_IDENTITY,
+		VK_COMPONENT_SWIZZLE_IDENTITY,
+		VK_COMPONENT_SWIZZLE_IDENTITY,
+		VK_COMPONENT_SWIZZLE_IDENTITY
+	    },
+	    .subresourceRange = {
+		.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+		.baseMipLevel = 0,
+		.levelCount = 1,
+		.baseArrayLayer = 0,
+		.layerCount = 1
+	    }
+	};
+
+	if(vkCreateImageView(*logical_device, &view_create_info, nullptr, &image_views[i]) < 0) critical_error("vkCreateImageView()");
+    }
 }
 
 Graphics::Swap_chain::operator VkSwapchainKHR& () noexcept {
@@ -110,5 +138,9 @@ Graphics::Swap_chain::operator VkSwapchainKHR& () noexcept {
 }
 
 Graphics::Swap_chain::~Swap_chain() {
+    for(auto& image_view : image_views) vkDestroyImageView(*logical_device, image_view, nullptr);
     vkDestroySwapchainKHR(*logical_device, swap_chain, nullptr);
 }
+
+
+
