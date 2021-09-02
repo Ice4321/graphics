@@ -61,7 +61,18 @@ Graphics::Shader_binary Graphics::Shader_compiler::compile(Shader_kind _kind, st
     
     if(compilation_status == shaderc_compilation_status_success) {
 	// Transfer ownership
-	return { compilation_result };
+	Shader_binary::Shader_kind kind2{};
+	
+	// TODO: get rid of this
+	switch(kind) {
+	    case Shader_kind::vertex: kind2 = Shader_binary::Shader_kind::vertex; break;
+	    case Shader_kind::fragment: kind2 = Shader_binary::Shader_kind::fragment; break;
+	    case Shader_kind::compute: kind2 = Shader_binary::Shader_kind::compute; break;
+	    case Shader_kind::geometry: kind2 = Shader_binary::Shader_kind::geometry; break;
+	    case Shader_kind::tessellation_control: kind2 = Shader_binary::Shader_kind::tessellation_control; break;
+	    case Shader_kind::tessellation_evaluation: kind2 = Shader_binary::Shader_kind::tessellation_evaluation; break;
+	}
+	return { kind2, compilation_result };
     } else {
 	char const* compilation_status_message = nullptr;
 	switch(compilation_status) {

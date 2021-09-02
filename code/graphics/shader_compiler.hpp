@@ -18,7 +18,7 @@ namespace Exceptions {
 namespace Graphics {
     class Shader_compiler {
     public:
-	enum struct Shader_kind { vertex, fragment, compute, geometry, tessellation_control, tessellation_evaluation };
+	enum struct Shader_kind { vertex, fragment, compute, geometry, tessellation_control, tessellation_evaluation } const shader_kind;
 
 	Shader_compiler();
 	

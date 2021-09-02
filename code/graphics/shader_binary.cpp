@@ -1,7 +1,8 @@
 #include"graphics/shader_binary.hpp"
 
 // TODO: safe to cast char* to std::byte*?
-Graphics::Shader_binary::Shader_binary(shaderc_compilation_result_t _compilation_result):
+Graphics::Shader_binary::Shader_binary(Shader_kind _shader_kind, shaderc_compilation_result_t _compilation_result):
+    shader_kind(_shader_kind),
     compilation_result(_compilation_result),
     spirv_binary(reinterpret_cast<std::byte const*>(shaderc_result_get_bytes(compilation_result)), shaderc_result_get_length(compilation_result))
 { }

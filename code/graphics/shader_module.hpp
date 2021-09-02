@@ -11,6 +11,8 @@ namespace Graphics {
 	// The binary can be destroyed immediately after creating the shader module
 	Shader_module(Shader_binary const& _binary, Logical_device& _logical_device);
 
+	operator VkShaderModule& () noexcept;
+
 	~Shader_module();
 	
 	Shader_module(Shader_module const&) = delete;

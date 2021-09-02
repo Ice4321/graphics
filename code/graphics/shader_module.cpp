@@ -18,3 +18,8 @@ Graphics::Shader_module::Shader_module(Shader_binary const& _binary, Logical_dev
 Graphics::Shader_module::~Shader_module() {
     vkDestroyShaderModule(*logical_device, shader_module, nullptr);
 }
+
+
+Graphics::Shader_module::operator VkShaderModule& () noexcept {
+    return shader_module;
+}
