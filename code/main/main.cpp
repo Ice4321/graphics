@@ -13,25 +13,12 @@ int main() {
     Concurrency::main_thread_id = std::this_thread::get_id();
     
     
-    Graphics::Shader_compiler shc;
-    
-    auto result = shc.compile(
-	Graphics::Shader_compiler::Shader_kind::vertex,
-	R"(
-	    #version 450
-	    void main() {
-		
-	    }
-	)"
-    );
-    
-    return 0;
 
     // glfwGetVersionString() may be called before glfwInit()
     std::cout << "GLFW version: " << glfwGetVersionString() << std::endl;
 
     Graphics::Window window(400, 400);
-    Graphics::Instance instance(Graphics::Instance::Validation::disabled);
+    Graphics::Instance instance(Graphics::Instance::Validation::enabled);
     Graphics::Surface surface(instance, window);
 
     auto all_physical_devices = Graphics::Physical_device::enumerate_all(instance);
@@ -42,6 +29,48 @@ int main() {
     Graphics::Logical_device logical_device(all_physical_devices[0], surface);
     Graphics::Swap_chain swap_chain(all_physical_devices[0], logical_device, surface, window);
 
+    Graphics::Shader_compiler shader_compiler;
+    
+    auto vertex_shader = shader_compiler.compile(
+	Graphics::Shader_compiler::Shader_kind::vertex,
+	R"(
+	    #version 450
+
+	    layout(location = 0) out vec3 fragment_colour;
+
+	    vec2 positions[3] = vec2[](
+		vec2(0.0, -0.5),
+		vec2(0.5, 0.5),
+		vec2(-0.5, 0.5)
+	    );
+
+	    vec3 colours[3] = vec3[](
+		vec3(1.0, 0.0, 0.0),
+		vec3(0.0, 1.0, 0.0),
+		vec3(0.0, 0.0, 1.0)
+	    );
+
+	    void main() {
+		gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
+		fragment_colour = colours[gl_VertexIndex];
+	    }
+	)"
+    );
+
+    auto fragment_shader = shader_compiler.compile(
+	Graphics::Shader_compiler::Shader_kind::vertex,
+	R"(
+	    #version 450
+    
+	    layout(location = 0) in vec3 fragment_colour;
+	    layout(location = 0) out vec4 out_colour;
+
+	    void main() {
+		out_colour = vec4(fragment_colour, 1.0);
+	    }
+
+	)"
+    );
 
     bool exit = false;
 
