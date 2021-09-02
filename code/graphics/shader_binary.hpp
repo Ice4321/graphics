@@ -11,6 +11,7 @@ namespace Graphics {
 	// Takes ownership of _compilation_result
 	Shader_binary(shaderc_compilation_result_t _compilation_result);
 	
+	// libshaderc guarantees that the binary is castable to a uint32_t* 
 	std::span<std::byte const> const& get_spirv_binary() const noexcept;
 
 	~Shader_binary();
