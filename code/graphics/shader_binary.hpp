@@ -22,6 +22,7 @@ namespace Graphics {
 	Shader_binary& operator=(Shader_binary const&) = delete;
 
     private:
+	Shader_kind shader_kind; // TODO: this field is not needed
 	shaderc_compilation_result_t compilation_result;
 	std::span<std::byte const> spirv_binary;
     };

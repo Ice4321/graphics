@@ -16,6 +16,9 @@ namespace Graphics {
 
 	operator VkSwapchainKHR& () noexcept;
 
+	VkExtent2D const& get_image_extent() const noexcept;
+	VkFormat const& get_image_format() const noexcept;
+
 	~Swap_chain();
 
 	Swap_chain(Swap_chain const&) = delete;

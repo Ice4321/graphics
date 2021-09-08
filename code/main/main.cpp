@@ -8,6 +8,7 @@
 #include"graphics/swap_chain.hpp"
 #include"utility/critical_error.hpp"
 #include"graphics/shader_compiler.hpp"
+#include"graphics/pipeline.hpp"
 
 int main() {
     Concurrency::main_thread_id = std::this_thread::get_id();
@@ -31,7 +32,7 @@ int main() {
 
     Graphics::Shader_compiler shader_compiler;
     
-    auto vertex_shader = shader_compiler.compile(
+    auto vertex_shader_binary = shader_compiler.compile(
 	Graphics::Shader_compiler::Shader_kind::vertex,
 	R"(
 	    #version 450
@@ -57,8 +58,8 @@ int main() {
 	)"
     );
 
-    auto fragment_shader = shader_compiler.compile(
-	Graphics::Shader_compiler::Shader_kind::vertex,
+    auto fragment_shader_binary = shader_compiler.compile(
+	Graphics::Shader_compiler::Shader_kind::fragment,
 	R"(
 	    #version 450
     
@@ -71,6 +72,12 @@ int main() {
 
 	)"
     );
+
+    Graphics::Shader_module vertex_shader_module(vertex_shader_binary, logical_device);
+    Graphics::Shader_module fragment_shader_module(fragment_shader_binary, logical_device);
+
+    Graphics::Pipeline pipeline(vertex_shader_module, fragment_shader_module, swap_chain, logical_device);
+	
 
     bool exit = false;
 

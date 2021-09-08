@@ -64,7 +64,7 @@ Graphics::Shader_binary Graphics::Shader_compiler::compile(Shader_kind _kind, st
 	Shader_binary::Shader_kind kind2{};
 	
 	// TODO: get rid of this
-	switch(kind) {
+	switch(_kind) {
 	    case Shader_kind::vertex: kind2 = Shader_binary::Shader_kind::vertex; break;
 	    case Shader_kind::fragment: kind2 = Shader_binary::Shader_kind::fragment; break;
 	    case Shader_kind::compute: kind2 = Shader_binary::Shader_kind::compute; break;

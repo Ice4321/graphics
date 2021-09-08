@@ -133,14 +133,22 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
     }
 }
 
-Graphics::Swap_chain::operator VkSwapchainKHR& () noexcept {
-    return swap_chain;
-}
-
 Graphics::Swap_chain::~Swap_chain() {
     for(auto& image_view : image_views) vkDestroyImageView(*logical_device, image_view, nullptr);
     vkDestroySwapchainKHR(*logical_device, swap_chain, nullptr);
 }
 
+Graphics::Swap_chain::operator VkSwapchainKHR& () noexcept {
+    return swap_chain;
+}
+
+VkExtent2D const& Graphics::Swap_chain::get_image_extent() const noexcept {
+    return image_extent;
+}
+
+
+VkFormat const& Graphics::Swap_chain::get_image_format() const noexcept {
+    return image_format;
+}
 
 
