@@ -1,4 +1,5 @@
 #include"graphics/swap_chain.hpp"
+#include"graphics/pipeline.hpp"
 #include<algorithm>
 
 
@@ -134,8 +135,33 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 }
 
 Graphics::Swap_chain::~Swap_chain() {
+    for(auto& framebuffer : framebuffers) vkDestroyFramebuffer(*logical_device, framebuffer, nullptr);
     for(auto& image_view : image_views) vkDestroyImageView(*logical_device, image_view, nullptr);
     vkDestroySwapchainKHR(*logical_device, swap_chain, nullptr);
+}
+
+void Graphics::Swap_chain::create_framebuffers(Pipeline& _pipeline) {
+    framebuffers.resize(images.size());
+
+    for(std::size_t i = 0; i < image_views.size(); ++i) {
+	VkImageView attachments[] = {
+	    image_views[i]
+	};
+
+	VkFramebufferCreateInfo framebuffer_create_info{
+	    .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+	    .pNext = nullptr,
+	    .flags = 0,
+	    .renderPass = _pipeline.get_render_pass(),
+	    .attachmentCount = 1,
+	    .pAttachments = attachments,
+	    .width = image_extent.width,
+	    .height = image_extent.height,
+	    .layers = 1
+	};
+
+	if(vkCreateFramebuffer(*logical_device, &framebuffer_create_info, nullptr, &framebuffers[i]) < 0) critical_error("vkCreateFramebuffer()");
+    }
 }
 
 Graphics::Swap_chain::operator VkSwapchainKHR& () noexcept {

@@ -1,4 +1,5 @@
 #include"graphics/pipeline.hpp"
+#include"graphics/swap_chain.hpp"
 
 Graphics::Pipeline::Pipeline(Shader_module& _vertex_shader, Shader_module& _fragment_shader, Swap_chain& _swap_chain, Logical_device& _logical_device):
     logical_device(&_logical_device) 
@@ -209,4 +210,8 @@ Graphics::Pipeline::~Pipeline() {
     vkDestroyPipeline(*logical_device, pipeline, nullptr);
     vkDestroyRenderPass(*logical_device, render_pass, nullptr);
     vkDestroyPipelineLayout(*logical_device, layout, nullptr);
+}
+
+VkRenderPass Graphics::Pipeline::get_render_pass() noexcept {
+    return render_pass;
 }

@@ -1,6 +1,7 @@
 #ifndef INCLUDED_GRAPHICS_SWAP_CHAIN_HPP
 #define INCLUDED_GRAPHICS_SWAP_CHAIN_HPP
 
+namespace Graphics { class Pipeline; }
 #include<vulkan/vulkan.h>
 #include<vector>
 #include"graphics/physical_device.hpp"
@@ -13,6 +14,8 @@ namespace Graphics {
     class Swap_chain {
     public:
 	Swap_chain(Physical_device& _physical_device, Logical_device& _logical_device, Surface& _surface, Window& _window);
+
+	void create_framebuffers(Pipeline& _pipeline);
 
 	operator VkSwapchainKHR& () noexcept;
 
@@ -28,6 +31,7 @@ namespace Graphics {
 	VkSwapchainKHR swap_chain;
 	std::vector<VkImage> images;
 	std::vector<VkImageView> image_views;
+	std::vector<VkFramebuffer> framebuffers;
 	VkFormat image_format;
 	VkExtent2D image_extent;
 	Logical_device* logical_device;

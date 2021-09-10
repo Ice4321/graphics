@@ -77,7 +77,8 @@ int main() {
     Graphics::Shader_module fragment_shader_module(fragment_shader_binary, logical_device);
 
     Graphics::Pipeline pipeline(vertex_shader_module, fragment_shader_module, swap_chain, logical_device);
-	
+    
+    swap_chain.create_framebuffers(pipeline);
 
     bool exit = false;
 
