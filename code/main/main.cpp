@@ -9,6 +9,7 @@
 #include"utility/critical_error.hpp"
 #include"graphics/shader_compiler.hpp"
 #include"graphics/pipeline.hpp"
+#include"graphics/renderer.hpp"
 
 int main() {
     Concurrency::main_thread_id = std::this_thread::get_id();
@@ -79,6 +80,8 @@ int main() {
     Graphics::Pipeline pipeline(vertex_shader_module, fragment_shader_module, swap_chain, logical_device);
     
     swap_chain.create_framebuffers(pipeline);
+
+    Graphics::Renderer renderer(logical_device, swap_chain, pipeline);
 
     bool exit = false;
 

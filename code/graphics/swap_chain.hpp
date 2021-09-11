@@ -18,9 +18,11 @@ namespace Graphics {
 	void create_framebuffers(Pipeline& _pipeline);
 
 	operator VkSwapchainKHR& () noexcept;
-
+	
+	std::size_t get_image_count() const noexcept;
 	VkExtent2D const& get_image_extent() const noexcept;
 	VkFormat const& get_image_format() const noexcept;
+	std::vector<VkFramebuffer>& get_framebuffers() noexcept;
 
 	~Swap_chain();
 

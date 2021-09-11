@@ -212,6 +212,10 @@ Graphics::Pipeline::~Pipeline() {
     vkDestroyPipelineLayout(*logical_device, layout, nullptr);
 }
 
-VkRenderPass Graphics::Pipeline::get_render_pass() noexcept {
+Graphics::Pipeline::operator VkPipeline& () noexcept {
+    return pipeline;
+}
+
+VkRenderPass& Graphics::Pipeline::get_render_pass() noexcept {
     return render_pass;
 }

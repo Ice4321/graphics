@@ -38,6 +38,19 @@ VkQueue Graphics::Logical_device::get_graphics_queue() noexcept {
     return graphics_queue_handle;
 }
 
+VkQueue Graphics::Logical_device::get_presentation_queue() noexcept {
+    return presentation_queue_handle;
+}
+
+std::uint32_t Graphics::Logical_device::get_graphics_queue_index() noexcept {
+    return graphics_queue_family_index;
+}
+
+std::uint32_t Graphics::Logical_device::get_presentation_queue_index() noexcept {
+    return presentation_queue_family_index;
+}
+
+
 Graphics::Logical_device::~Logical_device() {
     vkDestroyDevice(logical_device, nullptr);
 }

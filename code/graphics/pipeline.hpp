@@ -10,8 +10,10 @@ namespace Graphics {
     public:
 	// TODO: make this variadic
 	Pipeline(Shader_module& _vertex_shader, Shader_module& _fragment_shader, Swap_chain& _swap_chain, Logical_device& _logical_device);
+	
+	operator VkPipeline& () noexcept;
 
-	VkRenderPass get_render_pass() noexcept;
+	VkRenderPass& get_render_pass() noexcept;
 
 	~Pipeline();
 

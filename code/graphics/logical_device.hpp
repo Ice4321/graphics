@@ -16,6 +16,9 @@ namespace Graphics {
 	VkQueue get_graphics_queue() noexcept;
 	VkQueue get_presentation_queue() noexcept;
 	
+	std::uint32_t get_graphics_queue_index() noexcept;
+	std::uint32_t get_presentation_queue_index() noexcept;
+
 	~Logical_device();
 
 	Logical_device(Logical_device const&) = delete;

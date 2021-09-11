@@ -168,6 +168,10 @@ Graphics::Swap_chain::operator VkSwapchainKHR& () noexcept {
     return swap_chain;
 }
 
+std::size_t Graphics::Swap_chain::get_image_count() const noexcept {
+    return images.size();
+}
+
 VkExtent2D const& Graphics::Swap_chain::get_image_extent() const noexcept {
     return image_extent;
 }
@@ -175,6 +179,10 @@ VkExtent2D const& Graphics::Swap_chain::get_image_extent() const noexcept {
 
 VkFormat const& Graphics::Swap_chain::get_image_format() const noexcept {
     return image_format;
+}
+
+std::vector<VkFramebuffer>& Graphics::Swap_chain::get_framebuffers() noexcept {
+    return framebuffers;
 }
 
 
