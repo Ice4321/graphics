@@ -19,6 +19,8 @@ namespace Graphics {
 	std::uint32_t get_graphics_queue_index() noexcept;
 	std::uint32_t get_presentation_queue_index() noexcept;
 
+	void wait_idle();
+
 	~Logical_device();
 
 	Logical_device(Logical_device const&) = delete;

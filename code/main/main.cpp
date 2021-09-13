@@ -101,6 +101,8 @@ int main() {
 	window.await_events();
     }
 
+    logical_device.wait_idle();
+
 }
 
 

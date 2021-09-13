@@ -50,9 +50,11 @@ std::uint32_t Graphics::Logical_device::get_presentation_queue_index() noexcept 
     return presentation_queue_family_index;
 }
 
+void Graphics::Logical_device::wait_idle() {
+    vkDeviceWaitIdle(logical_device);
+}
 
 Graphics::Logical_device::~Logical_device() {
-    vkDeviceWaitIdle(logical_device);
     vkDestroyDevice(logical_device, nullptr);
 }
 
