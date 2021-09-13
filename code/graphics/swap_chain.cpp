@@ -72,9 +72,12 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 	surface_capabilities.maxImageCount == 0 || surface_capabilities.maxImageCount > surface_capabilities.minImageCount ? 1 : 0
     );
 
-    // TODO: VK_SHARING_MODE_EXCLUSIVE requires ownership transfer if graphics and presentation queues are not the same queue
-    
-    // queueFamilyIndexCount and pQueueFamilyIndices are zero if imageSharingMode is VK_SHARING_MODE_EXCLUSIVE
+    std::vector<std::uint32_t> queue_families;
+    queue_families.emplace_back(logical_device->get_graphics_queue_index());
+    if(logical_device->get_graphics_queue_index() != logical_device->get_presentation_queue_index()) {
+	queue_families.emplace_back(logical_device->get_presentation_queue_index());
+    }
+
     VkSwapchainCreateInfoKHR create_info{
 	.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
 	.pNext = nullptr,
@@ -86,9 +89,9 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 	.imageExtent = chosen_extent,
 	.imageArrayLayers = 1,
 	.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-	.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
-	.queueFamilyIndexCount = 0,
-	.pQueueFamilyIndices = nullptr,
+	.imageSharingMode = queue_families.size() > 1 ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE,
+	.queueFamilyIndexCount = (std::uint32_t)queue_families.size(), // Ignored if sharing mode is exclusive
+	.pQueueFamilyIndices = queue_families.data(), // Ignored if sharing mode is exclusive
 	.preTransform = surface_capabilities.currentTransform,
 	.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
 	.presentMode = chosen_presentation_mode,
