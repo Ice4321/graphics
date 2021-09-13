@@ -1,6 +1,7 @@
 #include"graphics/swap_chain.hpp"
 #include"graphics/pipeline.hpp"
 #include<algorithm>
+#include<limits>
 
 
 Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_device& _logical_device, Surface& _surface, Window& _window):
@@ -184,5 +185,15 @@ VkFormat const& Graphics::Swap_chain::get_image_format() const noexcept {
 std::vector<VkFramebuffer>& Graphics::Swap_chain::get_framebuffers() noexcept {
     return framebuffers;
 }
+
+std::uint32_t Graphics::Swap_chain::acquire_next_image(VkSemaphore _semaphore) {
+    std::uint32_t index;
+    if(vkAcquireNextImageKHR(*logical_device, swap_chain, std::numeric_limits<std::uint64_t>::max(), _semaphore, VK_NULL_HANDLE, &index) < 0) {
+	critical_error("vkAcquireNextImageKHR()");
+    }
+
+    return index;
+}
+
 
 

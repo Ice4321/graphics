@@ -11,6 +11,8 @@ namespace Graphics {
     public:
 	Renderer(Logical_device& _logical_device, Swap_chain& _swap_chain, Pipeline& _pipeline);
 
+	void draw_frame();
+
 	~Renderer();
 
 	Renderer(Renderer const&) = delete;
@@ -23,6 +25,9 @@ namespace Graphics {
 	VkCommandPool graphics_command_pool;
 	// One command buffer for each image in the swap chain
 	std::vector<VkCommandBuffer> graphics_command_buffers;
+
+	VkSemaphore image_available_sem;
+	VkSemaphore rendering_finished_sem;
 
 	void record_command_buffers();
 

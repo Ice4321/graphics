@@ -161,6 +161,16 @@ Graphics::Pipeline::Pipeline(Shader_module& _vertex_shader, Shader_module& _frag
 	.preserveAttachmentCount = 0,
 	.pPreserveAttachments= nullptr
     }};
+    
+    VkSubpassDependency subpass_dependencies[] = {{
+	.srcSubpass = VK_SUBPASS_EXTERNAL,
+	.dstSubpass = 0, // The only subpass in the render pass is at index 0
+	.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+	.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+	.srcAccessMask = 0,
+	.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+	.dependencyFlags = 0
+    }};
 
     VkRenderPassCreateInfo render_pass_create_info{
 	.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
@@ -170,8 +180,8 @@ Graphics::Pipeline::Pipeline(Shader_module& _vertex_shader, Shader_module& _frag
 	.pAttachments = colour_attachment_descriptions,
 	.subpassCount = 1,
 	.pSubpasses = subpass_descriptions,
-	.dependencyCount = 0,
-	.pDependencies = nullptr
+	.dependencyCount = 1,
+	.pDependencies = subpass_dependencies
     };
 
     if(vkCreateRenderPass(*logical_device, &render_pass_create_info, nullptr, &render_pass) < 0) critical_error("vkCreateRenderPass()");

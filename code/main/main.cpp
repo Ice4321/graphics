@@ -19,7 +19,7 @@ int main() {
     // glfwGetVersionString() may be called before glfwInit()
     std::cout << "GLFW version: " << glfwGetVersionString() << std::endl;
 
-    Graphics::Window window(400, 400);
+    Graphics::Window window(800, 600);
     Graphics::Instance instance(Graphics::Instance::Validation::enabled);
     Graphics::Surface surface(instance, window);
 
@@ -82,6 +82,8 @@ int main() {
     swap_chain.create_framebuffers(pipeline);
 
     Graphics::Renderer renderer(logical_device, swap_chain, pipeline);
+
+    renderer.draw_frame();
 
     bool exit = false;
 

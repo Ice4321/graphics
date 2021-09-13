@@ -52,6 +52,7 @@ std::uint32_t Graphics::Logical_device::get_presentation_queue_index() noexcept 
 
 
 Graphics::Logical_device::~Logical_device() {
+    vkDeviceWaitIdle(logical_device);
     vkDestroyDevice(logical_device, nullptr);
 }
 
