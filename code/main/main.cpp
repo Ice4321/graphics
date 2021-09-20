@@ -10,11 +10,10 @@
 #include"graphics/shader_compiler.hpp"
 #include"graphics/pipeline.hpp"
 #include"graphics/renderer.hpp"
+#include"utility/unique_handle.hpp"
 
 int main() {
     Concurrency::main_thread_id = std::this_thread::get_id();
-    
-    
 
     // glfwGetVersionString() may be called before glfwInit()
     std::cout << "GLFW version: " << glfwGetVersionString() << std::endl;
