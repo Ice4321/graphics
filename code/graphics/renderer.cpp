@@ -4,7 +4,9 @@
 Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_chain, Pipeline& _pipeline):
     logical_device(&_logical_device),
     swap_chain(&_swap_chain),
-    pipeline(&_pipeline)
+    pipeline(&_pipeline),
+    image_available_sem(&_logical_device),
+    rendering_finished_sem(&_logical_device)
 {
     VkCommandPoolCreateInfo graphics_command_pool_create_info{
 	.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -28,21 +30,9 @@ Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_
 
     record_command_buffers();
 
-    VkSemaphoreCreateInfo semaphore_create_info{
-	.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
-	.pNext = nullptr,
-	.flags = 0,
-    };
-
-    VULKAN_ASSERT(vkCreateSemaphore(*logical_device, &semaphore_create_info, nullptr, &image_available_sem)); 
-    VULKAN_ASSERT(vkCreateSemaphore(*logical_device, &semaphore_create_info, nullptr, &rendering_finished_sem)); 
-
-
 }
 
 Graphics::Renderer::~Renderer() {
-    vkDestroySemaphore(*logical_device, rendering_finished_sem, nullptr);
-    vkDestroySemaphore(*logical_device, image_available_sem, nullptr);
     vkFreeCommandBuffers(*logical_device, graphics_command_pool, graphics_command_buffers.size(), graphics_command_buffers.data());
     vkDestroyCommandPool(*logical_device, graphics_command_pool, nullptr);
 }

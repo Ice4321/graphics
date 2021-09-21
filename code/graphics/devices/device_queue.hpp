@@ -9,7 +9,7 @@ namespace Graphics {
     class Device_queue: public Utility::Unique_handle<VkQueue> {
     public:
 	static VkDeviceQueueCreateInfo make_creation_info(std::uint32_t _family_index, std::uint32_t _count);
-	// TODO: Any way to get rid of this?
+
 	Device_queue() = default;
 
 	Device_queue(class Logical_device& _logical_device, std::uint32_t _family_index, std::uint32_t _index);

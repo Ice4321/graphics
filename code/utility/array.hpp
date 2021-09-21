@@ -7,6 +7,7 @@
 
 // TODO: More comments!
 // TODO: Add iterators
+// TODO: Put this in namespace Utility
 
 // Exception specification is given assuming valid parameters are passed
 template<typename _Element>

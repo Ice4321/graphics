@@ -9,8 +9,6 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surf
     std::vector<VkDeviceQueueCreateInfo> queue_creation_info;
     std::uint32_t graphics_queue_family_index, presentation_queue_family_index;
 
-    // TODO: Check if this is correct!
-    
     {
 	auto has_graphics_support = [&](std::uint32_t _index) { return _physical_device.get_queue_family_properties(_index).queueFlags & VK_QUEUE_GRAPHICS_BIT; };
 	auto has_presentation_support = [&](std::uint32_t _index) { return _surface.test_queue_family_presentation_support(_physical_device, _index); };
