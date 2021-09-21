@@ -2,8 +2,8 @@
 #define INCLUDED_GRAPHICS_INSTANCE_HPP
 
 #include<vulkan/vulkan.h>
-#include<cassert>
 #include"graphics/validation_callback.hpp"
+#include "utility/assert.hpp"
 
 namespace Graphics {
     class Instance {
@@ -36,7 +36,7 @@ namespace Graphics {
     template<typename _Function_ptr>
     _Function_ptr Instance::get_function_address(char const* _function_name) {
 	_Function_ptr pointer = reinterpret_cast<_Function_ptr>(vkGetInstanceProcAddr(instance, _function_name));
-	assert(pointer);
+	ASSERT(pointer);
 	return pointer;
     }
 }

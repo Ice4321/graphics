@@ -1,5 +1,6 @@
 #include"graphics/pipeline.hpp"
 #include"graphics/swap_chain.hpp"
+#include"graphics/utility/vulkan_assert.hpp"
 
 Graphics::Pipeline::Pipeline(Shader_module& _vertex_shader, Shader_module& _fragment_shader, Swap_chain& _swap_chain, Logical_device& _logical_device):
     logical_device(&_logical_device) 
@@ -130,7 +131,7 @@ Graphics::Pipeline::Pipeline(Shader_module& _vertex_shader, Shader_module& _frag
 	.pPushConstantRanges = nullptr
     };
 
-    assert(vkCreatePipelineLayout(*logical_device, &pipeline_layout_create_info, nullptr, &layout) == VK_SUCCESS); 
+    VULKAN_ASSERT(vkCreatePipelineLayout(*logical_device, &pipeline_layout_create_info, nullptr, &layout)); 
 
     VkAttachmentDescription colour_attachment_descriptions[] = {{
 	.flags = 0,
@@ -184,7 +185,7 @@ Graphics::Pipeline::Pipeline(Shader_module& _vertex_shader, Shader_module& _frag
 	.pDependencies = subpass_dependencies
     };
 
-    assert(vkCreateRenderPass(*logical_device, &render_pass_create_info, nullptr, &render_pass) == VK_SUCCESS); 
+    VULKAN_ASSERT(vkCreateRenderPass(*logical_device, &render_pass_create_info, nullptr, &render_pass)); 
 
     VkGraphicsPipelineCreateInfo pipeline_create_info[] = {{
 	.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
@@ -209,7 +210,7 @@ Graphics::Pipeline::Pipeline(Shader_module& _vertex_shader, Shader_module& _frag
     }};
     
     // TODO: Safe to use the address of a single object as if it was a 1-element array?
-    assert(vkCreateGraphicsPipelines(*logical_device, VK_NULL_HANDLE, 1, pipeline_create_info, nullptr, &pipeline) == VK_SUCCESS);
+    VULKAN_ASSERT(vkCreateGraphicsPipelines(*logical_device, VK_NULL_HANDLE, 1, pipeline_create_info, nullptr, &pipeline));
 
 }
 

@@ -1,5 +1,6 @@
 #include"graphics/swap_chain.hpp"
 #include"graphics/pipeline.hpp"
+#include"graphics/utility/vulkan_assert.hpp"
 #include<algorithm>
 #include<limits>
 
@@ -8,20 +9,20 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
     logical_device(&_logical_device)
 {
     VkSurfaceCapabilitiesKHR surface_capabilities;
-    assert(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physical_device, _surface, &surface_capabilities) == VK_SUCCESS);
+    VULKAN_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physical_device, _surface, &surface_capabilities));
 
     std::uint32_t surface_format_count;
-    assert(vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, _surface, &surface_format_count, nullptr) == VK_SUCCESS);
+    VULKAN_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, _surface, &surface_format_count, nullptr));
 
     std::vector<VkSurfaceFormatKHR> surface_formats(surface_format_count);
-    assert(vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, _surface, &surface_format_count, surface_formats.data()) == VK_SUCCESS);
+    VULKAN_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, _surface, &surface_format_count, surface_formats.data()));
 
 
     std::uint32_t surface_presentation_mode_count;
-    assert(vkGetPhysicalDeviceSurfacePresentModesKHR(_physical_device, _surface, &surface_presentation_mode_count, nullptr) == VK_SUCCESS);
+    VULKAN_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(_physical_device, _surface, &surface_presentation_mode_count, nullptr));
 
     std::vector<VkPresentModeKHR> surface_presentation_modes(surface_presentation_mode_count);
-    assert(vkGetPhysicalDeviceSurfacePresentModesKHR(_physical_device, _surface, &surface_presentation_mode_count, surface_presentation_modes.data()) == VK_SUCCESS);
+    VULKAN_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(_physical_device, _surface, &surface_presentation_mode_count, surface_presentation_modes.data()));
     
     VkSurfaceFormatKHR chosen_format;
     VkPresentModeKHR chosen_presentation_mode;
@@ -35,7 +36,7 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 		break;
 	    }
 	}
-	assert(found);
+	ASSERT(found);
     }
 
     {
@@ -47,7 +48,7 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 		break;
 	    }
 	}
-	assert(found);
+	ASSERT(found);
     }
     
     VkExtent2D chosen_extent;
@@ -91,15 +92,15 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 	.oldSwapchain = VK_NULL_HANDLE
     };
 
-    assert(vkCreateSwapchainKHR(*logical_device, &create_info, nullptr, &swap_chain) == VK_SUCCESS); 
+    VULKAN_ASSERT(vkCreateSwapchainKHR(*logical_device, &create_info, nullptr, &swap_chain)); 
     
     image_format = chosen_format.format;
     image_extent = chosen_extent;
 
     std::uint32_t actual_image_count;
-    assert(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, nullptr) == VK_SUCCESS); 
+    VULKAN_ASSERT(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, nullptr)); 
     images.resize(actual_image_count);
-    assert(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, images.data()) == VK_SUCCESS); 
+    VULKAN_ASSERT(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, images.data())); 
     
     image_views.resize(images.size());
 
@@ -126,7 +127,7 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 	    }
 	};
 
-	assert(vkCreateImageView(*logical_device, &view_create_info, nullptr, &image_views[i]) == VK_SUCCESS); 
+	VULKAN_ASSERT(vkCreateImageView(*logical_device, &view_create_info, nullptr, &image_views[i])); 
     }
 }
 
@@ -156,7 +157,7 @@ void Graphics::Swap_chain::create_framebuffers(Pipeline& _pipeline) {
 	    .layers = 1
 	};
 
-	assert(vkCreateFramebuffer(*logical_device, &framebuffer_create_info, nullptr, &framebuffers[i]) == VK_SUCCESS); 
+	VULKAN_ASSERT(vkCreateFramebuffer(*logical_device, &framebuffer_create_info, nullptr, &framebuffers[i])); 
     }
 }
 
@@ -183,7 +184,7 @@ std::vector<VkFramebuffer>& Graphics::Swap_chain::get_framebuffers() noexcept {
 
 std::uint32_t Graphics::Swap_chain::acquire_next_image(VkSemaphore _semaphore) {
     std::uint32_t index;
-    assert(vkAcquireNextImageKHR(*logical_device, swap_chain, std::numeric_limits<std::uint64_t>::max(), _semaphore, VK_NULL_HANDLE, &index) == VK_SUCCESS);
+    VULKAN_ASSERT(vkAcquireNextImageKHR(*logical_device, swap_chain, std::numeric_limits<std::uint64_t>::max(), _semaphore, VK_NULL_HANDLE, &index));
 
     return index;
 }

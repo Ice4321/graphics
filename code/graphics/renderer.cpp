@@ -1,4 +1,5 @@
 #include"graphics/renderer.hpp"
+#include"graphics/utility/vulkan_assert.hpp"
 
 Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_chain, Pipeline& _pipeline):
     logical_device(&_logical_device),
@@ -12,7 +13,7 @@ Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_
 	.queueFamilyIndex = logical_device->get_graphics_queue().get_family_index()
     };
 
-    assert(vkCreateCommandPool(*logical_device, &graphics_command_pool_create_info, nullptr, &graphics_command_pool) == VK_SUCCESS); 
+    VULKAN_ASSERT(vkCreateCommandPool(*logical_device, &graphics_command_pool_create_info, nullptr, &graphics_command_pool)); 
 
     VkCommandBufferAllocateInfo graphics_command_buffer_allocate_info{
 	.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -23,7 +24,7 @@ Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_
     };
     
     graphics_command_buffers.resize(swap_chain->get_image_count());
-    assert(vkAllocateCommandBuffers(*logical_device, &graphics_command_buffer_allocate_info, graphics_command_buffers.data()) == VK_SUCCESS);
+    VULKAN_ASSERT(vkAllocateCommandBuffers(*logical_device, &graphics_command_buffer_allocate_info, graphics_command_buffers.data()));
 
     record_command_buffers();
 
@@ -33,8 +34,8 @@ Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_
 	.flags = 0,
     };
 
-    assert(vkCreateSemaphore(*logical_device, &semaphore_create_info, nullptr, &image_available_sem) == VK_SUCCESS); 
-    assert(vkCreateSemaphore(*logical_device, &semaphore_create_info, nullptr, &rendering_finished_sem) == VK_SUCCESS); 
+    VULKAN_ASSERT(vkCreateSemaphore(*logical_device, &semaphore_create_info, nullptr, &image_available_sem)); 
+    VULKAN_ASSERT(vkCreateSemaphore(*logical_device, &semaphore_create_info, nullptr, &rendering_finished_sem)); 
 
 
 }
@@ -68,7 +69,7 @@ void Graphics::Renderer::draw_frame() {
 	.pSignalSemaphores = signal_semaphores
     }};
 
-    assert(vkQueueSubmit(logical_device->get_graphics_queue(), 1, queue_submit_info, VK_NULL_HANDLE) == VK_SUCCESS); 
+    VULKAN_ASSERT(vkQueueSubmit(logical_device->get_graphics_queue(), 1, queue_submit_info, VK_NULL_HANDLE)); 
 
     VkSwapchainKHR swap_chains[] = { *swap_chain };
     std::uint32_t image_indices[] = { acquired_image_index };
@@ -84,7 +85,7 @@ void Graphics::Renderer::draw_frame() {
 	.pResults = nullptr
     };
 
-    assert(vkQueuePresentKHR(logical_device->get_presentation_queue(), &present_info) == VK_SUCCESS); 
+    VULKAN_ASSERT(vkQueuePresentKHR(logical_device->get_presentation_queue(), &present_info)); 
 }
 
 
@@ -97,7 +98,7 @@ void Graphics::Renderer::record_command_buffers() {
 	    .pInheritanceInfo = nullptr
 	};
 
-	assert(vkBeginCommandBuffer(graphics_command_buffers[i], &begin_info) == VK_SUCCESS); 
+	VULKAN_ASSERT(vkBeginCommandBuffer(graphics_command_buffers[i], &begin_info)); 
 	
 	// See: VK_ATTACHMENT_LOAD_OP_CLEAR
 	VkClearValue clear_values[] = {
@@ -124,7 +125,7 @@ void Graphics::Renderer::record_command_buffers() {
 
 	vkCmdEndRenderPass(graphics_command_buffers[i]);
 
-	assert(vkEndCommandBuffer(graphics_command_buffers[i]) == VK_SUCCESS); 
+	VULKAN_ASSERT(vkEndCommandBuffer(graphics_command_buffers[i])); 
 
     }
 }

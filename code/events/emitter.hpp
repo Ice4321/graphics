@@ -8,7 +8,7 @@
 #include<list>
 #include<vector>
 #include<ranges>
-#include<cassert>
+#include "utility/assert.hpp"
 
 namespace Internal {
     namespace Event_emitter_impl {
@@ -37,22 +37,22 @@ namespace Internal {
 	    
 	    virtual void invoke(_Argument& _argument) override {
 		if constexpr(std::invocable<_Callable&, decltype(_argument)>) callable(std::forward<decltype(_argument)>(_argument));
-		else assert(false && "Incorrect value category");
+		else ASSERT(false && "Incorrect value category");
 	    }
 
 	    virtual void invoke(_Argument&& _argument) override {
 		if constexpr(std::invocable<_Callable&, decltype(_argument)>) callable(std::forward<decltype(_argument)>(_argument));
-		else assert(false && "Incorrect value category");
+		else ASSERT(false && "Incorrect value category");
 	    }
 
 	    virtual void invoke(_Argument const& _argument) override {
 		if constexpr(std::invocable<_Callable&, decltype(_argument)>) callable(std::forward<decltype(_argument)>(_argument));
-		else assert(false && "Incorrect value category");
+		else ASSERT(false && "Incorrect value category");
 	    }
 
 	    virtual void invoke(_Argument const&& _argument) override {
 		if constexpr(std::invocable<_Callable&, decltype(_argument)>) callable(std::forward<decltype(_argument)>(_argument));
-		else assert(false && "Incorrect value category");
+		else ASSERT(false && "Incorrect value category");
 	    }
 
 	    virtual ~Callable_wrapper() override = default;

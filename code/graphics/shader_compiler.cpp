@@ -1,10 +1,10 @@
 #include"graphics/shader_compiler.hpp"
-#include<cassert>
+#include"utility/assert.hpp"
 
 Graphics::Shader_compiler::Shader_compiler() {
     // Calling shaderc_compiler_initialize() on multiple threads needs no synchronisation
-    assert((compiler = shaderc_compiler_initialize()));
-    assert((compile_options = shaderc_compile_options_initialize()));
+    ASSERT((compiler = shaderc_compiler_initialize()));
+    ASSERT((compile_options = shaderc_compile_options_initialize()));
     
     shaderc_compile_options_set_source_language(compile_options, shaderc_source_language_glsl);
     shaderc_compile_options_set_optimization_level(compile_options, shaderc_optimization_level_performance);
@@ -55,7 +55,7 @@ Graphics::Shader_binary Graphics::Shader_compiler::compile(Shader_kind _kind, st
     );
     
     // Some internal error, not a compilation error
-    assert(compilation_result);
+    ASSERT(compilation_result);
 
     shaderc_compilation_status compilation_status = shaderc_result_get_compilation_status(compilation_result);
     

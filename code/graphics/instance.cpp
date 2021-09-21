@@ -1,7 +1,7 @@
 #include"graphics/instance.hpp"
 #include"graphics/window.hpp"
-#include<cassert>
 #include<array>
+#include "graphics/utility/vulkan_assert.hpp"
 
 Graphics::Instance::Instance(Validation _validation):
     validation_enabled(_validation == Validation::enabled)
@@ -57,11 +57,11 @@ Graphics::Instance::Instance(Validation _validation):
     };
 
 
-    assert(vkCreateInstance(&create_info, nullptr, &instance) == VK_SUCCESS); 
+    VULKAN_ASSERT(vkCreateInstance(&create_info, nullptr, &instance)); 
 
     if(validation_enabled) {
 	auto ptr_vkCreateDebugUtilsMessengerEXT = get_function_address<PFN_vkCreateDebugUtilsMessengerEXT>("vkCreateDebugUtilsMessengerEXT");
-	assert(ptr_vkCreateDebugUtilsMessengerEXT(instance, &debug_messenger_create_info, nullptr, &debug_messenger) == VK_SUCCESS);
+	VULKAN_ASSERT(ptr_vkCreateDebugUtilsMessengerEXT(instance, &debug_messenger_create_info, nullptr, &debug_messenger));
     }
 }
 

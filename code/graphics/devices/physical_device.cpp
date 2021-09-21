@@ -1,12 +1,12 @@
 #include"graphics/devices/physical_device.hpp"
-#include<cassert>
 #include<cstdint>
+#include "graphics/utility/vulkan_assert.hpp"
 
 std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all(Instance& _instance) {
     std::uint32_t device_count = 0;
-    assert(vkEnumeratePhysicalDevices(_instance, &device_count, nullptr) == VK_SUCCESS);
+    VULKAN_ASSERT(vkEnumeratePhysicalDevices(_instance, &device_count, nullptr));
     std::vector<VkPhysicalDevice> devices(device_count);
-    assert(vkEnumeratePhysicalDevices(_instance, &device_count, devices.data()) == VK_SUCCESS);
+    VULKAN_ASSERT(vkEnumeratePhysicalDevices(_instance, &device_count, devices.data()));
 
     return { std::begin(devices), std::end(devices) };
 }

@@ -4,8 +4,8 @@
 #include<optional>
 #include<functional>
 #include<utility>
-#include"cassert"
 #include"preprocessor/macros.hpp"
+#include "utility/assert.hpp"
 
 namespace Utility {
 
@@ -28,12 +28,12 @@ namespace Utility {
 	// Non-const, because library functions may take handles by copy, in which case the pointed-to objects can still be mutated
 	// Therefore, an object of type Unique_handle const must not be usable with library functions
 	operator _Handle& () & noexcept { 
-	    IF_DEBUG(assert(handle.has_value()));
+	    IF_DEBUG(ASSERT(handle.has_value()));
 	    return *handle; 
 	}
 
 	operator _Handle&& () && noexcept { 
-	    IF_DEBUG(assert(handle.has_value()));
+	    IF_DEBUG(ASSERT(handle.has_value()));
 	    return std::move(*handle);
 	}
 
