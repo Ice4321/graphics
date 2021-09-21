@@ -10,6 +10,11 @@
 #include"graphics/pipeline.hpp"
 #include"graphics/renderer.hpp"
 #include"utility/unique_handle.hpp"
+#include"utility/assert.hpp"
+
+bool f(int x, int y) {
+    return (bool)(x + y);
+}
 
 int main() {
     Concurrency::main_thread_id = std::this_thread::get_id();
