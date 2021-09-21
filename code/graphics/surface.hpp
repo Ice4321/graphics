@@ -4,6 +4,7 @@
 #include<vulkan/vulkan.h>
 #include"graphics/window.hpp"
 #include"graphics/instance.hpp"
+#include"graphics/devices/physical_device.hpp"
 
 namespace Graphics {
     class Surface {
@@ -13,6 +14,8 @@ namespace Graphics {
 	Surface(Instance& _instance, Window& _window);
 
 	operator VkSurfaceKHR& () noexcept;
+
+	bool test_queue_family_presentation_support(Physical_device& _physical_device, std::uint32_t _queue_family_index);
 
 	~Surface();
 

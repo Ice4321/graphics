@@ -3,7 +3,7 @@
 
 namespace Graphics { class Swap_chain; }
 #include"graphics/shader_module.hpp"
-#include"graphics/logical_device.hpp"
+#include"graphics/devices/logical_device.hpp"
 
 namespace Graphics {
     class Pipeline {

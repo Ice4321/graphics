@@ -4,8 +4,8 @@
 namespace Graphics { class Pipeline; }
 #include<vulkan/vulkan.h>
 #include<vector>
-#include"graphics/physical_device.hpp"
-#include"graphics/logical_device.hpp"
+#include"graphics/devices/physical_device.hpp"
+#include"graphics/devices/logical_device.hpp"
 #include"graphics/surface.hpp"
 #include"graphics/window.hpp"
 

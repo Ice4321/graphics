@@ -3,7 +3,7 @@
 
 #include<vulkan/vulkan.h>
 #include"graphics/shader_binary.hpp"
-#include"graphics/logical_device.hpp"
+#include"graphics/devices/logical_device.hpp"
 
 namespace Graphics {
     class Shader_module {

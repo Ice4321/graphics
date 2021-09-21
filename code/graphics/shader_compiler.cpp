@@ -1,10 +1,10 @@
 #include"graphics/shader_compiler.hpp"
-#include"utility/critical_error.hpp"
+#include<cassert>
 
 Graphics::Shader_compiler::Shader_compiler() {
     // Calling shaderc_compiler_initialize() on multiple threads needs no synchronisation
-    if((compiler = shaderc_compiler_initialize()) == nullptr) critical_error("shaderc_compiler_initialize()");
-    if((compile_options = shaderc_compile_options_initialize()) == nullptr) critical_error("shaderc_compile_options_initialize()");
+    assert((compiler = shaderc_compiler_initialize()));
+    assert((compile_options = shaderc_compile_options_initialize()));
     
     shaderc_compile_options_set_source_language(compile_options, shaderc_source_language_glsl);
     shaderc_compile_options_set_optimization_level(compile_options, shaderc_optimization_level_performance);
@@ -55,7 +55,7 @@ Graphics::Shader_binary Graphics::Shader_compiler::compile(Shader_kind _kind, st
     );
     
     // Some internal error, not a compilation error
-    if(!compilation_result) critical_error("shaderc_compile_into_spv()");
+    assert(compilation_result);
 
     shaderc_compilation_status compilation_status = shaderc_result_get_compilation_status(compilation_result);
     

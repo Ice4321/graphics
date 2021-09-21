@@ -2,7 +2,7 @@
 #define INCLUDED_GRAPHICS_INSTANCE_HPP
 
 #include<vulkan/vulkan.h>
-#include"utility/critical_error.hpp"
+#include<cassert>
 #include"graphics/validation_callback.hpp"
 
 namespace Graphics {
@@ -36,7 +36,7 @@ namespace Graphics {
     template<typename _Function_ptr>
     _Function_ptr Instance::get_function_address(char const* _function_name) {
 	_Function_ptr pointer = reinterpret_cast<_Function_ptr>(vkGetInstanceProcAddr(instance, _function_name));
-	if(!pointer) critical_error("vkGetInstanceProcAddr()");
+	assert(pointer);
 	return pointer;
     }
 }

@@ -9,10 +9,10 @@ Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_
 	.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
 	.pNext = nullptr,
 	.flags = 0,
-	.queueFamilyIndex = logical_device->get_graphics_queue_index()
+	.queueFamilyIndex = logical_device->get_graphics_queue().get_family_index()
     };
 
-    if(vkCreateCommandPool(*logical_device, &graphics_command_pool_create_info, nullptr, &graphics_command_pool) < 0) critical_error("vkCreateCommandPool()");
+    assert(vkCreateCommandPool(*logical_device, &graphics_command_pool_create_info, nullptr, &graphics_command_pool) == VK_SUCCESS); 
 
     VkCommandBufferAllocateInfo graphics_command_buffer_allocate_info{
 	.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -23,9 +23,7 @@ Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_
     };
     
     graphics_command_buffers.resize(swap_chain->get_image_count());
-    if(vkAllocateCommandBuffers(*logical_device, &graphics_command_buffer_allocate_info, graphics_command_buffers.data()) < 0) {
-	critical_error("vkAllocateCommandBuffers()");
-    }
+    assert(vkAllocateCommandBuffers(*logical_device, &graphics_command_buffer_allocate_info, graphics_command_buffers.data()) == VK_SUCCESS);
 
     record_command_buffers();
 
@@ -35,8 +33,8 @@ Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_
 	.flags = 0,
     };
 
-    if(vkCreateSemaphore(*logical_device, &semaphore_create_info, nullptr, &image_available_sem) < 0) critical_error("vkCreateSemaphore()");
-    if(vkCreateSemaphore(*logical_device, &semaphore_create_info, nullptr, &rendering_finished_sem) < 0) critical_error("vkCreateSemaphore()");
+    assert(vkCreateSemaphore(*logical_device, &semaphore_create_info, nullptr, &image_available_sem) == VK_SUCCESS); 
+    assert(vkCreateSemaphore(*logical_device, &semaphore_create_info, nullptr, &rendering_finished_sem) == VK_SUCCESS); 
 
 
 }
@@ -70,7 +68,7 @@ void Graphics::Renderer::draw_frame() {
 	.pSignalSemaphores = signal_semaphores
     }};
 
-    if(vkQueueSubmit(logical_device->get_graphics_queue(), 1, queue_submit_info, VK_NULL_HANDLE) < 0) critical_error("vkQueueSubmit()");
+    assert(vkQueueSubmit(logical_device->get_graphics_queue(), 1, queue_submit_info, VK_NULL_HANDLE) == VK_SUCCESS); 
 
     VkSwapchainKHR swap_chains[] = { *swap_chain };
     std::uint32_t image_indices[] = { acquired_image_index };
@@ -86,7 +84,7 @@ void Graphics::Renderer::draw_frame() {
 	.pResults = nullptr
     };
 
-    if(vkQueuePresentKHR(logical_device->get_presentation_queue(), &present_info) < 0) critical_error("vkQueuePresentKHR()");
+    assert(vkQueuePresentKHR(logical_device->get_presentation_queue(), &present_info) == VK_SUCCESS); 
 }
 
 
@@ -99,7 +97,7 @@ void Graphics::Renderer::record_command_buffers() {
 	    .pInheritanceInfo = nullptr
 	};
 
-	if(vkBeginCommandBuffer(graphics_command_buffers[i], &begin_info) < 0) critical_error("vkBeginCommandBuffer()");
+	assert(vkBeginCommandBuffer(graphics_command_buffers[i], &begin_info) == VK_SUCCESS); 
 	
 	// See: VK_ATTACHMENT_LOAD_OP_CLEAR
 	VkClearValue clear_values[] = {
@@ -126,7 +124,7 @@ void Graphics::Renderer::record_command_buffers() {
 
 	vkCmdEndRenderPass(graphics_command_buffers[i]);
 
-	if(vkEndCommandBuffer(graphics_command_buffers[i]) < 0) critical_error("vkEndCommandBuffer()");
+	assert(vkEndCommandBuffer(graphics_command_buffers[i]) == VK_SUCCESS); 
 
     }
 }

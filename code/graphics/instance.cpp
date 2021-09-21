@@ -1,5 +1,6 @@
 #include"graphics/instance.hpp"
 #include"graphics/window.hpp"
+#include<cassert>
 #include<array>
 
 Graphics::Instance::Instance(Validation _validation):
@@ -56,14 +57,11 @@ Graphics::Instance::Instance(Validation _validation):
     };
 
 
-    if(vkCreateInstance(&create_info, nullptr, &instance) < 0) critical_error("vkCreateInstance()");
+    assert(vkCreateInstance(&create_info, nullptr, &instance) == VK_SUCCESS); 
 
     if(validation_enabled) {
 	auto ptr_vkCreateDebugUtilsMessengerEXT = get_function_address<PFN_vkCreateDebugUtilsMessengerEXT>("vkCreateDebugUtilsMessengerEXT");
-	if(ptr_vkCreateDebugUtilsMessengerEXT(instance, &debug_messenger_create_info, nullptr, &debug_messenger) < 0) {
-	    critical_error("vkCreateDebugUtilsMessengerEXT()");
-	}
-
+	assert(ptr_vkCreateDebugUtilsMessengerEXT(instance, &debug_messenger_create_info, nullptr, &debug_messenger) == VK_SUCCESS);
     }
 }
 

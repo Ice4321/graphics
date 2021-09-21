@@ -130,7 +130,7 @@ Graphics::Pipeline::Pipeline(Shader_module& _vertex_shader, Shader_module& _frag
 	.pPushConstantRanges = nullptr
     };
 
-    if(vkCreatePipelineLayout(*logical_device, &pipeline_layout_create_info, nullptr, &layout) < 0) critical_error("vkCreatePipelineLayout()");
+    assert(vkCreatePipelineLayout(*logical_device, &pipeline_layout_create_info, nullptr, &layout) == VK_SUCCESS); 
 
     VkAttachmentDescription colour_attachment_descriptions[] = {{
 	.flags = 0,
@@ -184,7 +184,7 @@ Graphics::Pipeline::Pipeline(Shader_module& _vertex_shader, Shader_module& _frag
 	.pDependencies = subpass_dependencies
     };
 
-    if(vkCreateRenderPass(*logical_device, &render_pass_create_info, nullptr, &render_pass) < 0) critical_error("vkCreateRenderPass()");
+    assert(vkCreateRenderPass(*logical_device, &render_pass_create_info, nullptr, &render_pass) == VK_SUCCESS); 
 
     VkGraphicsPipelineCreateInfo pipeline_create_info[] = {{
 	.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
@@ -209,9 +209,7 @@ Graphics::Pipeline::Pipeline(Shader_module& _vertex_shader, Shader_module& _frag
     }};
     
     // TODO: Safe to use the address of a single object as if it was a 1-element array?
-    if(vkCreateGraphicsPipelines(*logical_device, VK_NULL_HANDLE, 1, pipeline_create_info, nullptr, &pipeline) < 0) {
-	critical_error("vkCreateGraphicsPipelines()");
-    }
+    assert(vkCreateGraphicsPipelines(*logical_device, VK_NULL_HANDLE, 1, pipeline_create_info, nullptr, &pipeline) == VK_SUCCESS);
 
 }
 

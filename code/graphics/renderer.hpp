@@ -2,7 +2,7 @@
 #define INCLUDED_GRAPHICS_RENDERER_HPP
 
 #include<vulkan/vulkan.h>
-#include"graphics/logical_device.hpp"
+#include"graphics/devices/logical_device.hpp"
 #include"graphics/swap_chain.hpp"
 #include"graphics/pipeline.hpp"
 

@@ -8,28 +8,20 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
     logical_device(&_logical_device)
 {
     VkSurfaceCapabilitiesKHR surface_capabilities;
-    if(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physical_device, _surface, &surface_capabilities) < 0) {
-	critical_error("vkGetPhysicalDeviceSurfaceCapabilitiesKHR()");
-    }
+    assert(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physical_device, _surface, &surface_capabilities) == VK_SUCCESS);
 
     std::uint32_t surface_format_count;
-    if(vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, _surface, &surface_format_count, nullptr) < 0) {
-	critical_error("vkGetPhysicalDeviceSurfaceFormatsKHR()");
-    }
+    assert(vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, _surface, &surface_format_count, nullptr) == VK_SUCCESS);
+
     std::vector<VkSurfaceFormatKHR> surface_formats(surface_format_count);
-    if(vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, _surface, &surface_format_count, surface_formats.data()) < 0) {
-	critical_error("vkGetPhysicalDeviceSurfaceFormatsKHR()");
-    }
+    assert(vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, _surface, &surface_format_count, surface_formats.data()) == VK_SUCCESS);
 
 
     std::uint32_t surface_presentation_mode_count;
-    if(vkGetPhysicalDeviceSurfacePresentModesKHR(_physical_device, _surface, &surface_presentation_mode_count, nullptr) < 0) {
-	critical_error("vkGetPhysicalDeviceSurfacePresentModesKHR()");
-    }
+    assert(vkGetPhysicalDeviceSurfacePresentModesKHR(_physical_device, _surface, &surface_presentation_mode_count, nullptr) == VK_SUCCESS);
+
     std::vector<VkPresentModeKHR> surface_presentation_modes(surface_presentation_mode_count);
-    if(vkGetPhysicalDeviceSurfacePresentModesKHR(_physical_device, _surface, &surface_presentation_mode_count, surface_presentation_modes.data()) < 0) {
-	critical_error("vkGetPhysicalDeviceSurfacePresentModesKHR()");
-    }
+    assert(vkGetPhysicalDeviceSurfacePresentModesKHR(_physical_device, _surface, &surface_presentation_mode_count, surface_presentation_modes.data()) == VK_SUCCESS);
     
     VkSurfaceFormatKHR chosen_format;
     VkPresentModeKHR chosen_presentation_mode;
@@ -43,7 +35,7 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 		break;
 	    }
 	}
-	if(!found) critical_error("Surface format not available");
+	assert(found);
     }
 
     {
@@ -55,7 +47,7 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 		break;
 	    }
 	}
-	if(!found) critical_error("Surface presentation mode not available");
+	assert(found);
     }
     
     VkExtent2D chosen_extent;
@@ -73,9 +65,9 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
     );
 
     std::vector<std::uint32_t> queue_families;
-    queue_families.emplace_back(logical_device->get_graphics_queue_index());
-    if(logical_device->get_graphics_queue_index() != logical_device->get_presentation_queue_index()) {
-	queue_families.emplace_back(logical_device->get_presentation_queue_index());
+    queue_families.emplace_back(logical_device->get_graphics_queue().get_family_index());
+    if(logical_device->get_graphics_queue().get_family_index() != logical_device->get_presentation_queue().get_family_index()) {
+	queue_families.emplace_back(logical_device->get_presentation_queue().get_family_index());
     }
 
     VkSwapchainCreateInfoKHR create_info{
@@ -99,15 +91,15 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 	.oldSwapchain = VK_NULL_HANDLE
     };
 
-    if(vkCreateSwapchainKHR(*logical_device, &create_info, nullptr, &swap_chain) < 0) critical_error("vkCreateSwapchainKHR()");
+    assert(vkCreateSwapchainKHR(*logical_device, &create_info, nullptr, &swap_chain) == VK_SUCCESS); 
     
     image_format = chosen_format.format;
     image_extent = chosen_extent;
 
     std::uint32_t actual_image_count;
-    if(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, nullptr) < 0) critical_error("vkGetSwapchainImagesKHR()");
+    assert(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, nullptr) == VK_SUCCESS); 
     images.resize(actual_image_count);
-    if(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, images.data()) < 0) critical_error("vkGetSwapchainImagesKHR()");
+    assert(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, images.data()) == VK_SUCCESS); 
     
     image_views.resize(images.size());
 
@@ -134,7 +126,7 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 	    }
 	};
 
-	if(vkCreateImageView(*logical_device, &view_create_info, nullptr, &image_views[i]) < 0) critical_error("vkCreateImageView()");
+	assert(vkCreateImageView(*logical_device, &view_create_info, nullptr, &image_views[i]) == VK_SUCCESS); 
     }
 }
 
@@ -164,7 +156,7 @@ void Graphics::Swap_chain::create_framebuffers(Pipeline& _pipeline) {
 	    .layers = 1
 	};
 
-	if(vkCreateFramebuffer(*logical_device, &framebuffer_create_info, nullptr, &framebuffers[i]) < 0) critical_error("vkCreateFramebuffer()");
+	assert(vkCreateFramebuffer(*logical_device, &framebuffer_create_info, nullptr, &framebuffers[i]) == VK_SUCCESS); 
     }
 }
 
@@ -191,9 +183,7 @@ std::vector<VkFramebuffer>& Graphics::Swap_chain::get_framebuffers() noexcept {
 
 std::uint32_t Graphics::Swap_chain::acquire_next_image(VkSemaphore _semaphore) {
     std::uint32_t index;
-    if(vkAcquireNextImageKHR(*logical_device, swap_chain, std::numeric_limits<std::uint64_t>::max(), _semaphore, VK_NULL_HANDLE, &index) < 0) {
-	critical_error("vkAcquireNextImageKHR()");
-    }
+    assert(vkAcquireNextImageKHR(*logical_device, swap_chain, std::numeric_limits<std::uint64_t>::max(), _semaphore, VK_NULL_HANDLE, &index) == VK_SUCCESS);
 
     return index;
 }

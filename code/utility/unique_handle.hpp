@@ -16,6 +16,10 @@ namespace Utility {
     public:
 	Unique_handle() = default;
 
+	Unique_handle(_Handle _handle):
+	    Unique_handle(_handle, +[](_Handle) constexpr noexcept { })
+	{ }
+
 	Unique_handle(_Handle _handle, auto&& _deleter):
 	    handle(_handle),
 	    deleter(std::forward<decltype(_deleter)>(_deleter))
@@ -24,12 +28,12 @@ namespace Utility {
 	// Non-const, because library functions may take handles by copy, in which case the pointed-to objects can still be mutated
 	// Therefore, an object of type Unique_handle const must not be usable with library functions
 	operator _Handle& () & noexcept { 
-	    IF_DEBUG(assert(handle.has_value());)
+	    IF_DEBUG(assert(handle.has_value()));
 	    return *handle; 
 	}
 
 	operator _Handle&& () && noexcept { 
-	    IF_DEBUG(assert(handle.has_value());)
+	    IF_DEBUG(assert(handle.has_value()));
 	    return std::move(*handle);
 	}
 
@@ -49,6 +53,7 @@ namespace Utility {
 
 	Unique_handle& operator=(Unique_handle&& _other) {
 	    // TODO: Is this function not UB?
+	    if(this == &_other) return *this;
 	    this->~Unique_handle();
 	    // Transparently-replaceable, no need to launder
 	    new (this) Unique_handle(std::move(_other));
