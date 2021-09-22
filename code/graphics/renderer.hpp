@@ -6,6 +6,7 @@
 #include"graphics/swap_chain.hpp"
 #include"graphics/pipeline.hpp"
 #include "graphics/synchronisation/semaphore.hpp"
+#include "graphics/commands/command_pool.hpp"
 
 namespace Graphics {
     class Renderer {
@@ -23,12 +24,14 @@ namespace Graphics {
 	Logical_device* logical_device;
 	Swap_chain* swap_chain;
 	Pipeline* pipeline;
-	VkCommandPool graphics_command_pool;
-	// One command buffer for each image in the swap chain
-	std::vector<VkCommandBuffer> graphics_command_buffers;
 
 	Semaphore image_available_sem;
 	Semaphore rendering_finished_sem;
+
+	Command_pool graphics_command_pool;
+	// One command buffer for each image in the swap chain
+	std::vector<VkCommandBuffer> graphics_command_buffers;
+
 
 	void record_command_buffers();
 

@@ -18,7 +18,7 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surf
 
 	// TODO: can operator* be used with an r-value iterator?
 	if(!with_both_support.empty()) {
-	    queue_creation_info.emplace_back(Device_queue::make_creation_info(*std::ranges::begin(with_both_support), 1));
+	    queue_creation_info.emplace_back(Queue::make_creation_info(*std::ranges::begin(with_both_support), 1));
 	    graphics_queue_family_index = *std::ranges::begin(with_both_support);
 	    presentation_queue_family_index = *std::ranges::begin(with_both_support);
 	} else {
@@ -26,8 +26,8 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surf
 	    auto with_presentation_support = queue_family_indices | std::views::filter(has_presentation_support);
 	    ASSERT(!with_graphics_support.empty() && !with_presentation_support.empty());
 
-	    queue_creation_info.emplace_back(Device_queue::make_creation_info(*std::ranges::begin(with_graphics_support ), 1));
-	    queue_creation_info.emplace_back(Device_queue::make_creation_info(*std::ranges::begin(with_presentation_support ), 1));
+	    queue_creation_info.emplace_back(Queue::make_creation_info(*std::ranges::begin(with_graphics_support ), 1));
+	    queue_creation_info.emplace_back(Queue::make_creation_info(*std::ranges::begin(with_presentation_support ), 1));
 	    graphics_queue_family_index = *std::ranges::begin(with_graphics_support);
 	    presentation_queue_family_index = *std::ranges::begin(with_presentation_support);
 	}
@@ -53,19 +53,18 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surf
     
     VkDevice logical_device;
     VULKAN_ASSERT(vkCreateDevice(_physical_device, &logical_device_create_info, nullptr, &logical_device)); 
-    Unique_handle::operator=(Unique_handle(logical_device, [](VkDevice _logical_device) { vkDestroyDevice(_logical_device, nullptr); }));
+    Unique_handle::operator=({logical_device, [](VkDevice _logical_device) { vkDestroyDevice(_logical_device, nullptr); }});
     
-    // TODO: Calling Device_queue's ctor accesses this outside of lifetime. Is this UB? Shouldn't be because it's accessed through the this pointer
-    graphics_queue = Device_queue(*this, graphics_queue_family_index, 0);
-    presentation_queue = Device_queue(*this, presentation_queue_family_index, 0);
+    graphics_queue = {this, graphics_queue_family_index, 0};
+    presentation_queue = {this, presentation_queue_family_index, 0};
 }
 
 
-Graphics::Device_queue& Graphics::Logical_device::get_graphics_queue() noexcept {
+Graphics::Queue& Graphics::Logical_device::get_graphics_queue() noexcept {
     return graphics_queue;
 }
 
-Graphics::Device_queue& Graphics::Logical_device::get_presentation_queue() noexcept {
+Graphics::Queue& Graphics::Logical_device::get_presentation_queue() noexcept {
     return presentation_queue;
 }
 

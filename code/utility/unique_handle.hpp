@@ -14,6 +14,7 @@ namespace Utility {
     template<typename _Handle>
     class Unique_handle {
     public:
+	typedef _Handle Handle;
 	Unique_handle() = default;
 
 	Unique_handle(_Handle _handle):
@@ -39,7 +40,7 @@ namespace Utility {
 
 	bool has_value() const noexcept { return handle.has_value(); }
 
-	~Unique_handle() {
+	virtual ~Unique_handle() {
 	    if(handle.has_value()) deleter(*handle);
 	}
 
@@ -50,13 +51,21 @@ namespace Utility {
 	    handle(std::exchange(_other.handle, std::nullopt)),
 	    deleter(std::exchange(_other.deleter, nullptr))
 	{ }
-
+	
+	// See example under [basic.life#8]
+	//
+	// Is the this pointer valid after calling dtor in a member function?
+	// Suppress dynamic dispatch of the destructor
+	//static_cast<Unique_handle*>(this)->Unique_handle::~Unique_handle();
+	//this->Unique_handle::~Unique_handle();
+	// TODO: Not transparently-replceable, potentially-overlapping subobject?
+	//new (this) Unique_handle(std::move(_other));
 	Unique_handle& operator=(Unique_handle&& _other) {
-	    // TODO: Is this function not UB?
-	    if(this == &_other) return *this;
-	    this->~Unique_handle();
-	    // Transparently-replaceable, no need to launder
-	    new (this) Unique_handle(std::move(_other));
+	    if(this != &_other) {
+		if(handle.has_value()) deleter(*handle);
+		handle = std::exchange(_other.handle, std::nullopt);
+		deleter = std::exchange(_other.deleter, nullptr);
+	    }
 	    return *this;
 	}
     

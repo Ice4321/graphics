@@ -6,17 +6,9 @@ Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_
     swap_chain(&_swap_chain),
     pipeline(&_pipeline),
     image_available_sem(&_logical_device),
-    rendering_finished_sem(&_logical_device)
+    rendering_finished_sem(&_logical_device),
+    graphics_command_pool(&_logical_device, _logical_device.get_graphics_queue().get_family_index())
 {
-    VkCommandPoolCreateInfo graphics_command_pool_create_info{
-	.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-	.pNext = nullptr,
-	.flags = 0,
-	.queueFamilyIndex = logical_device->get_graphics_queue().get_family_index()
-    };
-
-    VULKAN_ASSERT(vkCreateCommandPool(*logical_device, &graphics_command_pool_create_info, nullptr, &graphics_command_pool)); 
-
     VkCommandBufferAllocateInfo graphics_command_buffer_allocate_info{
 	.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 	.pNext = nullptr,
@@ -34,7 +26,6 @@ Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_
 
 Graphics::Renderer::~Renderer() {
     vkFreeCommandBuffers(*logical_device, graphics_command_pool, graphics_command_buffers.size(), graphics_command_buffers.data());
-    vkDestroyCommandPool(*logical_device, graphics_command_pool, nullptr);
 }
 
 void Graphics::Renderer::draw_frame() {
