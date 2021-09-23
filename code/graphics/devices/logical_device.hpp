@@ -1,5 +1,4 @@
-#ifndef INCLUDED_GRAPHICS_LOGICAL_DEVICE_HPP
-#define INCLUDED_GRAPHICS_LOGICAL_DEVICE_HPP
+#pragma once
 
 #include<vulkan/vulkan.h>
 #include"graphics/devices/physical_device.hpp"
@@ -29,5 +28,3 @@ namespace Graphics {
 
     };
 }
-
-#endif

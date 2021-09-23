@@ -12,6 +12,7 @@ namespace Graphics {
     public:
 	static std::vector<Physical_device> enumerate_all(Instance& _instance);
 	
+	// TODO: Make this private
 	Physical_device(VkPhysicalDevice _physical_device);
 
 	VkPhysicalDeviceProperties const& get_properties() const noexcept;

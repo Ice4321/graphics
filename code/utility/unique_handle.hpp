@@ -52,14 +52,6 @@ namespace Utility {
 	    deleter(std::exchange(_other.deleter, nullptr))
 	{ }
 	
-	// See example under [basic.life#8]
-	//
-	// Is the this pointer valid after calling dtor in a member function?
-	// Suppress dynamic dispatch of the destructor
-	//static_cast<Unique_handle*>(this)->Unique_handle::~Unique_handle();
-	//this->Unique_handle::~Unique_handle();
-	// TODO: Not transparently-replceable, potentially-overlapping subobject?
-	//new (this) Unique_handle(std::move(_other));
 	Unique_handle& operator=(Unique_handle&& _other) {
 	    if(this != &_other) {
 		if(handle.has_value()) deleter(*handle);

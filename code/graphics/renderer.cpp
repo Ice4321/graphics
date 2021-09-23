@@ -18,6 +18,7 @@ Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_
     };
     
     graphics_command_buffers.resize(swap_chain->get_image_count());
+    // If the allocation of any of these command buffers fails, the implementation must free all successfully allocated command buffer objects
     VULKAN_ASSERT(vkAllocateCommandBuffers(*logical_device, &graphics_command_buffer_allocate_info, graphics_command_buffers.data()));
 
     record_command_buffers();

@@ -2,7 +2,7 @@
 #include "graphics/devices/logical_device.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
 
-Graphics::Semaphore::Semaphore(class Logical_device* _logical_device) {
+Graphics::Semaphore::Semaphore(Logical_device* _logical_device) {
     VkSemaphoreCreateInfo create_info{
 	.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
 	.pNext = nullptr,
