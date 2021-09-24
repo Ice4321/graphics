@@ -62,14 +62,7 @@ void Graphics::Renderer::draw_frame() {
 
 void Graphics::Renderer::record_command_buffers() {
     for(std::size_t i = 0; i< graphics_command_buffers.size(); ++i) {
-	VkCommandBufferBeginInfo begin_info{
-	    .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-	    .pNext = nullptr,
-	    .flags = 0,
-	    .pInheritanceInfo = nullptr
-	};
-
-	VULKAN_ASSERT(vkBeginCommandBuffer(graphics_command_buffers[i], &begin_info)); 
+	graphics_command_buffers[i].begin_recording();
 	
 	// See: VK_ATTACHMENT_LOAD_OP_CLEAR
 	VkClearValue clear_values[] = {
@@ -96,7 +89,7 @@ void Graphics::Renderer::record_command_buffers() {
 
 	vkCmdEndRenderPass(graphics_command_buffers[i]);
 
-	VULKAN_ASSERT(vkEndCommandBuffer(graphics_command_buffers[i])); 
+	graphics_command_buffers[i].end_recording();
 
     }
 }

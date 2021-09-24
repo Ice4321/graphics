@@ -1,6 +1,6 @@
 #include "graphics/commands/command_pool.hpp"
-#include "graphics/devices/logical_device.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
+#include "graphics/devices/logical_device.hpp"
 
 Graphics::Command_pool::Command_pool(Logical_device* _logical_device, std::uint32_t _queue_family_index):
     logical_device(_logical_device)
@@ -13,8 +13,9 @@ Graphics::Command_pool::Command_pool(Logical_device* _logical_device, std::uint3
     };
 
     VkCommandPool command_pool;
-    VULKAN_ASSERT(vkCreateCommandPool(*_logical_device, &create_info, nullptr, &command_pool)); 
-    Unique_handle::operator=({command_pool, [_logical_device](Handle _command_pool) { vkDestroyCommandPool(*_logical_device, _command_pool, nullptr); }});
+    VULKAN_ASSERT(vkCreateCommandPool(*logical_device, &create_info, nullptr, &command_pool)); 
+    Unique_handle::operator=({ command_pool, [_logical_device](Handle _command_pool) { vkDestroyCommandPool(*_logical_device, _command_pool, nullptr); }
+    });
 }
 
 Graphics::Command_buffer Graphics::Command_pool::allocate_command_buffer() {

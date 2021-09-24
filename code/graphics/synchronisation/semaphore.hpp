@@ -4,10 +4,12 @@
 #include <vulkan/vulkan.h>
 
 namespace Graphics {
-    class Semaphore: public Utility::Unique_handle<VkSemaphore> {
+    class Semaphore final: public Utility::Unique_handle<VkSemaphore> {
     public:
-	// Address of _logical_device must not change
 	Semaphore(class Logical_device* _logical_device);
+
+    private:
+	class Logical_device* logical_device;
 
     };
 }
