@@ -6,12 +6,11 @@
 #include "graphics/utility/vulkan_assert.hpp"
 #include "graphics/swap_chain.hpp"
 
-Graphics::Queue::Queue(Logical_device* _logical_device, std::uint32_t _family_index, std::uint32_t _index):
-    logical_device(_logical_device),
+Graphics::Queue::Queue(Logical_device& _logical_device, std::uint32_t _family_index, std::uint32_t _index):
     family_index(_family_index), index(_index)
 { 
     VkQueue queue;
-    vkGetDeviceQueue(*logical_device, family_index, index, &queue);
+    vkGetDeviceQueue(_logical_device, family_index, index, &queue);
     Unique_handle::operator=({queue});
 }
 

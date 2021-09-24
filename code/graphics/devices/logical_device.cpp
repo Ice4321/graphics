@@ -1,9 +1,11 @@
-#include"graphics/devices/logical_device.hpp"
-#include<set>
-#include<array>
-#include<ranges>
-#include<algorithm>
+#include "graphics/devices/logical_device.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
+#include "graphics/devices/physical_device.hpp"
+#include "graphics/surface.hpp"
+#include <set>
+#include <array>
+#include <ranges>
+#include <algorithm>
 
 Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surface& _surface) {
     std::vector<VkDeviceQueueCreateInfo> queue_creation_info;
@@ -16,7 +18,6 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surf
 
 	auto with_both_support = queue_family_indices | std::views::filter(has_graphics_support) | std::views::filter(has_presentation_support);
 
-	// TODO: can operator* be used with an r-value iterator?
 	if(!with_both_support.empty()) {
 	    queue_creation_info.emplace_back(Queue::make_creation_info(*std::ranges::begin(with_both_support), 1));
 	    graphics_queue_family_index = *std::ranges::begin(with_both_support);
@@ -38,7 +39,7 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surf
 	+VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
-    VkDeviceCreateInfo logical_device_create_info{
+    VkDeviceCreateInfo create_info{
 	.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
 	.pNext = nullptr,
 	.flags = 0,
@@ -52,11 +53,11 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surf
     };
     
     VkDevice logical_device;
-    VULKAN_ASSERT(vkCreateDevice(_physical_device, &logical_device_create_info, nullptr, &logical_device)); 
-    Unique_handle::operator=({logical_device, [](VkDevice _logical_device) { vkDestroyDevice(_logical_device, nullptr); }});
+    VULKAN_ASSERT(vkCreateDevice(_physical_device, &create_info, nullptr, &logical_device)); 
+    Unique_handle::operator=({logical_device, [](Handle _logical_device) { vkDestroyDevice(_logical_device, nullptr); }});
     
-    graphics_queue = {this, graphics_queue_family_index, 0};
-    presentation_queue = {this, presentation_queue_family_index, 0};
+    graphics_queue = {*this, graphics_queue_family_index, 0};
+    presentation_queue = {*this, presentation_queue_family_index, 0};
 }
 
 

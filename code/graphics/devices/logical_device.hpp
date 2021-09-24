@@ -1,16 +1,13 @@
 #pragma once
 
-#include<vulkan/vulkan.h>
-#include"graphics/devices/physical_device.hpp"
-#include"graphics/surface.hpp"
-#include"utility/unique_handle.hpp"
-#include"graphics/commands/queue.hpp"
-#include<vector>
+#include "utility/unique_handle.hpp"
+#include <vulkan/vulkan.h>
+#include "graphics/commands/queue.hpp"
 
 namespace Graphics {
-    class Logical_device: public Utility::Unique_handle<VkDevice> {
+    class Logical_device final: public Utility::Unique_handle<VkDevice> {
     public:
-	Logical_device(Physical_device& _physical_device, Surface& _surface);
+	Logical_device(class Physical_device& _physical_device, class Surface& _surface);
 	
 	Queue const& get_graphics_queue() const noexcept;
 	Queue const& get_presentation_queue() const noexcept;
@@ -24,7 +21,6 @@ namespace Graphics {
 	// These might be the same queue
 	Queue graphics_queue;
 	Queue presentation_queue;
-	
 
     };
 }

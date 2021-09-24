@@ -11,7 +11,7 @@ namespace Graphics {
 	static VkDeviceQueueCreateInfo make_creation_info(std::uint32_t _family_index, std::uint32_t _count);
 
 	Queue() = default;
-	Queue(class Logical_device* _logical_device, std::uint32_t _family_index, std::uint32_t _index);
+	Queue(class Logical_device& _logical_device, std::uint32_t _family_index, std::uint32_t _index);
 
 	std::uint32_t get_family_index() const noexcept;
 	std::uint32_t get_index() const noexcept;
@@ -20,7 +20,6 @@ namespace Graphics {
 	void present(class Swap_chain& _swap_chain, std::uint32_t _swap_chain_image_index, class Semaphore& _wait_sem);
 
     private:
-	class Logical_device* logical_device;
 	// family_index corresponds to the index of an element of the pQueueFamilyProperties array that was returned by vkGetPhysicalDeviceQueueFamilyProperties
 	std::uint32_t family_index;
 	std::uint32_t index;

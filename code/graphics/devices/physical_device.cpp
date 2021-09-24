@@ -1,6 +1,7 @@
-#include"graphics/devices/physical_device.hpp"
-#include<cstdint>
+#include "graphics/devices/physical_device.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
+#include "graphics/instance.hpp"
+#include <cstdint>
 
 std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all(Instance& _instance) {
     std::uint32_t device_count = 0;
@@ -11,8 +12,8 @@ std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all(
     return { std::begin(devices), std::end(devices) };
 }
 
-Graphics::Physical_device::Physical_device(VkPhysicalDevice _physical_device): 
-    Unique_handle<VkPhysicalDevice>(_physical_device)
+Graphics::Physical_device::Physical_device(Handle _physical_device): 
+    Unique_handle(_physical_device)
 { 
     vkGetPhysicalDeviceProperties(*this, &properties);
 
@@ -20,7 +21,6 @@ Graphics::Physical_device::Physical_device(VkPhysicalDevice _physical_device):
     vkGetPhysicalDeviceQueueFamilyProperties(*this, &queue_family_properties_count, nullptr);
     queue_family_properties.resize(queue_family_properties_count);
     vkGetPhysicalDeviceQueueFamilyProperties(*this, &queue_family_properties_count, queue_family_properties.data());
-
 }
 
 VkPhysicalDeviceProperties const& Graphics::Physical_device::get_properties() const noexcept {
