@@ -60,12 +60,20 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surf
 }
 
 
-Graphics::Queue& Graphics::Logical_device::get_graphics_queue() noexcept {
+Graphics::Queue const& Graphics::Logical_device::get_graphics_queue() const noexcept {
     return graphics_queue;
 }
 
-Graphics::Queue& Graphics::Logical_device::get_presentation_queue() noexcept {
+Graphics::Queue const& Graphics::Logical_device::get_presentation_queue() const noexcept {
     return presentation_queue;
+}
+
+void Graphics::Logical_device::submit_drawing_commands(Command_buffer& _command_buffer, Semaphore& _wait_sem, Semaphore& _signal_sem) {
+    graphics_queue.submit(_command_buffer, _wait_sem, _signal_sem, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+}
+
+void Graphics::Logical_device::present(Swap_chain& _swap_chain, std::uint32_t _swap_chain_image_index, Semaphore& _wait_sem) {
+    presentation_queue.present(_swap_chain, _swap_chain_image_index, _wait_sem);
 }
 
 void Graphics::Logical_device::wait_idle() {

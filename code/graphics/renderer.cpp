@@ -20,19 +20,8 @@ Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_
 
 void Graphics::Renderer::draw_frame() {
     std::uint32_t acquired_image_index = swap_chain->acquire_next_image(image_available_sem);
-
-    logical_device->get_graphics_queue().submit(
-	graphics_command_buffers[acquired_image_index],
-	image_available_sem,
-	rendering_finished_sem,
-	VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT 
-    );
-
-    logical_device->get_presentation_queue().present(
-	*swap_chain, 
-	acquired_image_index, 
-	rendering_finished_sem
-    );
+    logical_device->submit_drawing_commands(graphics_command_buffers[acquired_image_index], image_available_sem, rendering_finished_sem);
+    logical_device->present(*swap_chain, acquired_image_index, rendering_finished_sem);
 }
 
 

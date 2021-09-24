@@ -12,13 +12,13 @@ namespace Graphics {
     public:
 	Logical_device(Physical_device& _physical_device, Surface& _surface);
 	
-	// TODO: Change this!! Must be by const ref, but then it can't be used to submit commands...
-	Queue& get_graphics_queue() noexcept;
-	Queue& get_presentation_queue() noexcept;
+	Queue const& get_graphics_queue() const noexcept;
+	Queue const& get_presentation_queue() const noexcept;
+
+	void submit_drawing_commands(class Command_buffer& _command_buffer, class Semaphore& _wait_sem, class Semaphore& _signal_sem);
+	void present(class Swap_chain& _swap_chain, std::uint32_t _swap_chain_image_index, class Semaphore& _wait_sem);
 
 	void wait_idle();
-
-	void TEST() {}
 
     private:
 	// These might be the same queue
