@@ -5,7 +5,7 @@
 
 namespace Graphics {
     // The callback must not make calls to any Vulkan commands (VUID-PFN_vkDebugUtilsMessengerCallbackEXT-None-04769)
-    class Validation_callback {
+    class Validation_callback final {
     public:
 	static VKAPI_ATTR VkBool32 VKAPI_CALL dispatch(
 	    VkDebugUtilsMessageSeverityFlagBitsEXT _message_severity,

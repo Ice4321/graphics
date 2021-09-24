@@ -1,6 +1,6 @@
-#include"critical_error.hpp"
-#include<cstdlib>
-#include<iostream>
+#include "critical_error.hpp"
+#include <cstdlib>
+#include <iostream>
 
 [[noreturn]] void critical_error(std::string_view _message, std::source_location _source_location) {
     // TODO: use std::format and make everything a single string (including newline) to prevent race condition

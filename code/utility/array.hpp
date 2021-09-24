@@ -1,9 +1,8 @@
-#ifndef INCLUDED_UTILITY_ARRAY_HPP
-#define INCLUDED_UTILITY_ARRAY_HPP
+#pragma once
 
-#include<memory>
-#include<type_traits>
-#include<utility>
+#include <memory>
+#include <type_traits>
+#include <utility>
 
 // TODO: More comments!
 // TODO: Add iterators
@@ -11,7 +10,7 @@
 
 // Exception specification is given assuming valid parameters are passed
 template<typename _Element>
-class Array {
+class Array final {
 private:
     union Element_union {
 	_Element element;
@@ -124,4 +123,3 @@ constexpr void swap(Array<_Element>& _first, Array<_Element> _second) noexcept {
 }
 
 
-#endif

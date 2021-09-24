@@ -1,5 +1,4 @@
-#ifndef INCLUDED_PREPROCESSOR_BUILD_HPP
-#define INCLUDED_PREPROCESSOR_BUILD_HPP
+#pragma once
 
 #define BUILD_DEBUG 1
 #define BUILD_RELEASE 2
@@ -8,4 +7,3 @@
 #define BUILD BUILD_DEBUG
 #define BUILD_TESTS true
 
-#endif

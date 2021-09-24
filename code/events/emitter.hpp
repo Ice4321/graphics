@@ -1,13 +1,12 @@
-#ifndef INCLUDED_EVENTS_EMITTER_HPP
-#define INCLUDED_EVENTS_EMITTER_HPP
+#pragma once
 
-#include<concepts>
-#include<stdexcept>
-#include<type_traits>
-#include<memory>
-#include<list>
-#include<vector>
-#include<ranges>
+#include <concepts>
+#include <stdexcept>
+#include <type_traits>
+#include <memory>
+#include <list>
+#include <vector>
+#include <ranges>
 #include "utility/assert.hpp"
 
 namespace Internal {
@@ -67,7 +66,7 @@ namespace Internal {
 
 	
 	template<typename _Argument> requires No_cvref<_Argument>
-	class Callable {
+	class Callable final {
 	public:
 	    typedef _Argument Argument_type;
 
@@ -142,6 +141,8 @@ namespace Internal {
 		for(auto& callback : callbacks | std::views::take(std::ssize(callbacks))) callback.invoke(std::forward<decltype(_event)>(_event));
 	    }
 
+	    ~Event_emitter_base() = default;
+
 	    Event_emitter_base(Event_emitter_base const&) = delete;
 	    Event_emitter_base& operator= (Event_emitter_base const&) = delete;
 
@@ -186,8 +187,3 @@ private:
 };
 
 
-
-
-
-
-#endif

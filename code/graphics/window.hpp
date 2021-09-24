@@ -6,13 +6,9 @@
 #include"events/emitter.hpp"
 #include"preprocessor/macros.hpp"
 
-namespace Events {
-    namespace Graphics {
-	namespace Window {
-	    struct Close { };
-	    struct Resize { int width_px, height_px; };
-	}
-    }
+namespace Events::Graphics::Window {
+    struct Close { };
+    struct Resize { int width_px, height_px; };
 }
 
 // TODO: rename width_px / height_px to framebuffer_width_px / framebuffer_height_px (also in the event struct)
