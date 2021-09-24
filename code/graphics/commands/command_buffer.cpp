@@ -10,7 +10,7 @@ Graphics::Command_buffer::Command_buffer(Handle _command_buffer, Command_pool* _
 { 
     Unique_handle::operator=({ _command_buffer, 
 	[_command_pool, _logical_device](Handle _command_buffer) { 
-	    vkFreeCommandBuffers(*_logical_device, *_command_pool, 1, std::array<Handle, 1>{_command_buffer}.data());
+	    vkFreeCommandBuffers(*_logical_device, *_command_pool, 1, std::array{_command_buffer}.data());
 	}
     });
 }

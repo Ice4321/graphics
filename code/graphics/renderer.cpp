@@ -19,44 +19,20 @@ Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_
 }
 
 void Graphics::Renderer::draw_frame() {
-    // TODO: get rid of arrays and code duplication
-    
     std::uint32_t acquired_image_index = swap_chain->acquire_next_image(image_available_sem);
 
-    VkCommandBuffer submit_command_buffers[] = { graphics_command_buffers[acquired_image_index] };
-    VkSemaphore wait_semaphores[] = { image_available_sem };
-    VkPipelineStageFlags wait_stages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-    VkSemaphore signal_semaphores[] = { rendering_finished_sem };
+    logical_device->get_graphics_queue().submit(
+	graphics_command_buffers[acquired_image_index],
+	image_available_sem,
+	rendering_finished_sem,
+	VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT 
+    );
 
-    VkSubmitInfo queue_submit_info[] = {{
-	.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-	.pNext = nullptr,
-	.waitSemaphoreCount = 1,
-	.pWaitSemaphores = wait_semaphores,
-	.pWaitDstStageMask = wait_stages,
-	.commandBufferCount = 1,
-	.pCommandBuffers = submit_command_buffers,
-	.signalSemaphoreCount = 1,
-	.pSignalSemaphores = signal_semaphores
-    }};
-
-    VULKAN_ASSERT(vkQueueSubmit(logical_device->get_graphics_queue(), 1, queue_submit_info, VK_NULL_HANDLE)); 
-
-    VkSwapchainKHR swap_chains[] = { *swap_chain };
-    std::uint32_t image_indices[] = { acquired_image_index };
-
-    VkPresentInfoKHR present_info{
-	.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-	.pNext = nullptr,
-	.waitSemaphoreCount = 1,
-	.pWaitSemaphores = signal_semaphores,
-	.swapchainCount = 1,
-	.pSwapchains = swap_chains,
-	.pImageIndices = image_indices,
-	.pResults = nullptr
-    };
-
-    VULKAN_ASSERT(vkQueuePresentKHR(logical_device->get_presentation_queue(), &present_info)); 
+    logical_device->get_presentation_queue().present(
+	*swap_chain, 
+	acquired_image_index, 
+	rendering_finished_sem
+    );
 }
 
 
