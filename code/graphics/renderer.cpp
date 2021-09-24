@@ -9,24 +9,13 @@ Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_
     rendering_finished_sem(&_logical_device),
     graphics_command_pool(&_logical_device, _logical_device.get_graphics_queue().get_family_index())
 {
-    VkCommandBufferAllocateInfo graphics_command_buffer_allocate_info{
-	.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-	.pNext = nullptr,
-	.commandPool = graphics_command_pool,
-	.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-	.commandBufferCount = (std::uint32_t)swap_chain->get_image_count()
-    };
-    
-    graphics_command_buffers.resize(swap_chain->get_image_count());
-    // If the allocation of any of these command buffers fails, the implementation must free all successfully allocated command buffer objects
-    VULKAN_ASSERT(vkAllocateCommandBuffers(*logical_device, &graphics_command_buffer_allocate_info, graphics_command_buffers.data()));
+    graphics_command_buffers.reserve(swap_chain->get_image_count());
+    for(std::size_t i = 0; i < swap_chain->get_image_count(); ++i) {
+	graphics_command_buffers.emplace_back(graphics_command_pool.allocate_command_buffer());
+    }
 
     record_command_buffers();
 
-}
-
-Graphics::Renderer::~Renderer() {
-    vkFreeCommandBuffers(*logical_device, graphics_command_pool, graphics_command_buffers.size(), graphics_command_buffers.data());
 }
 
 void Graphics::Renderer::draw_frame() {
