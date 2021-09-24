@@ -2,6 +2,7 @@
 #include"graphics/window.hpp"
 #include<array>
 #include "graphics/utility/vulkan_assert.hpp"
+#include<iostream>
 
 Graphics::Instance::Instance(Validation _validation):
     validation_enabled(_validation == Validation::enabled)
@@ -27,23 +28,15 @@ Graphics::Instance::Instance(Validation _validation):
 	all_extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
 
+
+    debug_messenger.add_event_callback([](Events::Graphics::Debug_messenger::Message const& _message){
+	std::cout << _message.text << std::endl;
+    });
+
     // To capture events that occur while creating or destroying an instance an application can link a VkDebugUtilsMessengerCreateInfoEXT structure 
     // to the pNext element of the VkInstanceCreateInfo structure given to vkCreateInstance.
     // https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/chap50.html#_examples_10
-    VkDebugUtilsMessengerCreateInfoEXT debug_messenger_create_info{
-	.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-	.pNext = nullptr,
-	.flags = 0,
-	.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-			   VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
-			   VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-			   VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
-	.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-			   VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-			   VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
-	.pfnUserCallback = &Validation_callback::dispatch,
-	.pUserData = static_cast<void*>(&validation_callback)
-    };
+    VkDebugUtilsMessengerCreateInfoEXT const& debug_messenger_create_info = debug_messenger.get_creation_info();
 
     VkInstanceCreateInfo create_info{
 	.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
@@ -56,25 +49,17 @@ Graphics::Instance::Instance(Validation _validation):
 	.ppEnabledExtensionNames = all_extensions.data()
     };
 
-
+    VkInstance instance;
     VULKAN_ASSERT(vkCreateInstance(&create_info, nullptr, &instance)); 
+    Unique_handle::operator=({ instance, [](Handle _instance) { vkDestroyInstance(_instance, nullptr); } });
 
-    if(validation_enabled) {
-	auto ptr_vkCreateDebugUtilsMessengerEXT = get_function_address<PFN_vkCreateDebugUtilsMessengerEXT>("vkCreateDebugUtilsMessengerEXT");
-	VULKAN_ASSERT(ptr_vkCreateDebugUtilsMessengerEXT(instance, &debug_messenger_create_info, nullptr, &debug_messenger));
-    }
-}
+    if(validation_enabled) debug_messenger.initialise(this);
 
-Graphics::Instance::operator VkInstance& () noexcept {
-    return instance;
 }
 
 Graphics::Instance::~Instance() {
-    if(validation_enabled) {
-	auto ptr_vkDestroyDebugUtilsMessengerEXT = get_function_address<PFN_vkDestroyDebugUtilsMessengerEXT>("vkDestroyDebugUtilsMessengerEXT");
-	ptr_vkDestroyDebugUtilsMessengerEXT(instance, debug_messenger, nullptr);
-    }
-
-    vkDestroyInstance(instance, nullptr);
+    if(validation_enabled) debug_messenger.destroy();
+    Unique_handle::operator=({});
 }
+
 

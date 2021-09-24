@@ -36,9 +36,15 @@ void Graphics::Debug_messenger::initialise(Instance* _instance) {
     });
 }
 
+void Graphics::Debug_messenger::destroy() {
+    Unique_handle::operator=({});
+}
+
 VkDebugUtilsMessengerCreateInfoEXT const& Graphics::Debug_messenger::get_creation_info() const noexcept{
     return creation_info;
 }
+
+
 
 VKAPI_ATTR VkBool32 VKAPI_CALL Graphics::Debug_messenger::global_callback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT _message_severity,
@@ -50,12 +56,12 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Graphics::Debug_messenger::global_callback(
 
     // The values of VkDebugUtilsMessageSeverityFlagBitsEXT are sorted based on severity
     
-    Events::Graphics::Debug_messenger::Message event;
+    //if(_message_severity < VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) return VK_FALSE;
+    
+    Events::Graphics::Debug_messenger::Message event(_callback_data->pMessage);
     static_cast<Debug_messenger*>(_user_data)->post_event(std::as_const(event));
 
     // Must always return false
     return VK_FALSE;
 }
-
-
 

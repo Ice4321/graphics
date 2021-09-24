@@ -6,7 +6,7 @@
 
 namespace Events::Graphics::Debug_messenger {
     struct Message {
-
+	char const* text;
     };
 }
 
@@ -25,10 +25,13 @@ namespace Graphics {
 	);
 
 	Debug_messenger();
+	// TODO: Is there a better way to do this?
 	void initialise(class Instance* _instance);
+	// Destroy the VkDebugUtilsMessengerEXT object, but Debug_messenger can only be destroyed after VkInstance is destroyed,
+	// because the destruction of VkInstance may emit messages
+	void destroy();
 
 	VkDebugUtilsMessengerCreateInfoEXT const& get_creation_info() const noexcept;
-
 	
     private:
 	class Instance* instance;

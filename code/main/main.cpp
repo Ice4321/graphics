@@ -24,6 +24,10 @@ int main() {
 
     Graphics::Window window(800, 600);
     Graphics::Instance instance(Graphics::Instance::Validation::enabled);
+
+    
+
+
     Graphics::Surface surface(instance, window);
 
     auto all_physical_devices = Graphics::Physical_device::enumerate_all(instance);
