@@ -1,32 +1,18 @@
-#ifndef INCLUDED_GRAPHICS_SURFACE_HPP
-#define INCLUDED_GRAPHICS_SURFACE_HPP
+#pragma once
 
-#include<vulkan/vulkan.h>
-#include"graphics/wsi/window.hpp"
-#include"graphics/instance/instance.hpp"
-#include"graphics/devices/physical_device.hpp"
+#include "utility/unique_handle.hpp"
+#include <vulkan/vulkan.h>
 
 namespace Graphics {
-    class Surface {
+    class Surface: public Utility::Unique_handle<VkSurfaceKHR> {
     public:
-	// Instance must be within its lifetime during Surface's destruction
-	// Instance's address must not change until Surface is destroyed (no copying or moving)
-	Surface(Instance& _instance, Window& _window);
+	Surface(class Instance* _instance, class Window& _window);
 
-	operator VkSurfaceKHR& () noexcept;
-
-	bool test_queue_family_presentation_support(Physical_device& _physical_device, std::uint32_t _queue_family_index);
-
-	~Surface();
-
-	Surface(Surface const&) = delete;
-	Surface& operator=(Surface const&) = delete;
+	bool test_queue_family_presentation_support(class Physical_device& _physical_device, std::uint32_t _queue_family_index);
 
     private:
-	VkSurfaceKHR surface;
-	Instance* instance;
+	class Instance* instance;
 
     };
 }
 
-#endif

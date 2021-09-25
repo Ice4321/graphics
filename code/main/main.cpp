@@ -3,7 +3,7 @@
 #include"graphics/wsi/window.hpp"
 #include"graphics/instance/instance.hpp"
 #include"graphics/devices/physical_device.hpp"
-#include"graphics/surface.hpp"
+#include"graphics/wsi/surface.hpp"
 #include"graphics/devices/logical_device.hpp"
 #include"graphics/swap_chain.hpp"
 #include"graphics/shader/compiler.hpp"

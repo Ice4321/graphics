@@ -6,7 +6,7 @@ namespace Graphics { class Pipeline; }
 #include<vector>
 #include"graphics/devices/physical_device.hpp"
 #include"graphics/devices/logical_device.hpp"
-#include"graphics/surface.hpp"
+#include"graphics/wsi/surface.hpp"
 #include"graphics/wsi/window.hpp"
 
 

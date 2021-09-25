@@ -1,7 +1,7 @@
 #include "graphics/devices/logical_device.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
 #include "graphics/devices/physical_device.hpp"
-#include "graphics/surface.hpp"
+#include "graphics/wsi/surface.hpp"
 #include <set>
 #include <array>
 #include <ranges>
