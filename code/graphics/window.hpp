@@ -5,9 +5,6 @@
 #include "events/emitter.hpp"
 #include "utility/unique_handle.hpp"
 
-
-#include<tuple>
-
 namespace Events::Graphics::Window {
     struct Close { };
     struct Resize { int framebuffer_width_px, framebuffer_height_px; };

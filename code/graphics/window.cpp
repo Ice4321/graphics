@@ -1,8 +1,5 @@
-#include"graphics/window.hpp"
-#include"concurrency/main_thread.hpp"
-#include"utility/critical_error.hpp"
-#include<cassert>
-#include<iostream>
+#include "graphics/window.hpp"
+#include "utility/critical_error.hpp"
 
 std::string Graphics::Window::get_glfw_version_string() {
     // May be called before glfwInit()
