@@ -3,11 +3,9 @@
 #include<array>
 #include "graphics/utility/vulkan_assert.hpp"
 
-Graphics::Instance::Instance(Validation _validation, std::function<void(Events::Graphics::Debug_messenger::Message const&)>&& _validation_message_callback):
+Graphics::Instance::Instance(Validation _validation, std::function<void(Events::Graphics::Validation_event_dispatcher::Message const&)>&& _validation_message_callback):
     validation_enabled(_validation == Validation::enabled)
 {
-    debug_messenger.add_event_callback(std::move(_validation_message_callback));
-
     VkApplicationInfo application_info{
 	.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
 	.pNext = nullptr,
@@ -29,14 +27,15 @@ Graphics::Instance::Instance(Validation _validation, std::function<void(Events::
 	all_extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
 
+    validation_event_dispatcher.add_event_callback(std::move(_validation_message_callback));
+
     // To capture events that occur while creating or destroying an instance an application can link a VkDebugUtilsMessengerCreateInfoEXT structure 
     // to the pNext element of the VkInstanceCreateInfo structure given to vkCreateInstance.
     // https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/chap50.html#_examples_10
-    VkDebugUtilsMessengerCreateInfoEXT const& debug_messenger_create_info = debug_messenger.get_creation_info();
 
     VkInstanceCreateInfo create_info{
 	.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-	.pNext = validation_enabled ? &debug_messenger_create_info : nullptr,
+	.pNext = validation_enabled ? &validation_event_dispatcher.get_debug_messenger_creation_info() : nullptr,
 	.flags = 0,
 	.pApplicationInfo = &application_info,
 	.enabledLayerCount = std::uint32_t(validation_enabled ? validation_layers.size() : 0),
@@ -49,14 +48,15 @@ Graphics::Instance::Instance(Validation _validation, std::function<void(Events::
     VULKAN_ASSERT(vkCreateInstance(&create_info, nullptr, &instance)); 
     Unique_handle::operator=({ instance, [](Handle _instance) { vkDestroyInstance(_instance, nullptr); } });
 
-    if(validation_enabled) debug_messenger.initialise(this);
+    if(validation_enabled) debug_messenger = { this, validation_event_dispatcher };
 
 }
 
 Graphics::Instance::~Instance() {
-    if(validation_enabled) debug_messenger.destroy();
+    // Instance must be alive during the destruction of debug_messenger
+    if(validation_enabled) debug_messenger = {};
     Unique_handle::operator=({});
-    // debug_messenger must be destroyed after VkInstance, because destroying VkInstance may emit debug messages
+    // validation_event_dispatcher must be destroyed after VkInstance, because destroying VkInstance may emit debug messages
 }
 
 
