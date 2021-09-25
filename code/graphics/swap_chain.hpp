@@ -1,6 +1,8 @@
 #pragma once
 
 #include "utility/unique_handle.hpp"
+#include "graphics/image/image.hpp"
+#include "graphics/image/view.hpp"
 #include <vulkan/vulkan.h>
 
 
@@ -35,8 +37,8 @@ namespace Graphics {
 	VkFormat image_format;
 	VkExtent2D image_extent;
 
-	std::vector<VkImage> images;
-	std::vector<VkImageView> image_views;
+	std::vector<Image> images;
+	std::vector<Image_view> image_views;
 	std::vector<VkFramebuffer> framebuffers;
 
     };

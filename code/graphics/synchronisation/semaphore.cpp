@@ -11,7 +11,7 @@ Graphics::Semaphore::Semaphore(Logical_device* _logical_device):
 	.flags = 0,
     };
 
-    VkSemaphore semaphore;
+    Handle semaphore;
     VULKAN_ASSERT(vkCreateSemaphore(*logical_device, &create_info, nullptr, &semaphore));
     Unique_handle::operator=({semaphore, [_logical_device](Handle _semaphore) { vkDestroySemaphore(*_logical_device, _semaphore, nullptr); }});
 }

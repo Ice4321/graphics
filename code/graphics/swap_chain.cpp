@@ -65,7 +65,7 @@ Graphics::Swap_chain::Swap_chain(Logical_device* _logical_device, Physical_devic
 	.oldSwapchain = VK_NULL_HANDLE
     };
     
-    VkSwapchainKHR swap_chain;
+    Handle swap_chain;
     VULKAN_ASSERT(vkCreateSwapchainKHR(*logical_device, &create_info, nullptr, &swap_chain)); 
     Unique_handle::operator=({swap_chain, [_logical_device](Handle _swap_chain) { vkDestroySwapchainKHR(*_logical_device, _swap_chain, nullptr); }});
     
@@ -75,42 +75,18 @@ Graphics::Swap_chain::Swap_chain(Logical_device* _logical_device, Physical_devic
     // Application must not destroy these images
     std::uint32_t actual_image_count;
     VULKAN_ASSERT(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, nullptr)); 
-    images.resize(actual_image_count);
-    VULKAN_ASSERT(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, images.data())); 
+    std::vector<VkImage> created_images(actual_image_count);
+    VULKAN_ASSERT(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, created_images.data())); 
+
+    images.reserve(actual_image_count);
+    for(auto image : created_images) images.emplace_back(image, Image::borrowed);
     
-    image_views.resize(images.size());
-
-    for(std::size_t i = 0; i < image_views.size(); ++i) {
-	VkImageViewCreateInfo view_create_info{
-	    .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-	    .pNext = nullptr,
-	    .flags = 0,
-	    .image = images[i],
-	    .viewType = VK_IMAGE_VIEW_TYPE_2D,
-	    .format = image_format,
-	    .components = {
-		VK_COMPONENT_SWIZZLE_IDENTITY,
-		VK_COMPONENT_SWIZZLE_IDENTITY,
-		VK_COMPONENT_SWIZZLE_IDENTITY,
-		VK_COMPONENT_SWIZZLE_IDENTITY
-	    },
-	    .subresourceRange = {
-		.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-		.baseMipLevel = 0,
-		.levelCount = 1,
-		.baseArrayLayer = 0,
-		.layerCount = 1
-	    }
-	};
-
-	VULKAN_ASSERT(vkCreateImageView(*logical_device, &view_create_info, nullptr, &image_views[i])); 
-    }
+    image_views.reserve(actual_image_count);
+    for(auto& image : images) image_views.emplace_back(logical_device, image, image_format);
 }
 
 Graphics::Swap_chain::~Swap_chain() {
     for(auto& framebuffer : framebuffers) vkDestroyFramebuffer(*logical_device, framebuffer, nullptr);
-    for(auto& image_view : image_views) vkDestroyImageView(*logical_device, image_view, nullptr);
-    //vkDestroySwapchainKHR(*logical_device, swap_chain, nullptr);
 }
 
 void Graphics::Swap_chain::create_framebuffers(Pipeline& _pipeline) {
