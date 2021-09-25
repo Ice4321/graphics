@@ -1,7 +1,7 @@
 #include<iostream>
 #include"concurrency/main_thread.hpp"
 #include"graphics/window.hpp"
-#include"graphics/instance.hpp"
+#include"graphics/instance/instance.hpp"
 #include"graphics/devices/physical_device.hpp"
 #include"graphics/surface.hpp"
 #include"graphics/devices/logical_device.hpp"

@@ -1,11 +1,10 @@
-#ifndef INCLUDED_GRAPHICS_INSTANCE_HPP
-#define INCLUDED_GRAPHICS_INSTANCE_HPP
+#pragma once
 
 #include <vulkan/vulkan.h>
 #include <functional>
-#include "utility/assert.hpp"
-#include "graphics/debug_messenger.hpp"
-#include "graphics/validation_event_dispatcher.hpp"
+#include "graphics/utility/vulkan_assert.hpp"
+#include "graphics/validation/debug_messenger.hpp"
+#include "graphics/validation/validation_event_dispatcher.hpp"
 
 namespace Graphics {
     class Instance final: public Utility::Unique_handle<VkInstance> {
@@ -40,4 +39,3 @@ namespace Graphics {
     }
 }
 
-#endif

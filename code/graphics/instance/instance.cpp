@@ -1,7 +1,6 @@
-#include"graphics/instance.hpp"
-#include"graphics/window.hpp"
-#include<array>
-#include "graphics/utility/vulkan_assert.hpp"
+#include "graphics/instance/instance.hpp"
+#include "graphics/window.hpp"
+#include <array>
 
 Graphics::Instance::Instance(Validation _validation, std::function<void(Events::Graphics::Validation_event_dispatcher::Message const&)>&& _validation_message_callback):
     validation_enabled(_validation == Validation::enabled)
@@ -49,7 +48,6 @@ Graphics::Instance::Instance(Validation _validation, std::function<void(Events::
     Unique_handle::operator=({ instance, [](Handle _instance) { vkDestroyInstance(_instance, nullptr); } });
 
     if(validation_enabled) debug_messenger = { this, validation_event_dispatcher };
-
 }
 
 Graphics::Instance::~Instance() {

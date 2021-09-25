@@ -1,6 +1,6 @@
 #include "graphics/devices/physical_device.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
-#include "graphics/instance.hpp"
+#include "graphics/instance/instance.hpp"
 #include <cstdint>
 
 std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all(Instance& _instance) {

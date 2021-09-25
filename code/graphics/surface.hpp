@@ -3,7 +3,7 @@
 
 #include<vulkan/vulkan.h>
 #include"graphics/window.hpp"
-#include"graphics/instance.hpp"
+#include"graphics/instance/instance.hpp"
 #include"graphics/devices/physical_device.hpp"
 
 namespace Graphics {

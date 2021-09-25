@@ -1,6 +1,6 @@
-#include "graphics/debug_messenger.hpp"
-#include "graphics/instance.hpp"
-#include "graphics/validation_event_dispatcher.hpp"
+#include "graphics/validation/debug_messenger.hpp"
+#include "graphics/validation/validation_event_dispatcher.hpp"
+#include "graphics/instance/instance.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
 
 Graphics::Debug_messenger::Debug_messenger(class Instance* _instance, class Validation_event_dispatcher& _validation_event_dispatcher):
