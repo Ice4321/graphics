@@ -6,6 +6,8 @@
 #include "preprocessor/macros.hpp"
 #include "utility/assert.hpp"
 
+// TODO: make all ctors non-throwing, require that moving deleter does not throw!!
+
 namespace Utility {
 
     // RAII wrapper for an owning, non-nullable handle type using pass-by-copy semantics

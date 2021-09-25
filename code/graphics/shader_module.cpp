@@ -8,8 +8,8 @@ Graphics::Shader_module::Shader_module(Shader_binary const& _binary, Logical_dev
 	.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
 	.pNext = nullptr,
 	.flags = 0,
-	.codeSize = _binary.get_spirv_binary().size(),
-	.pCode = reinterpret_cast<std::uint32_t const*>(_binary.get_spirv_binary().data())
+	.codeSize = _binary.get_data().size(),
+	.pCode = reinterpret_cast<std::uint32_t const*>(_binary.get_data().data())
     };
 
     VULKAN_ASSERT(vkCreateShaderModule(*logical_device, &create_info, nullptr, &shader_module)); 

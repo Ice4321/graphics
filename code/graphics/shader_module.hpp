@@ -2,7 +2,7 @@
 #define INCLUDED_GRAPHICS_SHADER_MODULE_HPP
 
 #include<vulkan/vulkan.h>
-#include"graphics/shader_binary.hpp"
+#include"graphics/shader/binary.hpp"
 #include"graphics/devices/logical_device.hpp"
 
 

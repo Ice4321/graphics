@@ -23,8 +23,11 @@ Graphics::Shader_compiler::Shader_compiler() {
 Graphics::Shader_binary Graphics::Shader_compiler::compile(Shader_kind const& _kind, std::string_view _source) {
     // The input_file_name argument used as a tag to identify the source string in cases like emitting error messages. 
     // It doesn't have to be a 'file name'.
-    shaderc_compilation_result_t compilation_result = shaderc_compile_into_spv(
-	compiler, _source.data(), _source.length(), _kind, _kind, "main", compile_options
+    Utility::Unique_handle<shaderc_compilation_result_t> compilation_result(
+	shaderc_compile_into_spv(
+	    compiler, _source.data(), _source.length(), _kind, _kind, "main", compile_options
+	),
+	[](decltype(compilation_result)::Handle _compilation_result) { shaderc_result_release(_compilation_result); }
     );
     
     // Some internal error, not a compilation error
@@ -41,12 +44,9 @@ Graphics::Shader_binary Graphics::Shader_compiler::compile(Shader_kind const& _k
 	    std::to_string(error_count) + " error(s):\n" +
 	    std::string(shaderc_result_get_error_message(compilation_result));
 
-	shaderc_result_release(compilation_result);
-
 	critical_error(message);
     } else {
-	// Transfer ownership
-	return {_kind, compilation_result};
+	return {std::move(compilation_result)};
     }
 }
 

@@ -2,7 +2,7 @@
 
 #include <shaderc/shaderc.h>
 #include <string_view>
-#include "graphics/shader_binary.hpp"
+#include "graphics/shader/binary.hpp"
 #include "graphics/shader/kind.hpp"
 #include "utility/unique_handle.hpp"
 
