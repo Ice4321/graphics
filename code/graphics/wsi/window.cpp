@@ -1,4 +1,4 @@
-#include "graphics/window.hpp"
+#include "graphics/wsi/window.hpp"
 #include "utility/critical_error.hpp"
 
 std::string Graphics::Window::get_glfw_version_string() {

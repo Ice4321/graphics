@@ -2,7 +2,7 @@
 #define INCLUDED_GRAPHICS_SURFACE_HPP
 
 #include<vulkan/vulkan.h>
-#include"graphics/window.hpp"
+#include"graphics/wsi/window.hpp"
 #include"graphics/instance/instance.hpp"
 #include"graphics/devices/physical_device.hpp"
 

@@ -1,5 +1,5 @@
 #include "graphics/instance/instance.hpp"
-#include "graphics/window.hpp"
+#include "graphics/wsi/window.hpp"
 #include <array>
 
 Graphics::Instance::Instance(Validation _validation, std::function<void(Events::Graphics::Validation_event_dispatcher::Message const&)>&& _validation_message_callback):
