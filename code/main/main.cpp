@@ -84,8 +84,8 @@ int main() {
 	)"
     );
 
-    Graphics::Shader_module vertex_shader_module(vertex_shader_binary, logical_device);
-    Graphics::Shader_module fragment_shader_module(fragment_shader_binary, logical_device);
+    Graphics::Shader_module vertex_shader_module(vertex_shader_binary, &logical_device);
+    Graphics::Shader_module fragment_shader_module(fragment_shader_binary, &logical_device);
 
     Graphics::Pipeline pipeline(vertex_shader_module, fragment_shader_module, swap_chain, logical_device);
     

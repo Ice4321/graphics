@@ -2,7 +2,7 @@
 #define INCLUDED_GRAPHICS_PIPELINE_HPP
 
 namespace Graphics { class Swap_chain; }
-#include"graphics/shader_module.hpp"
+#include"graphics/shader/module.hpp"
 #include"graphics/devices/logical_device.hpp"
 
 namespace Graphics {

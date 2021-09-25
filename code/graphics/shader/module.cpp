@@ -1,4 +1,4 @@
-#include "graphics/shader_module.hpp"
+#include "graphics/shader/module.hpp"
 #include "graphics/shader/binary.hpp"
 #include "graphics/devices/logical_device.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
