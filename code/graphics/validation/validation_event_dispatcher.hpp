@@ -30,7 +30,7 @@ namespace Events::Graphics::Validation_event_dispatcher {
 // Event handlers must not make calls to any Vulkan commands (VUID-PFN_vkDebugUtilsMessengerCallbackEXT-None-04769)
  
 namespace Graphics {
-    class Validation_event_dispatcher final: 
+    class Validation_event_dispatcher: 
 	public Event_emitter<
 	    Events::Graphics::Validation_event_dispatcher::Message
 	 >

@@ -6,7 +6,7 @@
 #include <cstdint>
 
 namespace Graphics {
-    class Physical_device final: public Utility::Unique_handle<VkPhysicalDevice> {
+    class Physical_device: public Utility::Unique_handle<VkPhysicalDevice> {
     public:
 	static std::vector<Physical_device> enumerate_all(class Instance& _instance);
 	

@@ -4,7 +4,7 @@
 #include <vulkan/vulkan.h>
 
 namespace Graphics {
-    class Command_buffer final: public Utility::Unique_handle<VkCommandBuffer> {
+    class Command_buffer: public Utility::Unique_handle<VkCommandBuffer> {
     public:
 	Command_buffer(Handle _command_buffer, class Command_pool* _command_pool, class Logical_device* _logical_device);
 

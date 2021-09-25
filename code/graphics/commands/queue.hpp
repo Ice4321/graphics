@@ -6,7 +6,7 @@
 #include <span>
 
 namespace Graphics {
-    class Queue final: public Utility::Unique_handle<VkQueue> {
+    class Queue: public Utility::Unique_handle<VkQueue> {
     public:
 	static VkDeviceQueueCreateInfo make_creation_info(std::uint32_t _family_index, std::uint32_t _count);
 

@@ -4,7 +4,7 @@
 #include <vulkan/vulkan.h>
 
 namespace Graphics {
-    class Debug_messenger final: public Utility::Unique_handle<VkDebugUtilsMessengerEXT> {
+    class Debug_messenger: public Utility::Unique_handle<VkDebugUtilsMessengerEXT> {
     public:
 	// Nothing accesses instance if Unique_handle is default-constructed, so the value of instance doesn't matter
 	Debug_messenger() = default;

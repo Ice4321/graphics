@@ -7,7 +7,7 @@
 #include "graphics/validation/validation_event_dispatcher.hpp"
 
 namespace Graphics {
-    class Instance final: public Utility::Unique_handle<VkInstance> {
+    class Instance: public Utility::Unique_handle<VkInstance> {
     public:
 	enum struct Validation { enabled, disabled };
 	

@@ -10,7 +10,7 @@
 
 // Exception specification is given assuming valid parameters are passed
 template<typename _Element>
-class Array final {
+class Array {
 private:
     union Element_union {
 	_Element element;

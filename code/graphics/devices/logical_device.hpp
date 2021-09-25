@@ -5,7 +5,7 @@
 #include "graphics/commands/queue.hpp"
 
 namespace Graphics {
-    class Logical_device final: public Utility::Unique_handle<VkDevice> {
+    class Logical_device: public Utility::Unique_handle<VkDevice> {
     public:
 	Logical_device(class Physical_device& _physical_device, class Surface& _surface);
 	

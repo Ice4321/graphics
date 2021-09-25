@@ -66,7 +66,7 @@ namespace Internal {
 
 	
 	template<typename _Argument> requires No_cvref<_Argument>
-	class Callable final {
+	class Callable {
 	public:
 	    typedef _Argument Argument_type;
 
