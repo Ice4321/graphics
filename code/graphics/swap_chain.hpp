@@ -32,13 +32,12 @@ namespace Graphics {
     private:
 	class Logical_device* logical_device;
 
+	VkFormat image_format;
+	VkExtent2D image_extent;
 
-	VkSwapchainKHR swap_chain;
 	std::vector<VkImage> images;
 	std::vector<VkImageView> image_views;
 	std::vector<VkFramebuffer> framebuffers;
-	VkFormat image_format;
-	VkExtent2D image_extent;
 
     };
 }

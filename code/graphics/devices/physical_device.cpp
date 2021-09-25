@@ -1,6 +1,7 @@
 #include "graphics/devices/physical_device.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
 #include "graphics/instance/instance.hpp"
+#include "graphics/wsi/surface.hpp"
 #include <cstdint>
 
 std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all(Instance& _instance) {
@@ -21,9 +22,6 @@ Graphics::Physical_device::Physical_device(Handle _physical_device):
     vkGetPhysicalDeviceQueueFamilyProperties(*this, &queue_family_properties_count, nullptr);
     queue_family_properties.resize(queue_family_properties_count);
     vkGetPhysicalDeviceQueueFamilyProperties(*this, &queue_family_properties_count, queue_family_properties.data());
-
-
-    VULKAN_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(*this, _surface, &surface_capabilities));
 }
 
 VkPhysicalDeviceProperties const& Graphics::Physical_device::get_properties() const noexcept {

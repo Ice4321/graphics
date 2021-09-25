@@ -10,55 +10,34 @@ Graphics::Swap_chain::Swap_chain(Logical_device* _logical_device, Physical_devic
 {
     VkSurfaceCapabilitiesKHR surface_capabilities = _physical_device.get_surface_capabilities(_surface);
     std::vector<VkSurfaceFormatKHR> surface_formats = _physical_device.get_surface_formats(_surface);
+    std::vector<VkPresentModeKHR> surface_presentation_modes = _physical_device.get_surface_presentation_modes(_surface);
 
-
-    std::uint32_t surface_presentation_mode_count;
-    VULKAN_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(_physical_device, _surface, &surface_presentation_mode_count, nullptr));
-
-    std::vector<VkPresentModeKHR> surface_presentation_modes(surface_presentation_mode_count);
-    VULKAN_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(_physical_device, _surface, &surface_presentation_mode_count, surface_presentation_modes.data()));
-    
-    VkSurfaceFormatKHR chosen_format;
-    VkPresentModeKHR chosen_presentation_mode;
-
-    {
-	bool found = false;
-	for(auto const& format : surface_formats) {
-	    if(format.format == VK_FORMAT_B8G8R8A8_SRGB && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-		chosen_format = format;
-		found = true;
-		break;
-	    }
-	}
-	ASSERT(found);
-    }
-
-    {
-	bool found = false;
-	for(auto const& mode : surface_presentation_modes) {
-	    if(mode == VK_PRESENT_MODE_MAILBOX_KHR) {
-		chosen_presentation_mode = mode;
-		found = true;
-		break;
-	    }
-	}
-	ASSERT(found);
-    }
-    
+    VkSurfaceFormatKHR chosen_format = {.format = VK_FORMAT_B8G8R8A8_SRGB, .colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR};
+    VkPresentModeKHR chosen_presentation_mode = VK_PRESENT_MODE_MAILBOX_KHR;
     VkExtent2D chosen_extent;
+    
+    ASSERT(std::ranges::find_if(surface_formats, [&](VkSurfaceFormatKHR const& _format) { 
+	return _format.format == chosen_format.format && _format.colorSpace == chosen_format.colorSpace;
+    }) != std::ranges::end(surface_formats));
+
+    ASSERT(std::ranges::find(surface_presentation_modes, chosen_presentation_mode) != std::ranges::end(surface_presentation_modes));
+    
     if(surface_capabilities.currentExtent.width == 0xFFFFFFFF && surface_capabilities.currentExtent.height == 0xFFFFFFFF) {
 	// The surface size will be determined by the extent of a swapchain targeting the surface
-	chosen_extent.width = std::clamp<std::uint32_t>(_window.get_framebuffer_width_px(), surface_capabilities.minImageExtent.width, surface_capabilities.maxImageExtent.width);
-	chosen_extent.height = std::clamp<std::uint32_t>(_window.get_framebuffer_height_px(), surface_capabilities.minImageExtent.height, surface_capabilities.maxImageExtent.height);
+	chosen_extent = {
+	    .width = std::clamp<std::uint32_t>(_window.get_framebuffer_width_px(), surface_capabilities.minImageExtent.width, surface_capabilities.maxImageExtent.width),
+	    .height = std::clamp<std::uint32_t>(_window.get_framebuffer_height_px(), surface_capabilities.minImageExtent.height, surface_capabilities.maxImageExtent.height)
+	};
     } else {
 	// surface_capabilities.currentExtent is the current width and height of the surface
 	chosen_extent = surface_capabilities.currentExtent;
     }
 
     std::uint32_t min_image_count = surface_capabilities.minImageCount + (
-	surface_capabilities.maxImageCount == 0 || surface_capabilities.maxImageCount > surface_capabilities.minImageCount ? 1 : 0
+	(surface_capabilities.maxImageCount == 0 || surface_capabilities.maxImageCount > surface_capabilities.minImageCount) ? 1 : 0
     );
-
+    
+    // Queue families that will share access to the swap chain
     std::vector<std::uint32_t> queue_families;
     queue_families.emplace_back(logical_device->get_graphics_queue().get_family_index());
     if(logical_device->get_graphics_queue().get_family_index() != logical_device->get_presentation_queue().get_family_index()) {
@@ -177,7 +156,7 @@ std::vector<VkFramebuffer>& Graphics::Swap_chain::get_framebuffers() noexcept {
 
 std::uint32_t Graphics::Swap_chain::acquire_next_image(VkSemaphore _semaphore) {
     std::uint32_t index;
-    VULKAN_ASSERT(vkAcquireNextImageKHR(*logical_device, swap_chain, std::numeric_limits<std::uint64_t>::max(), _semaphore, VK_NULL_HANDLE, &index));
+    VULKAN_ASSERT(vkAcquireNextImageKHR(*logical_device, *this, std::numeric_limits<std::uint64_t>::max(), _semaphore, VK_NULL_HANDLE, &index));
 
     return index;
 }
