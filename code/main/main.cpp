@@ -30,7 +30,7 @@ int main() {
     
 
 
-    Graphics::Surface surface(instance, window);
+    Graphics::Surface surface(&instance, window);
 
     auto all_physical_devices = Graphics::Physical_device::enumerate_all(instance);
     for(auto const& physical_device : all_physical_devices) {
