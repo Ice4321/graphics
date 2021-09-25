@@ -14,6 +14,7 @@ namespace Graphics {
 	    case shaderc_compilation_status_validation_error: return "validation error";
 	    case shaderc_compilation_status_transformation_error: return "transformation error";
 	    case shaderc_compilation_status_configuration_error: return "configuration error";
+	    default: return "this really should not happen...";
 	}
     }
 }
