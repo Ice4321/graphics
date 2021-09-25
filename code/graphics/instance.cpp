@@ -2,11 +2,12 @@
 #include"graphics/window.hpp"
 #include<array>
 #include "graphics/utility/vulkan_assert.hpp"
-#include<iostream>
 
-Graphics::Instance::Instance(Validation _validation):
+Graphics::Instance::Instance(Validation _validation, std::function<void(Events::Graphics::Debug_messenger::Message const&)>&& _validation_message_callback):
     validation_enabled(_validation == Validation::enabled)
 {
+    debug_messenger.add_event_callback(std::move(_validation_message_callback));
+
     VkApplicationInfo application_info{
 	.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
 	.pNext = nullptr,
@@ -27,11 +28,6 @@ Graphics::Instance::Instance(Validation _validation):
     if(validation_enabled) {
 	all_extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
-
-
-    debug_messenger.add_event_callback([](Events::Graphics::Debug_messenger::Message const& _message){
-	std::cout << _message.text << std::endl;
-    });
 
     // To capture events that occur while creating or destroying an instance an application can link a VkDebugUtilsMessengerCreateInfoEXT structure 
     // to the pNext element of the VkInstanceCreateInfo structure given to vkCreateInstance.
@@ -60,6 +56,7 @@ Graphics::Instance::Instance(Validation _validation):
 Graphics::Instance::~Instance() {
     if(validation_enabled) debug_messenger.destroy();
     Unique_handle::operator=({});
+    // debug_messenger must be destroyed after VkInstance, because destroying VkInstance may emit debug messages
 }
 
 

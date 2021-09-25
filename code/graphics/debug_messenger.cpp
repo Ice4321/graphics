@@ -44,8 +44,6 @@ VkDebugUtilsMessengerCreateInfoEXT const& Graphics::Debug_messenger::get_creatio
     return creation_info;
 }
 
-
-
 VKAPI_ATTR VkBool32 VKAPI_CALL Graphics::Debug_messenger::global_callback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT _message_severity,
 	VkDebugUtilsMessageTypeFlagsEXT _message_types,
@@ -53,10 +51,6 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Graphics::Debug_messenger::global_callback(
 	void* _user_data
 ) {
     // The callback must not make calls to any Vulkan commands (VUID-PFN_vkDebugUtilsMessengerCallbackEXT-None-04769)
-
-    // The values of VkDebugUtilsMessageSeverityFlagBitsEXT are sorted based on severity
-    
-    //if(_message_severity < VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) return VK_FALSE;
     
     Events::Graphics::Debug_messenger::Message event(_callback_data->pMessage);
     static_cast<Debug_messenger*>(_user_data)->post_event(std::as_const(event));

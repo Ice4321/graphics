@@ -1,8 +1,9 @@
 #ifndef INCLUDED_GRAPHICS_INSTANCE_HPP
 #define INCLUDED_GRAPHICS_INSTANCE_HPP
 
-#include<vulkan/vulkan.h>
-#include"graphics/validation_callback.hpp"
+#include <vulkan/vulkan.h>
+#include <functional>
+#include "graphics/validation_callback.hpp"
 #include "utility/assert.hpp"
 #include "graphics/debug_messenger.hpp"
 
@@ -11,7 +12,11 @@ namespace Graphics {
     public:
 	enum struct Validation { enabled, disabled };
 
-	Instance(Validation _validation);
+	Instance(
+	    Validation _validation, 
+	    std::function<void(Events::Graphics::Debug_messenger::Message const&)>&& _validation_message_callback = 
+		+[](Events::Graphics::Debug_messenger::Message const&){}
+	);
 
 	// TODO: Constrain this to function pointer types only
 	template<typename _Function_ptr>

@@ -23,7 +23,9 @@ int main() {
     std::cout << "GLFW version: " << glfwGetVersionString() << std::endl;
 
     Graphics::Window window(800, 600);
-    Graphics::Instance instance(Graphics::Instance::Validation::enabled);
+    Graphics::Instance instance(Graphics::Instance::Validation::enabled, [](Events::Graphics::Debug_messenger::Message const& _m) {
+	std::cout << _m.text << std::endl;
+    });
 
     
 
