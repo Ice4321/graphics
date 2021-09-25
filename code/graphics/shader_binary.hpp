@@ -3,15 +3,15 @@
 
 #include<shaderc/shaderc.h>
 #include<span>
+#include "shader/kind.hpp"
 
 // TODO: add move ctor/assignment and default ctor (compilation may throw so local variables in the try block get destroyed)
 namespace Graphics {
+    // SPIR-V binary
     class Shader_binary {
     public:
-	enum struct Shader_kind { vertex, fragment, compute, geometry, tessellation_control, tessellation_evaluation };
-
 	// Takes ownership of _compilation_result
-	Shader_binary(Shader_kind _shader_kind, shaderc_compilation_result_t _compilation_result);
+	Shader_binary(Shader_kind const& _shader_kind, shaderc_compilation_result_t _compilation_result);
 	
 	// libshaderc guarantees that the binary is castable to a uint32_t* 
 	std::span<std::byte const> const& get_spirv_binary() const noexcept;

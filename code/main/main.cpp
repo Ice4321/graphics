@@ -44,7 +44,7 @@ int main() {
     Graphics::Shader_compiler shader_compiler;
     
     auto vertex_shader_binary = shader_compiler.compile(
-	Graphics::Shader_compiler::Shader_kind::vertex,
+	Graphics::Shader_kinds::vertex,
 	R"(
 	    #version 450
 
@@ -70,7 +70,7 @@ int main() {
     );
 
     auto fragment_shader_binary = shader_compiler.compile(
-	Graphics::Shader_compiler::Shader_kind::fragment,
+	Graphics::Shader_kinds::fragment,
 	R"(
 	    #version 450
     
