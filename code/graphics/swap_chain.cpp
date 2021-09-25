@@ -54,8 +54,8 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
     VkExtent2D chosen_extent;
     if(surface_capabilities.currentExtent.width == 0xFFFFFFFF && surface_capabilities.currentExtent.height == 0xFFFFFFFF) {
 	// The surface size will be determined by the extent of a swapchain targeting the surface
-	chosen_extent.width = std::clamp<std::uint32_t>(_window.get_width_px(), surface_capabilities.minImageExtent.width, surface_capabilities.maxImageExtent.width);
-	chosen_extent.height = std::clamp<std::uint32_t>(_window.get_height_px(), surface_capabilities.minImageExtent.height, surface_capabilities.maxImageExtent.height);
+	chosen_extent.width = std::clamp<std::uint32_t>(_window.get_framebuffer_width_px(), surface_capabilities.minImageExtent.width, surface_capabilities.maxImageExtent.width);
+	chosen_extent.height = std::clamp<std::uint32_t>(_window.get_framebuffer_height_px(), surface_capabilities.minImageExtent.height, surface_capabilities.maxImageExtent.height);
     } else {
 	// surface_capabilities.currentExtent is the current width and height of the surface
 	chosen_extent = surface_capabilities.currentExtent;

@@ -18,9 +18,8 @@ bool f(int x, int y) {
 
 int main() {
     Concurrency::main_thread_id = std::this_thread::get_id();
-
-    // glfwGetVersionString() may be called before glfwInit()
-    std::cout << "GLFW version: " << glfwGetVersionString() << std::endl;
+    
+    std::cout << "GLFW version: " << Graphics::Window::get_glfw_version_string() << std::endl;
 
     Graphics::Window window(800, 600);
     Graphics::Instance instance(Graphics::Instance::Validation::enabled, [](Events::Graphics::Validation_event_dispatcher::Message const& _m) {
@@ -104,7 +103,7 @@ int main() {
     });
 
     window.add_event_callback([&](Events::Graphics::Window::Resize const& _event) {
-	std::cout << "Window resized: " << _event.width_px << "x" << _event.height_px << std::endl;
+	std::cout << "Window resized: " << _event.framebuffer_width_px << "x" << _event.framebuffer_height_px << std::endl;
     });
 
     while(!exit) {

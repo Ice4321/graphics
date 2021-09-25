@@ -4,7 +4,7 @@
 #include <vulkan/vulkan.h>
 #include "graphics/commands/queue.hpp"
 
-// TODO: Rename this directory from 'devices' to 'device'
+// TODO: Rename this directory from 'devices' to 'device' and logical_device.hpp to logical.hpp / physical_device.hpp to physical.hpp
 
 namespace Graphics {
     class Logical_device: public Utility::Unique_handle<VkDevice> {

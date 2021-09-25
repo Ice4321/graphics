@@ -4,59 +4,58 @@
 #include<cassert>
 #include<iostream>
 
-std::tuple<char const* const*, std::uint32_t> Graphics::Window::get_required_instance_extensions() {
-    initialise_glfw();
-    std::uint32_t count = 0;
-    char const* const* extensions = glfwGetRequiredInstanceExtensions(&count);
-
-    return { extensions, count };
+std::string Graphics::Window::get_glfw_version_string() {
+    // May be called before glfwInit()
+    return {glfwGetVersionString()};
 }
 
-Graphics::Window::Window(int _width_sc, int _height_sc):
-    window(nullptr)
-{ 
+std::span<char const* const> Graphics::Window::get_required_instance_extensions() {
+    initialise_glfw();
+    static std::span<char const* const> const result = []() -> std::span<char const* const> {
+	std::uint32_t count = 0;
+	char const* const* extensions = glfwGetRequiredInstanceExtensions(&count);
+	return {extensions, count};
+    }();
+
+    return result;
+}
+
+Graphics::Window::Window(int _width_sc, int _height_sc) { 
     initialise_glfw();   
-
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    window = glfwCreateWindow(_width_sc, _height_sc, "main", nullptr, nullptr);
 
-    glfwGetFramebufferSize(window, &width_px, &height_px);
-
-    glfwSetWindowUserPointer(window, static_cast<void*>(this));
-
-    glfwSetWindowCloseCallback(window, [](GLFWwindow* _window) {
-	Window* window_object = static_cast<Window*>(glfwGetWindowUserPointer(_window));
-	window_object->post_event(Events::Graphics::Window::Close{});
-    });
-
-    glfwSetFramebufferSizeCallback(window, [](GLFWwindow* _window, int _width_px, int _height_px) {
-	Window* window_object = static_cast<Window*>(glfwGetWindowUserPointer(_window));
-	window_object->width_px = _width_px;
-	window_object->height_px = _height_px;
-	window_object->post_event(Events::Graphics::Window::Resize{_width_px, _height_px});
+    // Error callback is invoked in case of failure
+    Unique_handle::operator=({
+	glfwCreateWindow(_width_sc, _height_sc, "main", nullptr, nullptr),
+	[](Handle _window) { 
+	    glfwDestroyWindow(_window);
+	    --total_window_count;
+	    terminate_glfw();
+	}
     });
 
     ++total_window_count;
+
+    glfwGetFramebufferSize(*this, &framebuffer_width_px, &framebuffer_height_px);
+    glfwSetWindowUserPointer(*this, static_cast<void*>(this));
+    glfwSetWindowCloseCallback(*this, [](GLFWwindow* _window) {
+	Window* window_object = static_cast<Window*>(glfwGetWindowUserPointer(_window));
+	window_object->post_event(Events::Graphics::Window::Close{});
+    });
+    glfwSetFramebufferSizeCallback(*this, [](GLFWwindow* _window, int _framebuffer_width_px, int _framebuffer_height_px) {
+	Window* window_object = static_cast<Window*>(glfwGetWindowUserPointer(_window));
+	window_object->framebuffer_width_px = _framebuffer_width_px;
+	window_object->framebuffer_height_px = _framebuffer_height_px;
+	window_object->post_event(Events::Graphics::Window::Resize{_framebuffer_width_px, _framebuffer_height_px});
+    });
 }
 
-Graphics::Window::~Window() {
-    glfwDestroyWindow(window);
-
-    --total_window_count;
-    
-    terminate_glfw();
+int Graphics::Window::get_framebuffer_width_px() const noexcept {
+    return framebuffer_width_px;
 }
 
-Graphics::Window::operator GLFWwindow*& () noexcept {
-    return window;
-}
-
-int Graphics::Window::get_width_px() const noexcept {
-    return width_px;
-}
-
-int Graphics::Window::get_height_px() const noexcept {
-    return height_px;
+int Graphics::Window::get_framebuffer_height_px() const noexcept {
+    return framebuffer_height_px;
 }
 
 void Graphics::Window::poll_events() {

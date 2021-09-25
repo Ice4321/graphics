@@ -20,11 +20,9 @@ Graphics::Instance::Instance(Validation _validation, std::function<void(Events::
     };
     
     std::vector<char const*> all_extensions;
-    auto [glfw_extensions, glfw_extension_count] = Window::get_required_instance_extensions();
-    for(std::size_t i = 0; i < glfw_extension_count; ++i) all_extensions.emplace_back(glfw_extensions[i]);
-    if(validation_enabled) {
-	all_extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-    }
+    std::span<char const* const> glfw_extensions = Window::get_required_instance_extensions();
+    for(char const* e : glfw_extensions) all_extensions.emplace_back(e);
+    if(validation_enabled) all_extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
     validation_event_dispatcher.add_event_callback(std::move(_validation_message_callback));
 
