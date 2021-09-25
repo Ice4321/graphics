@@ -33,13 +33,11 @@ namespace Graphics {
 
     private:
 	class Logical_device* logical_device;
-
 	VkFormat image_format;
 	VkExtent2D image_extent;
-
 	std::vector<Image> images;
 	std::vector<Image_view> image_views;
-	std::vector<VkFramebuffer> framebuffers;
+	std::vector<VkFramebuffer> framebuffers; // TODO: remove this
 
     };
 }
