@@ -1,29 +1,16 @@
-#ifndef INCLUDED_GRAPHICS_SHADER_MODULE_HPP
-#define INCLUDED_GRAPHICS_SHADER_MODULE_HPP
+#pragma once
 
-#include<vulkan/vulkan.h>
-#include"graphics/shader/binary.hpp"
-#include"graphics/devices/logical_device.hpp"
-
-
+#include <vulkan/vulkan.h>
+#include "utility/unique_handle.hpp"
 
 namespace Graphics {
-    class Shader_module {
+    class Shader_module: public Utility::Unique_handle<VkShaderModule> {
     public:
 	// The binary can be destroyed immediately after creating the shader module
-	Shader_module(Shader_binary const& _binary, Logical_device& _logical_device);
-
-	operator VkShaderModule& () noexcept;
-
-	~Shader_module();
-	
-	Shader_module(Shader_module const&) = delete;
-	Shader_module& operator=(Shader_module const&) = delete;
+	Shader_module(class Shader_binary const& _binary, class Logical_device* _logical_device);
 
     private:
-	VkShaderModule shader_module;
-	Logical_device* logical_device;
+	class Logical_device* logical_device;
     };
 };
 
-#endif
