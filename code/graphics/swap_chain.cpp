@@ -5,17 +5,11 @@
 #include<limits>
 
 
-Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_device& _logical_device, Surface& _surface, Window& _window):
-    logical_device(&_logical_device)
+Graphics::Swap_chain::Swap_chain(Logical_device* _logical_device, Physical_device& _physical_device, Surface& _surface, Window& _window):
+    logical_device(_logical_device)
 {
-    VkSurfaceCapabilitiesKHR surface_capabilities;
-    VULKAN_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physical_device, _surface, &surface_capabilities));
-
-    std::uint32_t surface_format_count;
-    VULKAN_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, _surface, &surface_format_count, nullptr));
-
-    std::vector<VkSurfaceFormatKHR> surface_formats(surface_format_count);
-    VULKAN_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, _surface, &surface_format_count, surface_formats.data()));
+    VkSurfaceCapabilitiesKHR surface_capabilities = _physical_device.get_surface_capabilities(_surface);
+    std::vector<VkSurfaceFormatKHR> surface_formats = _physical_device.get_surface_formats(_surface);
 
 
     std::uint32_t surface_presentation_mode_count;
@@ -91,12 +85,15 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 	.clipped = VK_TRUE,
 	.oldSwapchain = VK_NULL_HANDLE
     };
-
+    
+    VkSwapchainKHR swap_chain;
     VULKAN_ASSERT(vkCreateSwapchainKHR(*logical_device, &create_info, nullptr, &swap_chain)); 
+    Unique_handle::operator=({swap_chain, [_logical_device](Handle _swap_chain) { vkDestroySwapchainKHR(*_logical_device, _swap_chain, nullptr); }});
     
     image_format = chosen_format.format;
     image_extent = chosen_extent;
 
+    // Application must not destroy these images
     std::uint32_t actual_image_count;
     VULKAN_ASSERT(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, nullptr)); 
     images.resize(actual_image_count);
@@ -134,7 +131,7 @@ Graphics::Swap_chain::Swap_chain(Physical_device& _physical_device, Logical_devi
 Graphics::Swap_chain::~Swap_chain() {
     for(auto& framebuffer : framebuffers) vkDestroyFramebuffer(*logical_device, framebuffer, nullptr);
     for(auto& image_view : image_views) vkDestroyImageView(*logical_device, image_view, nullptr);
-    vkDestroySwapchainKHR(*logical_device, swap_chain, nullptr);
+    //vkDestroySwapchainKHR(*logical_device, swap_chain, nullptr);
 }
 
 void Graphics::Swap_chain::create_framebuffers(Pipeline& _pipeline) {
@@ -159,10 +156,6 @@ void Graphics::Swap_chain::create_framebuffers(Pipeline& _pipeline) {
 
 	VULKAN_ASSERT(vkCreateFramebuffer(*logical_device, &framebuffer_create_info, nullptr, &framebuffers[i])); 
     }
-}
-
-Graphics::Swap_chain::operator VkSwapchainKHR& () noexcept {
-    return swap_chain;
 }
 
 std::size_t Graphics::Swap_chain::get_image_count() const noexcept {

@@ -21,6 +21,9 @@ Graphics::Physical_device::Physical_device(Handle _physical_device):
     vkGetPhysicalDeviceQueueFamilyProperties(*this, &queue_family_properties_count, nullptr);
     queue_family_properties.resize(queue_family_properties_count);
     vkGetPhysicalDeviceQueueFamilyProperties(*this, &queue_family_properties_count, queue_family_properties.data());
+
+
+    VULKAN_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(*this, _surface, &surface_capabilities));
 }
 
 VkPhysicalDeviceProperties const& Graphics::Physical_device::get_properties() const noexcept {
@@ -34,4 +37,33 @@ std::uint32_t Graphics::Physical_device::get_queue_family_count() const noexcept
 VkQueueFamilyProperties const& Graphics::Physical_device::get_queue_family_properties(std::uint32_t _queue_index) const {
     return queue_family_properties[_queue_index];
 }
+
+bool Graphics::Physical_device::get_queue_family_presentation_support(Surface& _surface, std::uint32_t _queue_family_index) {
+    VkBool32 result;
+    VULKAN_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(*this, _queue_family_index, _surface, &result));
+    return result;
+}
+
+VkSurfaceCapabilitiesKHR Graphics::Physical_device::get_surface_capabilities(Surface& _surface) {
+    VkSurfaceCapabilitiesKHR surface_capabilities;
+    VULKAN_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(*this, _surface, &surface_capabilities));
+    return surface_capabilities;
+}
+
+std::vector<VkSurfaceFormatKHR> Graphics::Physical_device::get_surface_formats(Surface& _surface) {
+    std::uint32_t surface_format_count;
+    VULKAN_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(*this, _surface, &surface_format_count, nullptr));
+    std::vector<VkSurfaceFormatKHR> surface_formats(surface_format_count);
+    VULKAN_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(*this, _surface, &surface_format_count, surface_formats.data()));
+    return surface_formats;
+}
+
+std::vector<VkPresentModeKHR> Graphics::Physical_device::get_surface_presentation_modes(Surface& _surface) {
+    std::uint32_t surface_presentation_mode_count;
+    VULKAN_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(*this, _surface, &surface_presentation_mode_count, nullptr));
+    std::vector<VkPresentModeKHR> surface_presentation_modes(surface_presentation_mode_count);
+    VULKAN_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(*this, _surface, &surface_presentation_mode_count, surface_presentation_modes.data()));
+    return surface_presentation_modes;
+}
+
 

@@ -38,7 +38,7 @@ int main() {
     }
     
     Graphics::Logical_device logical_device(all_physical_devices[0], surface);
-    Graphics::Swap_chain swap_chain(all_physical_devices[0], logical_device, surface, window);
+    Graphics::Swap_chain swap_chain(&logical_device, all_physical_devices[0], surface, window);
 
     Graphics::Shader_compiler shader_compiler;
     

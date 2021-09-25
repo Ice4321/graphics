@@ -13,7 +13,7 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surf
 
     {
 	auto has_graphics_support = [&](std::uint32_t _index) { return _physical_device.get_queue_family_properties(_index).queueFlags & VK_QUEUE_GRAPHICS_BIT; };
-	auto has_presentation_support = [&](std::uint32_t _index) { return _surface.test_queue_family_presentation_support(_physical_device, _index); };
+	auto has_presentation_support = [&](std::uint32_t _index) { return _physical_device.get_queue_family_presentation_support(_surface, _index); };
 	auto queue_family_indices = std::ranges::iota_view<std::uint32_t, std::uint32_t>(0, _physical_device.get_queue_family_count());
 
 	auto with_both_support = queue_family_indices | std::views::filter(has_graphics_support) | std::views::filter(has_presentation_support);
