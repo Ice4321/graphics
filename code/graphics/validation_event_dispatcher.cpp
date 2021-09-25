@@ -8,7 +8,16 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Graphics::Validation_event_dispatcher::forward(
 	VkDebugUtilsMessengerCallbackDataEXT const* _callback_data,
 	void* _user_data
 ) {
-    Events::Graphics::Validation_event_dispatcher::Message event(_callback_data->pMessage);
+    // This function must not make calls to any Vulkan commands (VUID-PFN_vkDebugUtilsMessengerCallbackEXT-None-04769)
+    
+    Events::Graphics::Validation_event_dispatcher::Message event(
+	static_cast<Events::Graphics::Validation_event_dispatcher::Message::Severity::Severity_value>(_message_severity),
+	static_cast<Events::Graphics::Validation_event_dispatcher::Message::Type_flags::Type_flags_value>(_message_types),
+	_callback_data->pMessageIdName,
+	_callback_data->messageIdNumber,
+	_callback_data->pMessage
+    );
+
     static_cast<Validation_event_dispatcher*>(_user_data)->post_event(std::as_const(event));
 
     // Must always return false

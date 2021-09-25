@@ -24,7 +24,8 @@ int main() {
 
     Graphics::Window window(800, 600);
     Graphics::Instance instance(Graphics::Instance::Validation::enabled, [](Events::Graphics::Validation_event_dispatcher::Message const& _m) {
-	std::cout << _m.text << std::endl;
+	if(_m.severity == Events::Graphics::Validation_event_dispatcher::Message::Severity::error) critical_error(_m.message);
+	else if(_m.severity >= Events::Graphics::Validation_event_dispatcher::Message::Severity::info) std::cout << _m.message << std::endl;
     });
 
     

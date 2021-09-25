@@ -6,7 +6,24 @@
 
 namespace Events::Graphics::Validation_event_dispatcher {
     struct Message {
-	char const* text;
+	// The values of VkDebugUtilsMessageSeverityFlagBitsEXT are sorted based on severity
+	struct Severity { enum Severity_value {
+	    verbose = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT,
+	    info = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT,
+	    warning = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT,
+	    error = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+	}; };
+	struct Type_flags { enum Type_flags_value {
+	    general = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT,
+	    validation = VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT,
+	    performance = VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT
+	}; };
+
+	Severity::Severity_value severity;
+	Type_flags::Type_flags_value type_flags;
+	char const* message_id_string; // Contains the portion of the Vulkan specification that has been violated
+	std::uint32_t message_id; // Internal number associated with the message being triggered
+	char const* message; // Detailed info
     };
 }
 
