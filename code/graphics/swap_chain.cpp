@@ -117,12 +117,12 @@ std::size_t Graphics::Swap_chain::get_image_count() const noexcept {
     return images.size();
 }
 
-VkExtent2D const& Graphics::Swap_chain::get_image_extent() const noexcept {
+VkExtent2D Graphics::Swap_chain::get_image_extent() const noexcept {
     return image_extent;
 }
 
 
-VkFormat const& Graphics::Swap_chain::get_image_format() const noexcept {
+VkFormat Graphics::Swap_chain::get_image_format() const noexcept {
     return image_format;
 }
 

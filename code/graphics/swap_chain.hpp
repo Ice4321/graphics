@@ -23,8 +23,8 @@ namespace Graphics {
 	void create_framebuffers(Pipeline& _pipeline);
 	
 	std::size_t get_image_count() const noexcept;
-	VkExtent2D const& get_image_extent() const noexcept;
-	VkFormat const& get_image_format() const noexcept;
+	VkExtent2D get_image_extent() const noexcept;
+	VkFormat get_image_format() const noexcept;
 	std::vector<VkFramebuffer>& get_framebuffers() noexcept;
 	
 	// Returns the index of the acquired image, as obtained from vkGetSwapchainImagesKHR()
