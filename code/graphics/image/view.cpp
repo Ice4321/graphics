@@ -3,7 +3,7 @@
 #include "graphics/devices/logical_device.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
 
-Graphics::Image_view::Image_view(Logical_device* _logical_device, Image& _image, VkFormat _format):
+Graphics::Image_view::Image_view(Logical_device* _logical_device, Image& _image):
     logical_device(_logical_device)
 {
     VkImageViewCreateInfo create_info{
@@ -12,7 +12,7 @@ Graphics::Image_view::Image_view(Logical_device* _logical_device, Image& _image,
 	.flags = 0,
 	.image = _image,
 	.viewType = VK_IMAGE_VIEW_TYPE_2D,
-	.format = _format,
+	.format = _image.get_format(),
 	.components = {
 	    VK_COMPONENT_SWIZZLE_IDENTITY,
 	    VK_COMPONENT_SWIZZLE_IDENTITY,

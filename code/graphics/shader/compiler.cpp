@@ -42,7 +42,7 @@ Graphics::Shader_binary Graphics::Shader_compiler::compile(Shader_kind const& _k
 	std::string message = "Shader compilation failed (" + std::string(shader_compilation_status_string(compilation_status)) + 
 	    std::string(") with ") + std::to_string(warning_count) + std::string(" warning(s) and ") + 
 	    std::to_string(error_count) + " error(s):\n" +
-	    std::string(shaderc_result_get_error_message(compilation_result));
+	    std::string(shaderc_result_get_error_message(compilation_result)); // Error and warning messages
 
 	critical_error(message);
     } else {

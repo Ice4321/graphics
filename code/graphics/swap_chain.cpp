@@ -79,10 +79,10 @@ Graphics::Swap_chain::Swap_chain(Logical_device* _logical_device, Physical_devic
     VULKAN_ASSERT(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, created_images.data())); 
 
     images.reserve(actual_image_count);
-    for(auto image : created_images) images.emplace_back(image, Image::borrowed);
+    for(auto image : created_images) images.emplace_back(Image::borrowed, image, image_format, chosen_extent);
     
     image_views.reserve(actual_image_count);
-    for(auto& image : images) image_views.emplace_back(logical_device, image, image_format);
+    for(auto& image : images) image_views.emplace_back(logical_device, image);
 }
 
 Graphics::Swap_chain::~Swap_chain() {
