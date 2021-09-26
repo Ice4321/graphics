@@ -4,8 +4,6 @@
 #include "events/emitter.hpp"
 #include <vulkan/vulkan.h>
 
-// TODO: rename this file to message_dispatcher.hpp
-
 namespace Events::Graphics::Validation_event_dispatcher {
     struct Message {
 	// The values of VkDebugUtilsMessageSeverityFlagBitsEXT are sorted based on severity
@@ -50,6 +48,10 @@ namespace Graphics {
 	
 	// Needed for constructing VkInstance and Debug_messenger objects associated with this Validation_event_dispatcher object
 	VkDebugUtilsMessengerCreateInfoEXT const& get_debug_messenger_creation_info();
+	
+	// debug_messenger_creation_info references *this
+	Validation_event_dispatcher(Validation_event_dispatcher const&) = delete;
+	Validation_event_dispatcher& operator=(Validation_event_dispatcher const&) = delete;
 	
     private:
 	VkDebugUtilsMessengerCreateInfoEXT debug_messenger_creation_info;

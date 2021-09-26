@@ -4,12 +4,14 @@
 #include <functional>
 #include "graphics/utility/vulkan_assert.hpp"
 #include "graphics/validation/debug_messenger.hpp"
-#include "graphics/validation/validation_event_dispatcher.hpp"
+#include "graphics/validation/message_dispatcher.hpp"
 
 namespace Graphics {
     class Instance: public Utility::Unique_handle<VkInstance> {
     public:
 	enum struct Validation { enabled, disabled };
+
+	Instance() = default; // TODO: delete this
 	
 	// Validation callback must be registered in the constructor in order to catch messages emitted during the construction of VkInstance
 	Instance(
@@ -24,7 +26,7 @@ namespace Graphics {
 	~Instance();
 
     private:
-	bool validation_enabled;
+	bool validation_enabled = false;
 	Validation_event_dispatcher validation_event_dispatcher;
 	Debug_messenger debug_messenger;
 

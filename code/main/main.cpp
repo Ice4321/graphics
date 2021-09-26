@@ -1,10 +1,9 @@
 #include<iostream>
 #include"concurrency/main_thread.hpp"
 #include"graphics/wsi/window.hpp"
-#include"graphics/instance/instance.hpp"
-#include"graphics/devices/physical_device.hpp"
+#include"graphics/state/globals.hpp"
+#include"graphics/device/physical.hpp"
 #include"graphics/wsi/surface.hpp"
-#include"graphics/devices/logical_device.hpp"
 #include"graphics/swap_chain.hpp"
 #include"graphics/shader/compiler.hpp"
 #include"graphics/pipeline.hpp"
@@ -12,33 +11,34 @@
 #include"utility/unique_handle.hpp"
 #include"utility/assert.hpp"
 
-bool f(int x, int y) {
-    return (bool)(x + y);
-}
-
 int main() {
     Concurrency::main_thread_id = std::this_thread::get_id();
     
     std::cout << "GLFW version: " << Graphics::Window::get_glfw_version_string() << std::endl;
 
     Graphics::Window window(800, 600);
-    Graphics::Instance instance(Graphics::Instance::Validation::enabled, [](Events::Graphics::Validation_event_dispatcher::Message const& _m) {
-	if(_m.severity == Events::Graphics::Validation_event_dispatcher::Message::Severity::error) critical_error(_m.message);
-	else if(_m.severity >= Events::Graphics::Validation_event_dispatcher::Message::Severity::info) std::cout << _m.message << std::endl;
-    });
-
     
+    Graphics::Instance instance = {
+	Graphics::Instance::Validation::enabled, 
+	[](Events::Graphics::Validation_event_dispatcher::Message const& _m) {
+	    if(_m.severity == Events::Graphics::Validation_event_dispatcher::Message::Severity::error) critical_error(_m.message);
+	    //else if(_m.severity >= Events::Graphics::Validation_event_dispatcher::Message::Severity::info) std::cout << _m.message << std::endl;
+	    else if(_m.severity >= Events::Graphics::Validation_event_dispatcher::Message::Severity::verbose) std::cout << _m.message << std::endl;
+	}
+    };
+    Graphics::instance = &instance;
 
+    Graphics::Surface surface(window);
 
-    Graphics::Surface surface(&instance, window);
-
-    auto all_physical_devices = Graphics::Physical_device::enumerate_all(instance);
+    auto all_physical_devices = Graphics::Physical_device::enumerate_all();
     for(auto const& physical_device : all_physical_devices) {
 	std::cout << "Device: " << physical_device.get_properties().deviceName << std::endl;
     }
     
-    Graphics::Logical_device logical_device(all_physical_devices[0], surface);
-    Graphics::Swap_chain swap_chain(&logical_device, all_physical_devices[0], surface, window);
+    Graphics::Logical_device logical_device = {all_physical_devices[0], surface};
+    Graphics::logical_device = &logical_device;
+
+    Graphics::Swap_chain swap_chain(surface, window);
 
     Graphics::Shader_compiler shader_compiler;
     
@@ -83,14 +83,14 @@ int main() {
 	)"
     );
 
-    Graphics::Shader_module vertex_shader_module(vertex_shader_binary, &logical_device);
-    Graphics::Shader_module fragment_shader_module(fragment_shader_binary, &logical_device);
+    Graphics::Shader_module vertex_shader_module(vertex_shader_binary);
+    Graphics::Shader_module fragment_shader_module(fragment_shader_binary);
 
-    Graphics::Pipeline pipeline(vertex_shader_module, fragment_shader_module, swap_chain, logical_device);
+    Graphics::Pipeline pipeline(vertex_shader_module, fragment_shader_module, swap_chain);
     
     swap_chain.create_framebuffers(pipeline);
 
-    Graphics::Renderer renderer(logical_device, swap_chain, pipeline);
+    Graphics::Renderer renderer(swap_chain, pipeline);
 
     renderer.draw_frame();
 
@@ -110,7 +110,7 @@ int main() {
 	window.await_events();
     }
 
-    logical_device.wait_idle();
+    Graphics::logical_device->wait_idle();
 
 }
 

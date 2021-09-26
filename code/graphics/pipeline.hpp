@@ -3,13 +3,12 @@
 
 namespace Graphics { class Swap_chain; }
 #include"graphics/shader/module.hpp"
-#include"graphics/devices/logical_device.hpp"
 
 namespace Graphics {
     class Pipeline {
     public:
 	// TODO: make this variadic
-	Pipeline(Shader_module& _vertex_shader, Shader_module& _fragment_shader, Swap_chain& _swap_chain, Logical_device& _logical_device);
+	Pipeline(Shader_module& _vertex_shader, Shader_module& _fragment_shader, Swap_chain& _swap_chain);
 	
 	operator VkPipeline& () noexcept;
 
@@ -21,7 +20,6 @@ namespace Graphics {
 	Pipeline& operator=(Pipeline const&) = delete;
 
     private:
-	Logical_device* logical_device;
 	VkPipelineLayout layout;
 	VkRenderPass render_pass;
 	VkPipeline pipeline;

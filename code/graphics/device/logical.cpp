@@ -1,13 +1,15 @@
-#include "graphics/devices/logical_device.hpp"
+#include "graphics/device/logical.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
-#include "graphics/devices/physical_device.hpp"
+#include "graphics/device/physical.hpp"
 #include "graphics/wsi/surface.hpp"
 #include <set>
 #include <array>
 #include <ranges>
 #include <algorithm>
 
-Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surface& _surface) {
+Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surface& _surface):
+    physical_device(&_physical_device) 
+{
     std::vector<VkDeviceQueueCreateInfo> queue_creation_info;
     std::uint32_t graphics_queue_family_index, presentation_queue_family_index;
 
@@ -52,14 +54,17 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surf
 	.pEnabledFeatures = nullptr
     };
     
-    VkDevice logical_device;
+    Handle logical_device;
     VULKAN_ASSERT(vkCreateDevice(_physical_device, &create_info, nullptr, &logical_device)); 
     Unique_handle::operator=({logical_device, [](Handle _logical_device) { vkDestroyDevice(_logical_device, nullptr); }});
     
-    graphics_queue = {*this, graphics_queue_family_index, 0};
-    presentation_queue = {*this, presentation_queue_family_index, 0};
+    graphics_queue = {graphics_queue_family_index, 0};
+    presentation_queue = {presentation_queue_family_index, 0};
 }
 
+Graphics::Physical_device& Graphics::Logical_device::get_physical_device() noexcept {
+    return *physical_device;
+}
 
 Graphics::Queue const& Graphics::Logical_device::get_graphics_queue() const noexcept {
     return graphics_queue;

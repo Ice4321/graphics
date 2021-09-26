@@ -9,8 +9,6 @@
 namespace Graphics { class Pipeline; }
 #include<vulkan/vulkan.h>
 #include<vector>
-#include"graphics/devices/physical_device.hpp"
-#include"graphics/devices/logical_device.hpp"
 #include"graphics/wsi/surface.hpp"
 #include"graphics/wsi/window.hpp"
 
@@ -18,7 +16,7 @@ namespace Graphics { class Pipeline; }
 namespace Graphics {
     class Swap_chain: public Utility::Unique_handle<VkSwapchainKHR> {
     public:
-	Swap_chain(class Logical_device* _logical_device, Physical_device& _physical_device, Surface& _surface, Window& _window);
+	Swap_chain(Surface& _surface, Window& _window);
 
 	void create_framebuffers(Pipeline& _pipeline);
 	
@@ -32,7 +30,6 @@ namespace Graphics {
 	~Swap_chain();
 
     private:
-	class Logical_device* logical_device;
 	VkFormat image_format;
 	VkExtent2D image_extent;
 	std::vector<Image> images;

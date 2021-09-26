@@ -7,6 +7,7 @@
 #include "utility/assert.hpp"
 
 // TODO: make all ctors non-throwing, require that moving deleter does not throw!!
+// TODO: make functions constexpr
 
 namespace Utility {
 

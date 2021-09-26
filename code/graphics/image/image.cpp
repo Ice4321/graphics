@@ -1,14 +1,15 @@
 #include "graphics/image/image.hpp"
-#include "graphics/devices/logical_device.hpp"
+#include "graphics/state/globals.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
 #include "graphics/swap_chain.hpp"
 
-std::vector<Graphics::Image> Graphics::Image::get_swap_chain_images(Logical_device& _logical_device, Swap_chain& _swap_chain) {
+std::vector<Graphics::Image> Graphics::Image::get_swap_chain_images(Swap_chain& _swap_chain) {
     // Application must not destroy these images
+    
     std::uint32_t actual_image_count;
-    VULKAN_ASSERT(vkGetSwapchainImagesKHR(_logical_device, _swap_chain, &actual_image_count, nullptr)); 
+    VULKAN_ASSERT(vkGetSwapchainImagesKHR(*logical_device, _swap_chain, &actual_image_count, nullptr)); 
     std::vector<VkImage> created_images(actual_image_count);
-    VULKAN_ASSERT(vkGetSwapchainImagesKHR(_logical_device, _swap_chain, &actual_image_count, created_images.data())); 
+    VULKAN_ASSERT(vkGetSwapchainImagesKHR(*logical_device, _swap_chain, &actual_image_count, created_images.data())); 
 
     std::vector<Image> result;
     result.reserve(actual_image_count);

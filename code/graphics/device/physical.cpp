@@ -1,14 +1,14 @@
-#include "graphics/devices/physical_device.hpp"
+#include "graphics/device/physical.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
-#include "graphics/instance/instance.hpp"
+#include "graphics/state/globals.hpp"
 #include "graphics/wsi/surface.hpp"
 #include <cstdint>
 
-std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all(Instance& _instance) {
+std::vector<Graphics::Physical_device> Graphics::Physical_device::enumerate_all() {
     std::uint32_t device_count = 0;
-    VULKAN_ASSERT(vkEnumeratePhysicalDevices(_instance, &device_count, nullptr));
+    VULKAN_ASSERT(vkEnumeratePhysicalDevices(*instance, &device_count, nullptr));
     std::vector<VkPhysicalDevice> devices(device_count);
-    VULKAN_ASSERT(vkEnumeratePhysicalDevices(_instance, &device_count, devices.data()));
+    VULKAN_ASSERT(vkEnumeratePhysicalDevices(*instance, &device_count, devices.data()));
 
     return { std::begin(devices), std::end(devices) };
 }

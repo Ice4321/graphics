@@ -2,17 +2,16 @@
 #define INCLUDED_GRAPHICS_RENDERER_HPP
 
 #include<vulkan/vulkan.h>
-#include"graphics/devices/logical_device.hpp"
 #include"graphics/swap_chain.hpp"
 #include"graphics/pipeline.hpp"
 #include "graphics/synchronisation/semaphore.hpp"
-#include "graphics/commands/command_pool.hpp"
-#include "graphics/commands/command_buffer.hpp"
+#include "graphics/command/command_pool.hpp"
+#include "graphics/command/command_buffer.hpp"
 
 namespace Graphics {
     class Renderer {
     public:
-	Renderer(Logical_device& _logical_device, Swap_chain& _swap_chain, Pipeline& _pipeline);
+	Renderer(Swap_chain& _swap_chain, Pipeline& _pipeline);
 
 	void draw_frame();
 
@@ -20,7 +19,6 @@ namespace Graphics {
 	Renderer& operator=(Renderer const&) = delete;
 
     private:
-	Logical_device* logical_device;
 	Swap_chain* swap_chain;
 	Pipeline* pipeline;
 

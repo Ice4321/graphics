@@ -1,10 +1,9 @@
 #include"graphics/pipeline.hpp"
 #include"graphics/swap_chain.hpp"
 #include"graphics/utility/vulkan_assert.hpp"
+#include"graphics/state/globals.hpp"
 
-Graphics::Pipeline::Pipeline(Shader_module& _vertex_shader, Shader_module& _fragment_shader, Swap_chain& _swap_chain, Logical_device& _logical_device):
-    logical_device(&_logical_device) 
-{
+Graphics::Pipeline::Pipeline(Shader_module& _vertex_shader, Shader_module& _fragment_shader, Swap_chain& _swap_chain) {
     // TODO: use pSpecializationInfo
     VkPipelineShaderStageCreateInfo shader_stages_create_info[] = {
 	// Vertex shader

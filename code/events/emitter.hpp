@@ -145,7 +145,10 @@ namespace Internal {
 
 	    Event_emitter_base(Event_emitter_base const&) = delete;
 	    Event_emitter_base& operator= (Event_emitter_base const&) = delete;
-
+	    
+	    // After a move, the iterators of std::list and std::vector remain valid, but refer to elements that are now in *this
+	    Event_emitter_base(Event_emitter_base&&) = default;
+	    Event_emitter_base& operator= (Event_emitter_base&&) = default;
 	};
     }
 }
@@ -179,6 +182,9 @@ protected:
 
     Event_emitter(Event_emitter const&) = delete;
     Event_emitter& operator= (Event_emitter const&) = delete;
+
+    Event_emitter(Event_emitter&&) = default;
+    Event_emitter& operator= (Event_emitter&&) = default;
 
 private:
     using Internal::Event_emitter_impl::Event_emitter_base<_Events>::add_callback...;

@@ -1,4 +1,4 @@
-#include "graphics/instance/instance.hpp"
+#include "graphics/state/instance.hpp"
 #include "graphics/wsi/window.hpp"
 #include <array>
 
@@ -45,7 +45,7 @@ Graphics::Instance::Instance(Validation _validation, std::function<void(Events::
     VULKAN_ASSERT(vkCreateInstance(&create_info, nullptr, &instance)); 
     Unique_handle::operator=({ instance, [](Handle _instance) { vkDestroyInstance(_instance, nullptr); } });
 
-    if(validation_enabled) debug_messenger = { this, validation_event_dispatcher };
+    if(validation_enabled) debug_messenger = {validation_event_dispatcher} ;
 }
 
 Graphics::Instance::~Instance() {

@@ -2,15 +2,16 @@
 
 #include "utility/unique_handle.hpp"
 #include <vulkan/vulkan.h>
-#include "graphics/commands/queue.hpp"
-
-// TODO: Rename this directory from 'devices' to 'device' and logical_device.hpp to logical.hpp / physical_device.hpp to physical.hpp
+#include "graphics/command/queue.hpp"
 
 namespace Graphics {
     class Logical_device: public Utility::Unique_handle<VkDevice> {
     public:
+	Logical_device() = default; // TODO: delete this
 	Logical_device(class Physical_device& _physical_device, class Surface& _surface);
 	
+	class Physical_device& get_physical_device() noexcept;
+
 	Queue const& get_graphics_queue() const noexcept;
 	Queue const& get_presentation_queue() const noexcept;
 
@@ -20,6 +21,7 @@ namespace Graphics {
 	void wait_idle();
 
     private:
+	Physical_device* physical_device;
 	// These might be the same queue
 	Queue graphics_queue;
 	Queue presentation_queue;
