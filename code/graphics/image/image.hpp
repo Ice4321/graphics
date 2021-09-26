@@ -2,19 +2,19 @@
 
 #include "utility/unique_handle.hpp"
 #include <vulkan/vulkan.h>
+#include <vector>
 
 namespace Graphics {
     class Image: public Utility::Unique_handle<VkImage> {
     public:
-	// Ctor tag indicating that this image should not be destroyed
-	inline static constexpr struct Borrowed {} borrowed = {};
+	static std::vector<Image> get_swap_chain_images(class Logical_device& _logical_device, class Swap_chain& _swap_chain);
 
-	Image(Borrowed, VkImage _image, VkFormat _format, VkExtent2D _extent);
-	
 	VkFormat get_format() const noexcept;
 	VkExtent2D get_extent() const noexcept;
 
     private:
+	Image(VkImage _image, class Swap_chain& _swap_chain);
+
 	VkFormat format;
 	VkExtent2D extent;
     };

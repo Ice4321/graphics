@@ -69,19 +69,13 @@ Graphics::Swap_chain::Swap_chain(Logical_device* _logical_device, Physical_devic
     VULKAN_ASSERT(vkCreateSwapchainKHR(*logical_device, &create_info, nullptr, &swap_chain)); 
     Unique_handle::operator=({swap_chain, [_logical_device](Handle _swap_chain) { vkDestroySwapchainKHR(*_logical_device, _swap_chain, nullptr); }});
     
+    // These must be set before Image::get_swap_chain_images() is called
     image_format = chosen_format.format;
     image_extent = chosen_extent;
 
-    // Application must not destroy these images
-    std::uint32_t actual_image_count;
-    VULKAN_ASSERT(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, nullptr)); 
-    std::vector<VkImage> created_images(actual_image_count);
-    VULKAN_ASSERT(vkGetSwapchainImagesKHR(*logical_device, swap_chain, &actual_image_count, created_images.data())); 
-
-    images.reserve(actual_image_count);
-    for(auto image : created_images) images.emplace_back(Image::borrowed, image, image_format, chosen_extent);
+    images = Image::get_swap_chain_images(*logical_device, *this);
     
-    image_views.reserve(actual_image_count);
+    image_views.reserve(images.size());
     for(auto& image : images) image_views.emplace_back(logical_device, image);
 }
 
