@@ -7,7 +7,7 @@ namespace Graphics {
     class Shader_module: public Utility::Unique_handle<VkShaderModule> {
     public:
 	// The binary can be destroyed immediately after creating the shader module
-	Shader_module(class Shader_binary const& _binary);
+	Shader_module(class Logical_device& _logical_device, class Shader_binary const& _binary);
 
     };
 };

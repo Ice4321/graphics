@@ -6,7 +6,7 @@
 namespace Graphics {
     class Surface: public Utility::Unique_handle<VkSurfaceKHR> {
     public:
-	Surface(class Window& _window);
+	Surface(class Instance& _instance, class Window& _window);
 
     };
 }

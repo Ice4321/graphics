@@ -7,7 +7,6 @@
 namespace Graphics {
     class Logical_device: public Utility::Unique_handle<VkDevice> {
     public:
-	Logical_device() = default; // TODO: delete this
 	Logical_device(class Physical_device& _physical_device, class Surface& _surface);
 	
 	class Physical_device& get_physical_device() noexcept;

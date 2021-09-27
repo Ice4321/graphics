@@ -1,13 +1,14 @@
 #include"graphics/renderer.hpp"
 #include"graphics/utility/vulkan_assert.hpp"
-#include"graphics/state/globals.hpp"
+#include"graphics/device/logical.hpp"
 
-Graphics::Renderer::Renderer(Swap_chain& _swap_chain, Pipeline& _pipeline):
+Graphics::Renderer::Renderer(Logical_device& _logical_device, Swap_chain& _swap_chain, Pipeline& _pipeline):
+    logical_device(&_logical_device),
     swap_chain(&_swap_chain),
     pipeline(&_pipeline),
-    image_available_sem(),
-    rendering_finished_sem(),
-    graphics_command_pool(logical_device->get_graphics_queue().get_family_index())
+    image_available_sem(_logical_device),
+    rendering_finished_sem(_logical_device),
+    graphics_command_pool(*logical_device, logical_device->get_graphics_queue().get_family_index())
 {
     graphics_command_buffers.reserve(swap_chain->get_image_count());
     for(std::size_t i = 0; i < swap_chain->get_image_count(); ++i) {

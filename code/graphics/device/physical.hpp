@@ -8,7 +8,7 @@
 namespace Graphics {
     class Physical_device: public Utility::Unique_handle<VkPhysicalDevice> {
     public:
-	static std::vector<Physical_device> enumerate_all();
+	static std::vector<Physical_device> enumerate_all(class Instance& _instance);
 	
 	Physical_device(Handle _physical_device);
 

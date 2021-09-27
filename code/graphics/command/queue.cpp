@@ -1,16 +1,16 @@
 #include "graphics/command/queue.hpp"
-#include "graphics/state/globals.hpp"
 #include "preprocessor/macros.hpp"
 #include "graphics/command/command_buffer.hpp"
 #include "graphics/synchronisation/semaphore.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
+#include "graphics/device/logical.hpp"
 #include "graphics/swap_chain.hpp"
 
-Graphics::Queue::Queue(std::uint32_t _family_index, std::uint32_t _index):
+Graphics::Queue::Queue(Logical_device& _logical_device, std::uint32_t _family_index, std::uint32_t _index):
     family_index(_family_index), index(_index)
 { 
     Handle queue;
-    vkGetDeviceQueue(*logical_device, family_index, index, &queue);
+    vkGetDeviceQueue(_logical_device, family_index, index, &queue);
     Unique_handle::operator=({queue});
 }
 

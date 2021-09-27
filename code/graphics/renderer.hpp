@@ -11,7 +11,7 @@
 namespace Graphics {
     class Renderer {
     public:
-	Renderer(Swap_chain& _swap_chain, Pipeline& _pipeline);
+	Renderer(class Logical_device& _logical_device, Swap_chain& _swap_chain, Pipeline& _pipeline);
 
 	void draw_frame();
 
@@ -19,6 +19,8 @@ namespace Graphics {
 	Renderer& operator=(Renderer const&) = delete;
 
     private:
+	class Logical_device* logical_device;
+
 	Swap_chain* swap_chain;
 	Pipeline* pipeline;
 

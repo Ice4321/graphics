@@ -1,9 +1,9 @@
 #include "graphics/image/view.hpp"
 #include "graphics/image/image.hpp"
-#include "graphics/state/globals.hpp"
+#include "graphics/device/logical.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
 
-Graphics::Image_view::Image_view(Image& _image) {
+Graphics::Image_view::Image_view(Logical_device& _logical_device, Image& _image) {
     VkImageViewCreateInfo create_info{
 	.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 	.pNext = nullptr,
@@ -27,6 +27,6 @@ Graphics::Image_view::Image_view(Image& _image) {
     };
 
     Handle image_view;
-    VULKAN_ASSERT(vkCreateImageView(*logical_device, &create_info, nullptr, &image_view)); 
-    Unique_handle::operator=({image_view, [](Handle _image_view) { vkDestroyImageView(*logical_device, _image_view, nullptr); }});
+    VULKAN_ASSERT(vkCreateImageView(_logical_device, &create_info, nullptr, &image_view)); 
+    Unique_handle::operator=({image_view, [&_logical_device](Handle _image_view) { vkDestroyImageView(_logical_device, _image_view, nullptr); }});
 }

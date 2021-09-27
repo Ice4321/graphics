@@ -11,8 +11,6 @@ namespace Graphics {
     public:
 	enum struct Validation { enabled, disabled };
 
-	Instance() = default; // TODO: delete this
-	
 	// Validation callback must be registered in the constructor in order to catch messages emitted during the construction of VkInstance
 	Instance(
 	    Validation _validation, 

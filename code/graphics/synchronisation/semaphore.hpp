@@ -6,7 +6,7 @@
 namespace Graphics {
     class Semaphore: public Utility::Unique_handle<VkSemaphore> {
     public:
-	Semaphore();
+	Semaphore(class Logical_device& _logical_device);
 
     };
 }

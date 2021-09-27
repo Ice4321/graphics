@@ -11,7 +11,7 @@ namespace Graphics {
 	static VkDeviceQueueCreateInfo make_creation_info(std::uint32_t _family_index, std::uint32_t _count);
 
 	Queue() = default;
-	Queue(std::uint32_t _family_index, std::uint32_t _index);
+	Queue(class Logical_device& _logical_device, std::uint32_t _family_index, std::uint32_t _index);
 
 	std::uint32_t get_family_index() const noexcept;
 	std::uint32_t get_index() const noexcept;

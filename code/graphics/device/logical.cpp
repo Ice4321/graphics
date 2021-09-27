@@ -58,8 +58,8 @@ Graphics::Logical_device::Logical_device(Physical_device& _physical_device, Surf
     VULKAN_ASSERT(vkCreateDevice(_physical_device, &create_info, nullptr, &logical_device)); 
     Unique_handle::operator=({logical_device, [](Handle _logical_device) { vkDestroyDevice(_logical_device, nullptr); }});
     
-    graphics_queue = {graphics_queue_family_index, 0};
-    presentation_queue = {presentation_queue_family_index, 0};
+    graphics_queue = {*this, graphics_queue_family_index, 0};
+    presentation_queue = {*this, presentation_queue_family_index, 0};
 }
 
 Graphics::Physical_device& Graphics::Logical_device::get_physical_device() noexcept {

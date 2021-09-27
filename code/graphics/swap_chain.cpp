@@ -1,16 +1,18 @@
 #include"graphics/swap_chain.hpp"
 #include"graphics/pipeline.hpp"
 #include "graphics/device/physical.hpp"
-#include "graphics/state/globals.hpp"
+#include "graphics/device/logical.hpp"
 #include"graphics/utility/vulkan_assert.hpp"
 #include<algorithm>
 #include<limits>
 
 
-Graphics::Swap_chain::Swap_chain(Surface& _surface, Window& _window) {
-    VkSurfaceCapabilitiesKHR surface_capabilities = logical_device->get_physical_device().get_surface_capabilities(_surface);
-    std::vector<VkSurfaceFormatKHR> surface_formats = logical_device->get_physical_device().get_surface_formats(_surface);
-    std::vector<VkPresentModeKHR> surface_presentation_modes = logical_device->get_physical_device().get_surface_presentation_modes(_surface);
+Graphics::Swap_chain::Swap_chain(Logical_device& _logical_device, Surface& _surface, Window& _window):
+    logical_device(&_logical_device)
+{
+    VkSurfaceCapabilitiesKHR surface_capabilities = _logical_device.get_physical_device().get_surface_capabilities(_surface);
+    std::vector<VkSurfaceFormatKHR> surface_formats = _logical_device.get_physical_device().get_surface_formats(_surface);
+    std::vector<VkPresentModeKHR> surface_presentation_modes = _logical_device.get_physical_device().get_surface_presentation_modes(_surface);
 
     VkSurfaceFormatKHR chosen_format = {.format = VK_FORMAT_B8G8R8A8_SRGB, .colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR};
     VkPresentModeKHR chosen_presentation_mode = VK_PRESENT_MODE_MAILBOX_KHR;
@@ -39,9 +41,9 @@ Graphics::Swap_chain::Swap_chain(Surface& _surface, Window& _window) {
     
     // Queue families that will share access to the swap chain
     std::vector<std::uint32_t> queue_families;
-    queue_families.emplace_back(logical_device->get_graphics_queue().get_family_index());
-    if(logical_device->get_graphics_queue().get_family_index() != logical_device->get_presentation_queue().get_family_index()) {
-	queue_families.emplace_back(logical_device->get_presentation_queue().get_family_index());
+    queue_families.emplace_back(_logical_device.get_graphics_queue().get_family_index());
+    if(_logical_device.get_graphics_queue().get_family_index() != _logical_device.get_presentation_queue().get_family_index()) {
+	queue_families.emplace_back(_logical_device.get_presentation_queue().get_family_index());
     }
 
     VkSwapchainCreateInfoKHR create_info{
@@ -66,17 +68,17 @@ Graphics::Swap_chain::Swap_chain(Surface& _surface, Window& _window) {
     };
     
     Handle swap_chain;
-    VULKAN_ASSERT(vkCreateSwapchainKHR(*logical_device, &create_info, nullptr, &swap_chain)); 
-    Unique_handle::operator=({swap_chain, [](Handle _swap_chain) { vkDestroySwapchainKHR(*logical_device, _swap_chain, nullptr); }});
+    VULKAN_ASSERT(vkCreateSwapchainKHR(_logical_device, &create_info, nullptr, &swap_chain)); 
+    Unique_handle::operator=({swap_chain, [&_logical_device](Handle _swap_chain) { vkDestroySwapchainKHR(_logical_device, _swap_chain, nullptr); }});
     
     // These must be set before Image::get_swap_chain_images() is called
     image_format = chosen_format.format;
     image_extent = chosen_extent;
 
-    images = Image::get_swap_chain_images(*this);
+    images = Image::get_swap_chain_images(*logical_device, *this);
     
     image_views.reserve(images.size());
-    for(auto& image : images) image_views.emplace_back(image);
+    for(auto& image : images) image_views.emplace_back(*logical_device, image);
 }
 
 Graphics::Swap_chain::~Swap_chain() {

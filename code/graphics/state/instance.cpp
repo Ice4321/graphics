@@ -41,11 +41,11 @@ Graphics::Instance::Instance(Validation _validation, std::function<void(Events::
 	.ppEnabledExtensionNames = all_extensions.data()
     };
 
-    VkInstance instance;
-    VULKAN_ASSERT(vkCreateInstance(&create_info, nullptr, &instance)); 
-    Unique_handle::operator=({ instance, [](Handle _instance) { vkDestroyInstance(_instance, nullptr); } });
+    Handle instance_;
+    VULKAN_ASSERT(vkCreateInstance(&create_info, nullptr, &instance_)); 
+    Unique_handle::operator=({ instance_, [](Handle _instance) { vkDestroyInstance(_instance, nullptr); } });
 
-    if(validation_enabled) debug_messenger = {validation_event_dispatcher} ;
+    if(validation_enabled) debug_messenger = {*this, validation_event_dispatcher} ;
 }
 
 Graphics::Instance::~Instance() {

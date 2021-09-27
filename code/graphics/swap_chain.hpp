@@ -16,7 +16,7 @@ namespace Graphics { class Pipeline; }
 namespace Graphics {
     class Swap_chain: public Utility::Unique_handle<VkSwapchainKHR> {
     public:
-	Swap_chain(Surface& _surface, Window& _window);
+	Swap_chain(class Logical_device& _logical_device, Surface& _surface, Window& _window);
 
 	void create_framebuffers(Pipeline& _pipeline);
 	
@@ -30,6 +30,7 @@ namespace Graphics {
 	~Swap_chain();
 
     private:
+	class Logical_device* logical_device;
 	VkFormat image_format;
 	VkExtent2D image_extent;
 	std::vector<Image> images;

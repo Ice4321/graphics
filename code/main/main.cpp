@@ -1,8 +1,9 @@
 #include<iostream>
 #include"concurrency/main_thread.hpp"
 #include"graphics/wsi/window.hpp"
-#include"graphics/state/globals.hpp"
+#include"graphics/state/instance.hpp"
 #include"graphics/device/physical.hpp"
+#include"graphics/device/logical.hpp"
 #include"graphics/wsi/surface.hpp"
 #include"graphics/swap_chain.hpp"
 #include"graphics/shader/compiler.hpp"
@@ -26,19 +27,17 @@ int main() {
 	    else if(_m.severity >= Events::Graphics::Validation_event_dispatcher::Message::Severity::verbose) std::cout << _m.message << std::endl;
 	}
     };
-    Graphics::instance = &instance;
 
-    Graphics::Surface surface(window);
+    Graphics::Surface surface(instance, window);
 
-    auto all_physical_devices = Graphics::Physical_device::enumerate_all();
+    auto all_physical_devices = Graphics::Physical_device::enumerate_all(instance);
     for(auto const& physical_device : all_physical_devices) {
 	std::cout << "Device: " << physical_device.get_properties().deviceName << std::endl;
     }
     
     Graphics::Logical_device logical_device = {all_physical_devices[0], surface};
-    Graphics::logical_device = &logical_device;
 
-    Graphics::Swap_chain swap_chain(surface, window);
+    Graphics::Swap_chain swap_chain(logical_device, surface, window);
 
     Graphics::Shader_compiler shader_compiler;
     
@@ -83,14 +82,14 @@ int main() {
 	)"
     );
 
-    Graphics::Shader_module vertex_shader_module(vertex_shader_binary);
-    Graphics::Shader_module fragment_shader_module(fragment_shader_binary);
+    Graphics::Shader_module vertex_shader_module(logical_device, vertex_shader_binary);
+    Graphics::Shader_module fragment_shader_module(logical_device, fragment_shader_binary);
 
-    Graphics::Pipeline pipeline(vertex_shader_module, fragment_shader_module, swap_chain);
+    Graphics::Pipeline pipeline(logical_device, vertex_shader_module, fragment_shader_module, swap_chain);
     
     swap_chain.create_framebuffers(pipeline);
 
-    Graphics::Renderer renderer(swap_chain, pipeline);
+    Graphics::Renderer renderer(logical_device, swap_chain, pipeline);
 
     renderer.draw_frame();
 
@@ -110,7 +109,7 @@ int main() {
 	window.await_events();
     }
 
-    Graphics::logical_device->wait_idle();
+    logical_device.wait_idle();
 
 }
 
