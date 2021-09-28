@@ -46,7 +46,7 @@ Graphics::Shader_binary Graphics::Shader_compiler::compile(Shader_kind const& _k
 
 	critical_error(message);
     } else {
-	return {std::move(compilation_result)};
+	return {_kind, std::move(compilation_result)};
     }
 }
 

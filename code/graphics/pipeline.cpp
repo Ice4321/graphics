@@ -8,26 +8,8 @@ Graphics::Pipeline::Pipeline(Logical_device& _logical_device, Shader_module& _ve
 {
     // TODO: use pSpecializationInfo
     VkPipelineShaderStageCreateInfo shader_stages_create_info[] = {
-	// Vertex shader
-	{
-	    .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-	    .pNext = nullptr,
-	    .flags = 0,
-	    .stage = VK_SHADER_STAGE_VERTEX_BIT,
-	    .module = _vertex_shader,
-	    .pName = "main",
-	    .pSpecializationInfo = nullptr
-	},
-	// Fragment shader
-	{
-	    .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-	    .pNext = nullptr,
-	    .flags = 0,
-	    .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-	    .module = _fragment_shader,
-	    .pName = "main",
-	    .pSpecializationInfo = nullptr
-	}
+	_vertex_shader.get_shader_stage_creation_info(),
+	_fragment_shader.get_shader_stage_creation_info()
     };
 
     VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info{
@@ -151,6 +133,8 @@ Graphics::Pipeline::Pipeline(Logical_device& _logical_device, Shader_module& _ve
 	.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
     }};
 
+    // Subpasses are subsequent rendering operations that depend on the contents of framebuffers in previous passes, 
+    // for example a sequence of post-processing effects that are applied one after another.
     VkSubpassDescription subpass_descriptions[] = {{
 	.flags = 0,
 	.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -166,7 +150,7 @@ Graphics::Pipeline::Pipeline(Logical_device& _logical_device, Shader_module& _ve
     
     VkSubpassDependency subpass_dependencies[] = {{
 	.srcSubpass = VK_SUBPASS_EXTERNAL,
-	.dstSubpass = 0, // The only subpass in the render pass is at index 0
+	.dstSubpass = 0,
 	.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 	.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 	.srcAccessMask = 0,
