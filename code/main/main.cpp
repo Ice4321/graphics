@@ -23,8 +23,8 @@ int main() {
 	Graphics::Instance::Validation::enabled, 
 	[](Events::Graphics::Validation_event_dispatcher::Message const& _m) {
 	    if(_m.severity == Events::Graphics::Validation_event_dispatcher::Message::Severity::error) critical_error(_m.message);
-	    //else if(_m.severity >= Events::Graphics::Validation_event_dispatcher::Message::Severity::info) std::cout << _m.message << std::endl;
-	    else if(_m.severity >= Events::Graphics::Validation_event_dispatcher::Message::Severity::verbose) std::cout << _m.message << std::endl;
+	    else if(_m.severity >= Events::Graphics::Validation_event_dispatcher::Message::Severity::info) std::cout << _m.message << std::endl;
+	    //else if(_m.severity >= Events::Graphics::Validation_event_dispatcher::Message::Severity::verbose) std::cout << _m.message << std::endl;
 	}
     };
 

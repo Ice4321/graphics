@@ -3,6 +3,7 @@
 
 namespace Graphics { class Swap_chain; }
 #include"graphics/shader/module.hpp"
+#include"graphics/render_pass.hpp"
 
 namespace Graphics {
     class Pipeline {
@@ -12,7 +13,7 @@ namespace Graphics {
 	
 	operator VkPipeline& () noexcept;
 
-	VkRenderPass& get_render_pass() noexcept;
+	VkRenderPass get_render_pass() noexcept;
 
 	~Pipeline();
 
@@ -22,7 +23,7 @@ namespace Graphics {
     private:
 	class Logical_device* logical_device;
 	VkPipelineLayout layout;
-	VkRenderPass render_pass;
+	Render_pass render_pass;
 	VkPipeline pipeline;
     };
 }

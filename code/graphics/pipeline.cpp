@@ -170,7 +170,8 @@ Graphics::Pipeline::Pipeline(Logical_device& _logical_device, Shader_module& _ve
 	.pDependencies = subpass_dependencies
     };
 
-    VULKAN_ASSERT(vkCreateRenderPass(*logical_device, &render_pass_create_info, nullptr, &render_pass)); 
+    render_pass = {_logical_device, colour_attachment_descriptions, subpass_descriptions, subpass_dependencies};
+
 
     VkGraphicsPipelineCreateInfo pipeline_create_info[] = {{
 	.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
@@ -202,7 +203,7 @@ Graphics::Pipeline::Pipeline(Logical_device& _logical_device, Shader_module& _ve
 
 Graphics::Pipeline::~Pipeline() {
     vkDestroyPipeline(*logical_device, pipeline, nullptr);
-    vkDestroyRenderPass(*logical_device, render_pass, nullptr);
+    render_pass = {}; // This will be removed later 
     vkDestroyPipelineLayout(*logical_device, layout, nullptr);
 }
 
@@ -210,6 +211,6 @@ Graphics::Pipeline::operator VkPipeline& () noexcept {
     return pipeline;
 }
 
-VkRenderPass& Graphics::Pipeline::get_render_pass() noexcept {
+VkRenderPass Graphics::Pipeline::get_render_pass() noexcept {
     return render_pass;
 }
