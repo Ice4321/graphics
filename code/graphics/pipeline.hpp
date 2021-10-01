@@ -1,31 +1,26 @@
-#ifndef INCLUDED_GRAPHICS_PIPELINE_HPP
-#define INCLUDED_GRAPHICS_PIPELINE_HPP
+#pragma once
 
-namespace Graphics { class Swap_chain; }
-#include"graphics/shader/module.hpp"
-#include"graphics/render_pass.hpp"
+#include "utility/unique_handle.hpp"
+#include <vulkan/vulkan.h>
+#include "graphics/render_pass.hpp"
 
 namespace Graphics {
-    class Pipeline {
+    class Pipeline: public Utility::Unique_handle<VkPipeline> {
     public:
-	// TODO: make this variadic
-	Pipeline(class Logical_device& _logical_device, Shader_module& _vertex_shader, Shader_module& _fragment_shader, Swap_chain& _swap_chain);
-	
-	operator VkPipeline& () noexcept;
+	Pipeline(
+	    class Logical_device& _logical_device, 
+	    class Shader_module& _vertex_shader, class Shader_module& _fragment_shader, 
+	    class Swap_chain& _swap_chain
+	);
 
-	VkRenderPass get_render_pass() noexcept;
+	Render_pass& get_render_pass() noexcept;
 
 	~Pipeline();
 
-	Pipeline(Pipeline const&) = delete;
-	Pipeline& operator=(Pipeline const&) = delete;
-
     private:
-	class Logical_device* logical_device;
-	VkPipelineLayout layout;
+	Utility::Unique_handle<VkPipelineLayout> layout;
 	Render_pass render_pass;
-	VkPipeline pipeline;
+
     };
 }
 
-#endif

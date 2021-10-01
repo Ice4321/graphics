@@ -36,7 +36,6 @@ namespace Graphics {
 	std::vector<Image> images;
 	std::vector<Image_view> image_views;
 	std::vector<VkFramebuffer> framebuffers; // TODO: remove this
-
     };
 }
 

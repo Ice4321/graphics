@@ -1,12 +1,14 @@
-#include"graphics/pipeline.hpp"
-#include"graphics/swap_chain.hpp"
-#include"graphics/utility/vulkan_assert.hpp"
-#include"graphics/device/logical.hpp"
+#include "graphics/pipeline.hpp"
+#include "graphics/utility/vulkan_assert.hpp"
+#include "graphics/swap_chain.hpp"
+#include "graphics/device/logical.hpp"
+#include "graphics/shader/module.hpp"
 
-Graphics::Pipeline::Pipeline(Logical_device& _logical_device, Shader_module& _vertex_shader, Shader_module& _fragment_shader, Swap_chain& _swap_chain):
-    logical_device(&_logical_device)
-{
-    // TODO: use pSpecializationInfo
+Graphics::Pipeline::Pipeline(
+	Logical_device& _logical_device, 
+	Shader_module& _vertex_shader, Shader_module& _fragment_shader, 
+	Swap_chain& _swap_chain
+) {
     VkPipelineShaderStageCreateInfo shader_stages_create_info[] = {
 	_vertex_shader.get_shader_stage_creation_info(),
 	_fragment_shader.get_shader_stage_creation_info()
@@ -114,9 +116,11 @@ Graphics::Pipeline::Pipeline(Logical_device& _logical_device, Shader_module& _ve
 	.pPushConstantRanges = nullptr
     };
 
-    VULKAN_ASSERT(vkCreatePipelineLayout(*logical_device, &pipeline_layout_create_info, nullptr, &layout)); 
+    typename decltype(layout)::Handle layout_;
+    VULKAN_ASSERT(vkCreatePipelineLayout(_logical_device, &pipeline_layout_create_info, nullptr, &layout_)); 
+    layout = {layout_, [&_logical_device](decltype(layout_) _layout) { vkDestroyPipelineLayout(_logical_device, _layout, nullptr); }};
 
-    VkAttachmentDescription colour_attachment_descriptions[] = {{
+    VkAttachmentDescription attachments[] = {{
 	.flags = 0,
 	.format = _swap_chain.get_image_format(),
 	.samples = VK_SAMPLE_COUNT_1_BIT,
@@ -128,20 +132,18 @@ Graphics::Pipeline::Pipeline(Logical_device& _logical_device, Shader_module& _ve
 	.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
     }};
 
-    VkAttachmentReference colour_attachment_references[] = {{
+    VkAttachmentReference subpass_attachment_references[] = {{
 	.attachment = 0,
 	.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
     }};
 
-    // Subpasses are subsequent rendering operations that depend on the contents of framebuffers in previous passes, 
-    // for example a sequence of post-processing effects that are applied one after another.
-    VkSubpassDescription subpass_descriptions[] = {{
+    VkSubpassDescription subpasses[] = {{
 	.flags = 0,
 	.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
 	.inputAttachmentCount = 0,
 	.pInputAttachments = nullptr,
 	.colorAttachmentCount = 1,
-	.pColorAttachments = colour_attachment_references,
+	.pColorAttachments = subpass_attachment_references,
 	.pResolveAttachments = 0,
 	.pDepthStencilAttachment = nullptr,
 	.preserveAttachmentCount = 0,
@@ -158,22 +160,9 @@ Graphics::Pipeline::Pipeline(Logical_device& _logical_device, Shader_module& _ve
 	.dependencyFlags = 0
     }};
 
-    VkRenderPassCreateInfo render_pass_create_info{
-	.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-	.pNext = nullptr,
-	.flags = 0,
-	.attachmentCount = 1,
-	.pAttachments = colour_attachment_descriptions,
-	.subpassCount = 1,
-	.pSubpasses = subpass_descriptions,
-	.dependencyCount = 1,
-	.pDependencies = subpass_dependencies
-    };
+    render_pass = {_logical_device, attachments, subpasses, subpass_dependencies};
 
-    render_pass = {_logical_device, colour_attachment_descriptions, subpass_descriptions, subpass_dependencies};
-
-
-    VkGraphicsPipelineCreateInfo pipeline_create_info[] = {{
+    VkGraphicsPipelineCreateInfo create_info[] = {{
 	.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 	.pNext = nullptr,
 	.flags = 0,
@@ -195,22 +184,16 @@ Graphics::Pipeline::Pipeline(Logical_device& _logical_device, Shader_module& _ve
 	.basePipelineIndex = -1
     }};
     
-    // TODO: Safe to use the address of a single object as if it was a 1-element array?
-    VULKAN_ASSERT(vkCreateGraphicsPipelines(*logical_device, VK_NULL_HANDLE, 1, pipeline_create_info, nullptr, &pipeline));
-
+    Handle pipelines[1];
+    VULKAN_ASSERT(vkCreateGraphicsPipelines(_logical_device, VK_NULL_HANDLE, 1, create_info, nullptr, pipelines));
+    Unique_handle::operator=({pipelines[0], [&_logical_device](Handle _pipeline) { vkDestroyPipeline(_logical_device, _pipeline, nullptr); }});
 }
 
 
 Graphics::Pipeline::~Pipeline() {
-    vkDestroyPipeline(*logical_device, pipeline, nullptr);
-    render_pass = {}; // This will be removed later 
-    vkDestroyPipelineLayout(*logical_device, layout, nullptr);
+    Unique_handle::operator=({}); // Destroy the pipeline before destroying the layout
 }
 
-Graphics::Pipeline::operator VkPipeline& () noexcept {
-    return pipeline;
-}
-
-VkRenderPass Graphics::Pipeline::get_render_pass() noexcept {
+Graphics::Render_pass& Graphics::Pipeline::get_render_pass() noexcept {
     return render_pass;
 }

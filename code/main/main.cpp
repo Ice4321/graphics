@@ -9,6 +9,7 @@
 #include"graphics/shader/compiler.hpp"
 #include"graphics/pipeline.hpp"
 #include"graphics/renderer.hpp"
+#include"graphics/shader/module.hpp"
 #include"utility/unique_handle.hpp"
 #include"utility/assert.hpp"
 
