@@ -133,7 +133,7 @@ Graphics::Pipeline::Pipeline(
     }};
 
     VkAttachmentReference subpass_attachment_references[] = {{
-	.attachment = 0,
+	.attachment = 0, // index in attachments[]
 	.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
     }};
 
@@ -162,6 +162,8 @@ Graphics::Pipeline::Pipeline(
 
     render_pass = {_logical_device, attachments, subpasses, subpass_dependencies};
 
+    // Framebuffers and graphics pipelines are created based on a specific render pass object. 
+    // They must only be used with that render pass object, or one compatible with it. (docs)
     VkGraphicsPipelineCreateInfo create_info[] = {{
 	.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 	.pNext = nullptr,
@@ -178,8 +180,8 @@ Graphics::Pipeline::Pipeline(
 	.pColorBlendState = &colour_blend_state_create_info,
 	.pDynamicState = nullptr,
 	.layout = layout,
-	.renderPass = render_pass,
-	.subpass = 0,
+	.renderPass = render_pass, // render pass object describing the environment in which the pipeline will be used
+	.subpass = 0, // index of the subpass in the render pass where this pipeline will be used
 	.basePipelineHandle = VK_NULL_HANDLE,
 	.basePipelineIndex = -1
     }};

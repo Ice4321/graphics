@@ -93,6 +93,8 @@ void Graphics::Swap_chain::create_framebuffers(Pipeline& _pipeline) {
 	    image_views[i]
 	};
 
+	// Framebuffers and graphics pipelines are created based on a specific render pass object. 
+	// They must only be used with that render pass object, or one compatible with it. (docs)
 	VkFramebufferCreateInfo framebuffer_create_info{
 	    .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
 	    .pNext = nullptr,
