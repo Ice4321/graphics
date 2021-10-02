@@ -4,7 +4,7 @@
 #include "graphics/synchronisation/semaphore.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
 #include "graphics/device/logical.hpp"
-#include "graphics/swap_chain.hpp"
+#include "graphics/wsi/swap_chain.hpp"
 
 Graphics::Queue::Queue(Logical_device& _logical_device, std::uint32_t _family_index, std::uint32_t _index):
     family_index(_family_index), index(_index)

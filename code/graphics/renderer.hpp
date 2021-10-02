@@ -1,7 +1,7 @@
 #pragma once
 
 #include<vulkan/vulkan.h>
-#include"graphics/swap_chain.hpp"
+#include"graphics/wsi/swap_chain.hpp"
 #include"graphics/rendering/render_pass.hpp"
 #include"graphics/pipeline.hpp"
 #include "graphics/synchronisation/semaphore.hpp"

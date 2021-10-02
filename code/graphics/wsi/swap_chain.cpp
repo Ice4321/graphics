@@ -1,10 +1,12 @@
-#include"graphics/swap_chain.hpp"
-#include"graphics/rendering/render_pass.hpp"
+#include "graphics/wsi/swap_chain.hpp"
+#include "graphics/wsi/window.hpp"
+#include "graphics/wsi/surface.hpp"
 #include "graphics/device/physical.hpp"
 #include "graphics/device/logical.hpp"
-#include"graphics/utility/vulkan_assert.hpp"
-#include<algorithm>
-#include<limits>
+#include "graphics/utility/vulkan_assert.hpp"
+#include "graphics/synchronisation/semaphore.hpp"
+#include <algorithm>
+#include <limits>
 
 
 Graphics::Swap_chain::Swap_chain(Logical_device& _logical_device, Surface& _surface, Window& _window):
@@ -25,7 +27,7 @@ Graphics::Swap_chain::Swap_chain(Logical_device& _logical_device, Surface& _surf
     ASSERT(std::ranges::find(surface_presentation_modes, chosen_presentation_mode) != std::ranges::end(surface_presentation_modes));
     
     if(surface_capabilities.currentExtent.width == 0xFFFFFFFF && surface_capabilities.currentExtent.height == 0xFFFFFFFF) {
-	// The surface size will be determined by the extent of a swapchain targeting the surface
+	// The surface size will be determined by the extent of a swapchain targetting the surface
 	chosen_extent = {
 	    .width = std::clamp<std::uint32_t>(_window.get_framebuffer_width_px(), surface_capabilities.minImageExtent.width, surface_capabilities.maxImageExtent.width),
 	    .height = std::clamp<std::uint32_t>(_window.get_framebuffer_height_px(), surface_capabilities.minImageExtent.height, surface_capabilities.maxImageExtent.height)
@@ -81,10 +83,6 @@ Graphics::Swap_chain::Swap_chain(Logical_device& _logical_device, Surface& _surf
     for(auto& image : images) image_views.emplace_back(*logical_device, image);
 }
 
-Graphics::Swap_chain::~Swap_chain() {
-    for(auto& framebuffer : framebuffers) vkDestroyFramebuffer(*logical_device, framebuffer, nullptr);
-}
-
 std::size_t Graphics::Swap_chain::get_image_count() const noexcept {
     return images.size();
 }
@@ -92,7 +90,6 @@ std::size_t Graphics::Swap_chain::get_image_count() const noexcept {
 VkExtent2D Graphics::Swap_chain::get_image_extent() const noexcept {
     return image_extent;
 }
-
 
 VkFormat Graphics::Swap_chain::get_image_format() const noexcept {
     return image_format;
@@ -102,10 +99,9 @@ Graphics::Image_view& Graphics::Swap_chain::get_image_view(std::size_t _index) n
     return image_views[_index];
 }
 
-std::uint32_t Graphics::Swap_chain::acquire_next_image(VkSemaphore _semaphore) {
+std::uint32_t Graphics::Swap_chain::acquire_next_image(Semaphore& _semaphore) {
     std::uint32_t index;
     VULKAN_ASSERT(vkAcquireNextImageKHR(*logical_device, *this, std::numeric_limits<std::uint64_t>::max(), _semaphore, VK_NULL_HANDLE, &index));
-
     return index;
 }
 

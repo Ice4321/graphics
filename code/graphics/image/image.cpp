@@ -1,6 +1,6 @@
 #include "graphics/image/image.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
-#include "graphics/swap_chain.hpp"
+#include "graphics/wsi/swap_chain.hpp"
 #include "graphics/device/logical.hpp"
 
 std::vector<Graphics::Image> Graphics::Image::get_swap_chain_images(Logical_device& _logical_device, Swap_chain& _swap_chain) {
