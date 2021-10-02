@@ -7,7 +7,7 @@
 #include"graphics/wsi/surface.hpp"
 #include"graphics/wsi/swap_chain.hpp"
 #include"graphics/shader/compiler.hpp"
-#include"graphics/renderer.hpp"
+#include"graphics/rendering/renderer.hpp"
 #include"graphics/shader/module.hpp"
 #include"utility/unique_handle.hpp"
 #include"utility/assert.hpp"
