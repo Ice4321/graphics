@@ -63,8 +63,11 @@ Graphics::Renderer::Renderer(
 	render_pass,
 	0
     };
-
-    swap_chain->create_framebuffers(render_pass);
+    
+    framebuffers.reserve(swap_chain->get_image_count());
+    for(unsigned i = 0; i < swap_chain->get_image_count(); ++i) {
+	framebuffers.emplace_back(*logical_device, render_pass, swap_chain->get_image_view(i));
+    }
 
     graphics_command_buffers.reserve(swap_chain->get_image_count());
     for(std::size_t i = 0; i < swap_chain->get_image_count(); ++i) {
@@ -95,7 +98,7 @@ void Graphics::Renderer::record_command_buffers() {
 	    .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 	    .pNext = nullptr,
 	    .renderPass = render_pass,
-	    .framebuffer = swap_chain->get_framebuffers()[i],
+	    .framebuffer = framebuffers[i],
 	    .renderArea = {
 		.offset = { .x = 0, .y = 0 },
 		.extent = swap_chain->get_image_extent()

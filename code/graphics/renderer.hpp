@@ -7,6 +7,7 @@
 #include "graphics/synchronisation/semaphore.hpp"
 #include "graphics/command/command_pool.hpp"
 #include "graphics/command/command_buffer.hpp"
+#include "graphics/rendering/framebuffer.hpp"
 
 namespace Graphics {
     class Renderer {
@@ -23,6 +24,7 @@ namespace Graphics {
 	class Swap_chain* swap_chain;
 	Render_pass render_pass;
 	Pipeline pipeline;
+	std::vector<Framebuffer> framebuffers;
 
 	Semaphore image_available_sem;
 	Semaphore rendering_finished_sem;

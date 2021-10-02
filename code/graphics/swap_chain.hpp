@@ -24,7 +24,7 @@ namespace Graphics {
 	std::size_t get_image_count() const noexcept;
 	VkExtent2D get_image_extent() const noexcept;
 	VkFormat get_image_format() const noexcept;
-	std::vector<VkFramebuffer>& get_framebuffers() noexcept;
+	Image_view& get_image_view(std::size_t _index) noexcept;
 	
 	// Returns the index of the acquired image, as obtained from vkGetSwapchainImagesKHR()
 	std::uint32_t acquire_next_image(VkSemaphore _semaphore);

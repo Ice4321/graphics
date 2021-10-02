@@ -85,32 +85,6 @@ Graphics::Swap_chain::~Swap_chain() {
     for(auto& framebuffer : framebuffers) vkDestroyFramebuffer(*logical_device, framebuffer, nullptr);
 }
 
-void Graphics::Swap_chain::create_framebuffers(Render_pass& _render_pass) {
-    framebuffers.resize(images.size());
-
-    for(std::size_t i = 0; i < image_views.size(); ++i) {
-	VkImageView attachments[] = {
-	    image_views[i]
-	};
-
-	// Framebuffers and graphics pipelines are created based on a specific render pass object. 
-	// They must only be used with that render pass object, or one compatible with it. (docs)
-	VkFramebufferCreateInfo framebuffer_create_info{
-	    .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-	    .pNext = nullptr,
-	    .flags = 0,
-	    .renderPass = _render_pass,
-	    .attachmentCount = 1,
-	    .pAttachments = attachments,
-	    .width = image_extent.width,
-	    .height = image_extent.height,
-	    .layers = 1
-	};
-
-	VULKAN_ASSERT(vkCreateFramebuffer(*logical_device, &framebuffer_create_info, nullptr, &framebuffers[i])); 
-    }
-}
-
 std::size_t Graphics::Swap_chain::get_image_count() const noexcept {
     return images.size();
 }
@@ -124,8 +98,8 @@ VkFormat Graphics::Swap_chain::get_image_format() const noexcept {
     return image_format;
 }
 
-std::vector<VkFramebuffer>& Graphics::Swap_chain::get_framebuffers() noexcept {
-    return framebuffers;
+Graphics::Image_view& Graphics::Swap_chain::get_image_view(std::size_t _index) noexcept {
+    return image_views[_index];
 }
 
 std::uint32_t Graphics::Swap_chain::acquire_next_image(VkSemaphore _semaphore) {
