@@ -1,4 +1,4 @@
-#include "graphics/pipeline.hpp"
+#include "graphics/rendering/pipeline.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
 #include "graphics/device/logical.hpp"
 #include "graphics/shader/module.hpp"
@@ -87,6 +87,7 @@ Graphics::Pipeline::Pipeline(
 	.alphaToOneEnable = {}
     };
 
+    // Per-target blending state for each individual color attachment (docs)
     VkPipelineColorBlendAttachmentState colour_blend_attachment_states[] = {{
 	.blendEnable = VK_FALSE,
 	.srcColorBlendFactor = {},
@@ -129,8 +130,8 @@ Graphics::Pipeline::Pipeline(
 	.pColorBlendState = &colour_blend_state_create_info,
 	.pDynamicState = nullptr,
 	.layout = layout,
-	.renderPass = _render_pass, // render pass object describing the environment in which the pipeline will be used
-	.subpass = _subpass_index, // index of the subpass in the render pass where this pipeline will be used
+	.renderPass = _render_pass, // render pass object describing the environment in which the pipeline will be used (docs)
+	.subpass = _subpass_index, // index of the subpass in the render pass where this pipeline will be used (docs)
 	.basePipelineHandle = VK_NULL_HANDLE,
 	.basePipelineIndex = -1
     }};

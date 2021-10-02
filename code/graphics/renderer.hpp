@@ -3,7 +3,7 @@
 #include<vulkan/vulkan.h>
 #include"graphics/wsi/swap_chain.hpp"
 #include"graphics/rendering/render_pass.hpp"
-#include"graphics/pipeline.hpp"
+#include"graphics/rendering/pipeline.hpp"
 #include "graphics/synchronisation/semaphore.hpp"
 #include "graphics/command/command_pool.hpp"
 #include "graphics/command/command_buffer.hpp"
