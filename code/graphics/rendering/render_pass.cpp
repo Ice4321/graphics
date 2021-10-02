@@ -1,4 +1,4 @@
-#include "graphics/render_pass.hpp"
+#include "graphics/rendering/render_pass.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
 #include "graphics/device/logical.hpp"
 

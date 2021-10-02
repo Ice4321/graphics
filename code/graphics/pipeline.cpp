@@ -2,7 +2,7 @@
 #include "graphics/utility/vulkan_assert.hpp"
 #include "graphics/device/logical.hpp"
 #include "graphics/shader/module.hpp"
-#include "graphics/render_pass.hpp"
+#include "graphics/rendering/render_pass.hpp"
 
 Graphics::Pipeline::Pipeline(
 	Logical_device& _logical_device, 
