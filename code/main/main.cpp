@@ -86,11 +86,7 @@ int main() {
     Graphics::Shader_module vertex_shader_module(logical_device, vertex_shader_binary);
     Graphics::Shader_module fragment_shader_module(logical_device, fragment_shader_binary);
 
-    Graphics::Pipeline pipeline(logical_device, vertex_shader_module, fragment_shader_module, swap_chain);
-    
-    swap_chain.create_framebuffers(pipeline);
-
-    Graphics::Renderer renderer(logical_device, swap_chain, pipeline);
+    Graphics::Renderer renderer(logical_device, swap_chain, vertex_shader_module, fragment_shader_module);
 
     renderer.draw_frame();
 

@@ -1,13 +1,16 @@
 #include "graphics/pipeline.hpp"
 #include "graphics/utility/vulkan_assert.hpp"
-#include "graphics/swap_chain.hpp"
 #include "graphics/device/logical.hpp"
 #include "graphics/shader/module.hpp"
+#include "graphics/render_pass.hpp"
 
 Graphics::Pipeline::Pipeline(
 	Logical_device& _logical_device, 
 	Shader_module& _vertex_shader, Shader_module& _fragment_shader, 
-	Swap_chain& _swap_chain
+	std::uint32_t _viewport_width, std::uint32_t _viewport_height,
+	VkFormat _colour_attachment_format,
+	Render_pass& _render_pass,
+	std::uint32_t _subpass_index
 ) {
     VkPipelineShaderStageCreateInfo shader_stages_create_info[] = {
 	_vertex_shader.get_shader_stage_creation_info(),
@@ -35,15 +38,15 @@ Graphics::Pipeline::Pipeline(
     VkViewport viewports[] = {{
 	.x = 0,
 	.y = 0,
-	.width = (float)_swap_chain.get_image_extent().width,
-	.height = (float)_swap_chain.get_image_extent().height,
+	.width = (float)_viewport_width,
+	.height = (float)_viewport_height,
 	.minDepth = 0.0f,
 	.maxDepth = 1.0f
     }};
 
     VkRect2D scissors[] = {{
-	.offset = { .x = 0, .y = 0 },
-	.extent = _swap_chain.get_image_extent()
+	.offset = {.x = 0, .y = 0},
+	.extent = {.width = _viewport_width, .height = _viewport_height}
     }};
 
     VkPipelineViewportStateCreateInfo viewport_state_create_info{
@@ -106,61 +109,7 @@ Graphics::Pipeline::Pipeline(
 	.blendConstants = {}
     };
 
-    VkPipelineLayoutCreateInfo pipeline_layout_create_info{
-	.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-	.pNext = nullptr,
-	.flags = 0,
-	.setLayoutCount = 0,
-	.pSetLayouts = nullptr,
-	.pushConstantRangeCount = 0,
-	.pPushConstantRanges = nullptr
-    };
-
-    typename decltype(layout)::Handle layout_;
-    VULKAN_ASSERT(vkCreatePipelineLayout(_logical_device, &pipeline_layout_create_info, nullptr, &layout_)); 
-    layout = {layout_, [&_logical_device](decltype(layout_) _layout) { vkDestroyPipelineLayout(_logical_device, _layout, nullptr); }};
-
-    VkAttachmentDescription attachments[] = {{
-	.flags = 0,
-	.format = _swap_chain.get_image_format(),
-	.samples = VK_SAMPLE_COUNT_1_BIT,
-	.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-	.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-	.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-	.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-	.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-	.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
-    }};
-
-    VkAttachmentReference subpass_attachment_references[] = {{
-	.attachment = 0, // index in attachments[]
-	.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-    }};
-
-    VkSubpassDescription subpasses[] = {{
-	.flags = 0,
-	.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-	.inputAttachmentCount = 0,
-	.pInputAttachments = nullptr,
-	.colorAttachmentCount = 1,
-	.pColorAttachments = subpass_attachment_references,
-	.pResolveAttachments = 0,
-	.pDepthStencilAttachment = nullptr,
-	.preserveAttachmentCount = 0,
-	.pPreserveAttachments= nullptr
-    }};
-    
-    VkSubpassDependency subpass_dependencies[] = {{
-	.srcSubpass = VK_SUBPASS_EXTERNAL,
-	.dstSubpass = 0,
-	.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-	.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-	.srcAccessMask = 0,
-	.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-	.dependencyFlags = 0
-    }};
-
-    render_pass = {_logical_device, attachments, subpasses, subpass_dependencies};
+    layout = {_logical_device};
 
     // Framebuffers and graphics pipelines are created based on a specific render pass object. 
     // They must only be used with that render pass object, or one compatible with it. (docs)
@@ -180,8 +129,8 @@ Graphics::Pipeline::Pipeline(
 	.pColorBlendState = &colour_blend_state_create_info,
 	.pDynamicState = nullptr,
 	.layout = layout,
-	.renderPass = render_pass, // render pass object describing the environment in which the pipeline will be used
-	.subpass = 0, // index of the subpass in the render pass where this pipeline will be used
+	.renderPass = _render_pass, // render pass object describing the environment in which the pipeline will be used
+	.subpass = _subpass_index, // index of the subpass in the render pass where this pipeline will be used
 	.basePipelineHandle = VK_NULL_HANDLE,
 	.basePipelineIndex = -1
     }};
@@ -196,6 +145,19 @@ Graphics::Pipeline::~Pipeline() {
     Unique_handle::operator=({}); // Destroy the pipeline before destroying the layout
 }
 
-Graphics::Render_pass& Graphics::Pipeline::get_render_pass() noexcept {
-    return render_pass;
+Graphics::Pipeline::Layout::Layout(Logical_device& _logical_device) {
+    VkPipelineLayoutCreateInfo create_info{
+	.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+	.pNext = nullptr,
+	.flags = 0,
+	.setLayoutCount = 0,
+	.pSetLayouts = nullptr,
+	.pushConstantRangeCount = 0,
+	.pPushConstantRanges = nullptr
+    };
+
+    Handle layout;
+    VULKAN_ASSERT(vkCreatePipelineLayout(_logical_device, &create_info, nullptr, &layout)); 
+    Unique_handle::operator=({layout, [&_logical_device](Handle _layout) { vkDestroyPipelineLayout(_logical_device, _layout, nullptr); }});
 }
+

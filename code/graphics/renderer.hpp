@@ -1,8 +1,8 @@
-#ifndef INCLUDED_GRAPHICS_RENDERER_HPP
-#define INCLUDED_GRAPHICS_RENDERER_HPP
+#pragma once
 
 #include<vulkan/vulkan.h>
 #include"graphics/swap_chain.hpp"
+#include"graphics/render_pass.hpp"
 #include"graphics/pipeline.hpp"
 #include "graphics/synchronisation/semaphore.hpp"
 #include "graphics/command/command_pool.hpp"
@@ -11,18 +11,18 @@
 namespace Graphics {
     class Renderer {
     public:
-	Renderer(class Logical_device& _logical_device, Swap_chain& _swap_chain, Pipeline& _pipeline);
+	Renderer(
+	    class Logical_device& _logical_device, Swap_chain& _swap_chain,
+	    class Shader_module& _vertex_shader, class Shader_module& _fragment_shader
+	);
 
 	void draw_frame();
 
-	Renderer(Renderer const&) = delete;
-	Renderer& operator=(Renderer const&) = delete;
-
     private:
 	class Logical_device* logical_device;
-
-	Swap_chain* swap_chain;
-	Pipeline* pipeline;
+	class Swap_chain* swap_chain;
+	Render_pass render_pass;
+	Pipeline pipeline;
 
 	Semaphore image_available_sem;
 	Semaphore rendering_finished_sem;
@@ -37,4 +37,3 @@ namespace Graphics {
     };
 }
 
-#endif

@@ -1,5 +1,5 @@
 #include"graphics/swap_chain.hpp"
-#include"graphics/pipeline.hpp"
+#include"graphics/render_pass.hpp"
 #include "graphics/device/physical.hpp"
 #include "graphics/device/logical.hpp"
 #include"graphics/utility/vulkan_assert.hpp"
@@ -85,7 +85,7 @@ Graphics::Swap_chain::~Swap_chain() {
     for(auto& framebuffer : framebuffers) vkDestroyFramebuffer(*logical_device, framebuffer, nullptr);
 }
 
-void Graphics::Swap_chain::create_framebuffers(Pipeline& _pipeline) {
+void Graphics::Swap_chain::create_framebuffers(Render_pass& _render_pass) {
     framebuffers.resize(images.size());
 
     for(std::size_t i = 0; i < image_views.size(); ++i) {
@@ -99,7 +99,7 @@ void Graphics::Swap_chain::create_framebuffers(Pipeline& _pipeline) {
 	    .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
 	    .pNext = nullptr,
 	    .flags = 0,
-	    .renderPass = _pipeline.get_render_pass(),
+	    .renderPass = _render_pass,
 	    .attachmentCount = 1,
 	    .pAttachments = attachments,
 	    .width = image_extent.width,

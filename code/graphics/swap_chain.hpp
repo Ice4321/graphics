@@ -18,7 +18,7 @@ namespace Graphics {
     public:
 	Swap_chain(class Logical_device& _logical_device, Surface& _surface, Window& _window);
 
-	void create_framebuffers(Pipeline& _pipeline);
+	void create_framebuffers(class Render_pass& _render_pass);
 	
 	std::size_t get_image_count() const noexcept;
 	VkExtent2D get_image_extent() const noexcept;
