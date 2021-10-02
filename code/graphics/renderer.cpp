@@ -1,7 +1,8 @@
-#include"graphics/renderer.hpp"
-#include"graphics/utility/vulkan_assert.hpp"
-#include"graphics/device/logical.hpp"
-#include"graphics/shader/module.hpp"
+#include "graphics/renderer.hpp"
+#include "graphics/utility/vulkan_assert.hpp"
+#include "graphics/device/logical.hpp"
+#include "graphics/shader/module.hpp"
+#include "graphics/wsi/swap_chain.hpp"
 
 Graphics::Renderer::Renderer(
 	Logical_device& _logical_device, Swap_chain& _swap_chain,
@@ -65,12 +66,9 @@ Graphics::Renderer::Renderer(
     };
     
     framebuffers.reserve(swap_chain->get_image_count());
+    graphics_command_buffers.reserve(swap_chain->get_image_count());
     for(unsigned i = 0; i < swap_chain->get_image_count(); ++i) {
 	framebuffers.emplace_back(*logical_device, render_pass, swap_chain->get_image_view(i));
-    }
-
-    graphics_command_buffers.reserve(swap_chain->get_image_count());
-    for(std::size_t i = 0; i < swap_chain->get_image_count(); ++i) {
 	graphics_command_buffers.emplace_back(graphics_command_pool.allocate_command_buffer());
     }
 
@@ -86,7 +84,7 @@ void Graphics::Renderer::draw_frame() {
 
 
 void Graphics::Renderer::record_command_buffers() {
-    for(std::size_t i = 0; i< graphics_command_buffers.size(); ++i) {
+    for(unsigned i = 0; i< graphics_command_buffers.size(); ++i) {
 	graphics_command_buffers[i].begin_recording();
 	
 	// See: VK_ATTACHMENT_LOAD_OP_CLEAR
